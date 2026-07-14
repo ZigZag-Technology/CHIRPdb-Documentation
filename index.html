@@ -734,6 +734,13 @@
         font-family: inherit;
         -webkit-tap-highlight-color: transparent;
       }
+      .step--static .step__header {
+        cursor: default;
+      }
+      .step--static .step__card:hover {
+        border-color: var(--border);
+        box-shadow: var(--shadow-sm);
+      }
       .step__title-block {
         flex: 1;
         min-width: 0;
@@ -1364,10 +1371,10 @@
 
       <h3 class="roadmap__section-title">Post-MVP</h3>
 
-      <article class="step step--ai" data-step="1" data-kind="ai">
+      <article class="step step--ai step--static" data-step="1" data-kind="ai">
         <div class="step__node">01</div>
         <div class="step__card">
-          <button class="step__header" aria-expanded="false">
+          <div class="step__header">
             <div class="step__title-block">
               <div class="step__meta">
                 <span class="step__tag step__tag--ai">AI-powered</span>
@@ -1380,43 +1387,6 @@
                 to produce the structured corpus the Alan Turing Data Study
                 Group will work from.
               </p>
-            </div>
-            <span class="step__chev" aria-hidden="true">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M4 6l4 4 4-4" />
-              </svg>
-            </span>
-          </button>
-          <div class="step__body">
-            <div class="step__body-inner">
-              <div class="step__detail">
-                <p>
-                  The MVP ingestion pipeline is run over every MAIB report,
-                  producing structured records — sentences, recommendations,
-                  safety issues — for the whole archive. First end-to-end output
-                  of the ingestion work.
-                </p>
-                <p>
-                  That corpus is what the Alan Turing Institute's Data Study
-                  Group will work against during their week-long collaboration,
-                  and what every downstream step builds on.
-                </p>
-              </div>
-              <div class="step__ai-role">
-                <span class="step__ai-role-label">AI's role</span>
-                <span class="step__ai-role-text"
-                  >The MVP pipeline is AI-driven — an agentic system reads each
-                  PDF end-to-end and extracts structured content. This step is
-                  that pipeline running at scale over the MAIB archive.</span
-                >
-              </div>
             </div>
           </div>
         </div>
@@ -2531,6 +2501,7 @@
       function setOpen(step, open) {
         const body = step.querySelector(".step__body");
         const header = step.querySelector(".step__header");
+        if (!body || !header) return;
         if (open) {
           step.classList.add("is-open");
           header.setAttribute("aria-expanded", "true");
@@ -2544,6 +2515,8 @@
 
       steps.forEach((step) => {
         const header = step.querySelector(".step__header");
+        const body = step.querySelector(".step__body");
+        if (!header || !body) return;
         header.addEventListener("click", () => {
           setOpen(step, !step.classList.contains("is-open"));
         });
@@ -2551,11 +2524,15 @@
 
       document.getElementById("expandAll").addEventListener("click", () => {
         steps.forEach((s) => {
+          if (!s.querySelector(".step__body")) return;
           if (!s.classList.contains("is-filtered-out")) setOpen(s, true);
         });
       });
       document.getElementById("collapseAll").addEventListener("click", () => {
-        steps.forEach((s) => setOpen(s, false));
+        steps.forEach((s) => {
+          if (!s.querySelector(".step__body")) return;
+          setOpen(s, false);
+        });
       });
 
       const chips = document.querySelectorAll(".chip");
