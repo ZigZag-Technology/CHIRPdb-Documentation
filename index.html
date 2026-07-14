@@ -579,6 +579,26 @@
         margin: 8px 0 32px;
       }
 
+      .roadmap__milestone {
+        position: relative;
+        border-top: 1.5px solid var(--orange);
+        margin: 8px 0 40px;
+      }
+      .roadmap__milestone-label {
+        position: absolute;
+        top: -11px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #fff;
+        padding: 0 14px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--orange-deep);
+        white-space: nowrap;
+      }
+
       .parallel-group {
         position: relative;
         border: 1.5px solid var(--orange);
@@ -1253,11 +1273,11 @@
           </button>
           <button class="chip" data-filter="ai">
             <span class="chip__dot"></span>AI-powered
-            <span class="chip__count" id="countAi">9</span>
+            <span class="chip__count" id="countAi">10</span>
           </button>
           <button class="chip" data-filter="built">
             <span class="chip__dot"></span>Built software
-            <span class="chip__count" id="countBuilt">8</span>
+            <span class="chip__count" id="countBuilt">7</span>
           </button>
         </div>
         <div class="controls__actions">
@@ -1344,10 +1364,68 @@
 
       <h3 class="roadmap__section-title">Post-MVP</h3>
 
+      <article class="step step--ai" data-step="1" data-kind="ai">
+        <div class="step__node">01</div>
+        <div class="step__card">
+          <button class="step__header" aria-expanded="false">
+            <div class="step__title-block">
+              <div class="step__meta">
+                <span class="step__tag step__tag--ai">AI-powered</span>
+              </div>
+              <h2 class="step__title">
+                Ingesting MAIB reports through the MVP pipeline
+              </h2>
+              <p class="step__summary">
+                Running the MVP ingestion pipeline over the MAIB report archive
+                to produce the structured corpus the Alan Turing Data Study
+                Group will work from.
+              </p>
+            </div>
+            <span class="step__chev" aria-hidden="true">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M4 6l4 4 4-4" />
+              </svg>
+            </span>
+          </button>
+          <div class="step__body">
+            <div class="step__body-inner">
+              <div class="step__detail">
+                <p>
+                  The MVP ingestion pipeline is run over every MAIB report,
+                  producing structured records — sentences, recommendations,
+                  safety issues — for the whole archive. First end-to-end output
+                  of the ingestion work.
+                </p>
+                <p>
+                  That corpus is what the Alan Turing Institute's Data Study
+                  Group will work against during their week-long collaboration,
+                  and what every downstream step builds on.
+                </p>
+              </div>
+              <div class="step__ai-role">
+                <span class="step__ai-role-label">AI's role</span>
+                <span class="step__ai-role-text"
+                  >The MVP pipeline is AI-driven — an agentic system reads each
+                  PDF end-to-end and extracts structured content. This step is
+                  that pipeline running at scale over the MAIB archive.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
       <div class="parallel-group">
         <span class="parallel-group__label">Happen simultaneously</span>
-        <article class="step step--ai" data-step="1" data-kind="ai">
-          <div class="step__node">01</div>
+        <article class="step step--ai" data-step="2" data-kind="ai">
+          <div class="step__node">02</div>
           <div class="step__card">
             <button class="step__header" aria-expanded="false">
               <div class="step__title-block">
@@ -1358,8 +1436,9 @@
                   Reading every report reliably, whatever shape it comes in
                 </h2>
                 <p class="step__summary">
-                  An AI ingestion pipeline that handles the awkward report
-                  formats, not just the predictable ones.
+                  An AI ingestion pipeline that pulls sentences,
+                  recommendations, and safety issues out of any report layout —
+                  not just the predictable ones.
                 </p>
               </div>
               <span class="step__chev" aria-hidden="true">
@@ -1396,7 +1475,7 @@
                     >An agentic system reads the full PDF, identifies sentences,
                     sections, recommendations, and safety issues, and outputs
                     them in a structured form the database can store. A human
-                    reviewer (see Step 6) verifies the result before it's relied
+                    reviewer (see Step 7) verifies the result before it's relied
                     on.</span
                   >
                 </div>
@@ -1405,8 +1484,8 @@
           </div>
         </article>
 
-        <article class="step step--built" data-step="2" data-kind="built">
-          <div class="step__node">02</div>
+        <article class="step step--built" data-step="3" data-kind="built">
+          <div class="step__node">03</div>
           <div class="step__card">
             <button class="step__header" aria-expanded="false">
               <div class="step__title-block">
@@ -1462,8 +1541,8 @@
         </article>
       </div>
 
-      <article class="step step--ai" data-step="3" data-kind="ai">
-        <div class="step__node">03</div>
+      <article class="step step--ai" data-step="4" data-kind="ai">
+        <div class="step__node">04</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1471,7 +1550,8 @@
                 <span class="step__tag step__tag--ai">AI-powered</span>
               </div>
               <h2 class="step__title">
-                Recognising who and what each report is about
+                Narrative entity extraction — recognising who and what each
+                report is about
               </h2>
               <p class="step__summary">
                 The AI doesn't just store sentences — it tracks the named
@@ -1515,7 +1595,7 @@
                   >The same language model that reads each report identifies the
                   people, vessels, organisations, locations, and equipment it
                   mentions, and links them to the sentences they appear in.
-                  Human reviewers confirm or correct these in Step 6.</span
+                  Human reviewers confirm or correct these in Step 7.</span
                 >
               </div>
             </div>
@@ -1523,20 +1603,25 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="4" data-kind="built">
-        <div class="step__node">04</div>
+      <div class="roadmap__milestone">
+        <span class="roadmap__milestone-label">DSG goal</span>
+      </div>
+
+      <article class="step step--ai" data-step="5" data-kind="ai">
+        <div class="step__node">05</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
               <div class="step__meta">
-                <span class="step__tag step__tag--built">Built software</span>
+                <span class="step__tag step__tag--ai">AI-powered</span>
               </div>
               <h2 class="step__title">
-                A single search across the whole database
+                A search endpoint powered by vector embeddings
               </h2>
               <p class="step__summary">
-                One way in — for reports, recommendations, safety issues, and
-                the entities above. Ordinary search, no AI required.
+                An API endpoint — not a UI — that lets other systems query the
+                corpus by meaning, using vector embeddings of every sentence,
+                entity, recommendation, and safety issue.
               </p>
             </div>
             <span class="step__chev" aria-hidden="true">
@@ -1556,23 +1641,30 @@
             <div class="step__body-inner">
               <div class="step__detail">
                 <p>
-                  A search interface that researchers and CHIRP staff can use
-                  directly — no database knowledge required. Combine filters,
-                  search by entity, or pull up everything related to a specific
-                  vessel or organisation.
+                  As part of this step, the content produced by steps 2–4 —
+                  sentences, recommendations, safety issues, and named entities
+                  — gets turned into vector embeddings, mathematical
+                  representations of meaning. Nothing is embedded before this
+                  step; the embeddings only exist once this endpoint is built.
                 </p>
                 <p>
-                  This is also how we prove the ingestion work has done its job:
-                  if the data is structured well, this kind of search becomes
-                  possible.
+                  The endpoint queries those embeddings alongside standard
+                  structured filters, so matches come back by meaning rather
+                  than by exact wording. It isn't a search box researchers click
+                  into — it's a machine-facing API that other parts of the
+                  system call: the review tool, the plain-language assistant
+                  later, and any partner integrations. If the ingestion has done
+                  its job, the endpoint's results reflect that.
                 </p>
               </div>
               <div class="step__ai-role">
-                <span class="step__ai-role-label">Not AI</span>
+                <span class="step__ai-role-label">AI's role</span>
                 <span class="step__ai-role-text"
-                  >Standard database search and filtering. Results are
-                  deterministic — the same query returns the same results every
-                  time.</span
+                  >An embedding model turns each piece of extracted content
+                  into a vector as part of this step, and turns each incoming
+                  query into one the same way. The endpoint returns the closest
+                  matches by vector similarity. The AI work sits inside the
+                  endpoint; callers just hit an API.</span
                 >
               </div>
             </div>
@@ -1580,8 +1672,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="5" data-kind="ai">
-        <div class="step__node">05</div>
+      <article class="step step--ai" data-step="6" data-kind="ai">
+        <div class="step__node">06</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1634,8 +1726,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="6" data-kind="built">
-        <div class="step__node">06</div>
+      <article class="step step--built" data-step="7" data-kind="built">
+        <div class="step__node">07</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1692,8 +1784,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="7" data-kind="built">
-        <div class="step__node">07</div>
+      <article class="step step--built" data-step="8" data-kind="built">
+        <div class="step__node">08</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1743,8 +1835,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="8" data-kind="built">
-        <div class="step__node">08</div>
+      <article class="step step--built" data-step="9" data-kind="built">
+        <div class="step__node">09</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1794,8 +1886,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="9" data-kind="built">
-        <div class="step__node">09</div>
+      <article class="step step--built" data-step="10" data-kind="built">
+        <div class="step__node">10</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1848,8 +1940,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="10" data-kind="ai">
-        <div class="step__node">10</div>
+      <article class="step step--ai" data-step="11" data-kind="ai">
+        <div class="step__node">11</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1908,8 +2000,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="11" data-kind="ai">
-        <div class="step__node">11</div>
+      <article class="step step--ai" data-step="12" data-kind="ai">
+        <div class="step__node">12</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1960,7 +2052,7 @@
                   >The same ingestion pipeline reads the new document types.
                   Where a format has its own conventions, the model is adapted
                   with format-specific prompts. Human reviewers verify the
-                  output in Step 6.</span
+                  output in Step 7.</span
                 >
               </div>
             </div>
@@ -1968,8 +2060,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="12" data-kind="ai">
-        <div class="step__node">12</div>
+      <article class="step step--ai" data-step="13" data-kind="ai">
+        <div class="step__node">13</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -2022,8 +2114,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="13" data-kind="built">
-        <div class="step__node">13</div>
+      <article class="step step--built" data-step="14" data-kind="built">
+        <div class="step__node">14</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -2088,8 +2180,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="14" data-kind="built">
-        <div class="step__node">14</div>
+      <article class="step step--built" data-step="15" data-kind="built">
+        <div class="step__node">15</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -2140,8 +2232,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="15" data-kind="built">
-        <div class="step__node">15</div>
+      <article class="step step--built" data-step="16" data-kind="built">
+        <div class="step__node">16</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -2189,7 +2281,7 @@
                 <span class="step__ai-role-text"
                   >Structured tracking of recommendation status over time. The
                   "similar recommendations" links lean on the similarity work
-                  from Step 10, but the tracking itself is plain database
+                  from Step 11, but the tracking itself is plain database
                   logic.</span
                 >
               </div>
@@ -2198,8 +2290,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="16" data-kind="ai">
-        <div class="step__node">16</div>
+      <article class="step step--ai" data-step="17" data-kind="ai">
+        <div class="step__node">17</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -2259,8 +2351,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="17" data-kind="ai">
-        <div class="step__node">17</div>
+      <article class="step step--ai" data-step="18" data-kind="ai">
+        <div class="step__node">18</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -2322,7 +2414,7 @@
           <div class="packages__kicker">Delivery</div>
           <h2>How this <span class="accent">breaks down</span>.</h2>
           <p class="packages__lead">
-            The 17 steps cluster into seven packages. Each one is scoped,
+            The 18 steps cluster into seven packages. Each one is scoped,
             quoted, and delivered as its own piece of work.
           </p>
         </div>
@@ -2331,7 +2423,7 @@
           <div class="package package--contracted">
             <div class="package__row">
               <span class="package__num">P1</span>
-              <span class="package__steps">Steps 1, 2, 3, 4, 5</span>
+              <span class="package__steps">Steps 1, 2, 3, 4, 5, 6</span>
             </div>
             <div class="package__title">Foundation</div>
             <div class="package__desc">
@@ -2345,7 +2437,7 @@
           <div class="package">
             <div class="package__row">
               <span class="package__num">P2</span>
-              <span class="package__steps">Steps 6, 7, 8, 9</span>
+              <span class="package__steps">Steps 7, 8, 9, 10</span>
             </div>
             <div class="package__title">Verification &amp; provenance</div>
             <div class="package__desc">
@@ -2358,7 +2450,7 @@
           <div class="package">
             <div class="package__row">
               <span class="package__num">P3</span>
-              <span class="package__steps">Step 10</span>
+              <span class="package__steps">Step 11</span>
             </div>
             <div class="package__title">Semantic layer</div>
             <div class="package__desc">
@@ -2370,7 +2462,7 @@
           <div class="package">
             <div class="package__row">
               <span class="package__num">P4</span>
-              <span class="package__steps">Steps 11, 12</span>
+              <span class="package__steps">Steps 12, 13</span>
             </div>
             <div class="package__title">Broader corpus &amp; legislation</div>
             <div class="package__desc">
@@ -2382,7 +2474,7 @@
           <div class="package package--essential">
             <div class="package__row">
               <span class="package__num">P5</span>
-              <span class="package__steps">Step 13</span>
+              <span class="package__steps">Step 14</span>
             </div>
             <div class="package__title">Production hardening</div>
             <div class="package__desc">
@@ -2399,7 +2491,7 @@
           <div class="package">
             <div class="package__row">
               <span class="package__num">P6</span>
-              <span class="package__steps">Steps 14, 15</span>
+              <span class="package__steps">Steps 15, 16</span>
             </div>
             <div class="package__title">Analytical frontend</div>
             <div class="package__desc">
@@ -2411,7 +2503,7 @@
           <div class="package">
             <div class="package__row">
               <span class="package__num">P7</span>
-              <span class="package__steps">Steps 16, 17</span>
+              <span class="package__steps">Steps 17, 18</span>
             </div>
             <div class="package__title">Conversational layer</div>
             <div class="package__desc">
