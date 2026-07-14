@@ -24,7 +24,17 @@
       .container {
         max-width: 860px;
         margin: 0 auto;
-        padding: 48px 24px 80px;
+        padding: 0 24px 80px;
+      }
+
+      .intro-wide {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+      }
+      .intro-wide__inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 48px 24px 40px;
       }
 
       .eyebrow {
@@ -227,6 +237,19 @@
       }
 
       /* full schema viewer */
+      .schema-wide {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        padding: 0 24px;
+      }
+      .schema-wide__inner {
+        max-width: 1320px;
+        margin: 0 auto;
+      }
       .schema-toolbar {
         display: flex;
         align-items: center;
@@ -250,8 +273,14 @@
         border-radius: 10px;
         background: var(--bg-card);
         overflow: auto;
-        max-height: 640px;
+        max-height: min(80vh, 900px);
         margin: 0 0 8px;
+      }
+      .schema-viewer.is-fullscreen {
+        max-height: none;
+        height: 100vh;
+        border-radius: 0;
+        background: var(--bg-card);
       }
       .schema-viewer img {
         display: block;
@@ -490,7 +519,13 @@
       }
       @media (max-width: 640px) {
         .container {
-          padding: 28px 16px 60px;
+          padding: 0 16px 60px;
+        }
+        .intro-wide__inner {
+          padding: 28px 16px 24px;
+        }
+        .schema-wide {
+          padding: 0 16px;
         }
         h1 {
           font-size: 27px;
@@ -519,16 +554,20 @@
       </div>
     </header>
 
-    <div class="container">
-      <p class="eyebrow">CHIRP Maritime · CHIRPdb</p>
-      <h1>How your incident data is stored</h1>
-      <p class="lede">
-        CHIRPdb takes published maritime incident reports — PDF documents — and
-        turns them into structured, searchable data. This page explains what the
-        database holds, how the pieces fit together, and the principles that
-        keep the data trustworthy.
-      </p>
+    <div class="intro-wide">
+      <div class="intro-wide__inner">
+        <p class="eyebrow">CHIRP Maritime · CHIRPdb</p>
+        <h1>How your incident data is stored</h1>
+        <p class="lede">
+          CHIRPdb takes published maritime incident reports — PDF documents —
+          and turns them into structured, searchable data. This page explains
+          what the database holds, how the pieces fit together, and the
+          principles that keep the data trustworthy.
+        </p>
+      </div>
+    </div>
 
+    <div class="container">
       <h2>From PDF to searchable data — the three stages</h2>
       <p>
         Every report goes through the same journey, and the database is
@@ -599,26 +638,40 @@
         database and every connection between them. It's dense by design; the
         sections that follow break it into readable pieces.
       </p>
-      <div class="schema-toolbar">
-        <button type="button" class="btn" id="zoomOut" aria-label="Zoom out">
-          &minus;
-        </button>
-        <span class="schema-toolbar__zoom" id="zoomLabel">100%</span>
-        <button type="button" class="btn" id="zoomIn" aria-label="Zoom in">
-          &plus;
-        </button>
-        <button type="button" class="btn" id="zoomFit">Fit width</button>
-        <button type="button" class="btn" id="zoomReset">Actual size</button>
-        <span class="schema-toolbar__hint"
-          >Scroll to pan, or hold Ctrl/Cmd and scroll to zoom.</span
-        >
-      </div>
-      <div class="schema-viewer" id="schemaViewer">
-        <img
-          src="schema.svg"
-          alt="Full CHIRPdb entity-relationship diagram showing all tables and their relationships"
-          id="schemaImg"
-        />
+      <div class="schema-wide">
+        <div class="schema-wide__inner">
+          <div class="schema-toolbar">
+            <button
+              type="button"
+              class="btn"
+              id="zoomOut"
+              aria-label="Zoom out"
+            >
+              &minus;
+            </button>
+            <span class="schema-toolbar__zoom" id="zoomLabel">100%</span>
+            <button type="button" class="btn" id="zoomIn" aria-label="Zoom in">
+              &plus;
+            </button>
+            <button type="button" class="btn" id="zoomFit">Fit width</button>
+            <button type="button" class="btn" id="zoomReset">
+              Actual size
+            </button>
+            <button type="button" class="btn" id="zoomFullscreen">
+              Full screen
+            </button>
+            <span class="schema-toolbar__hint"
+              >Scroll to pan, or hold Ctrl/Cmd and scroll to zoom.</span
+            >
+          </div>
+          <div class="schema-viewer" id="schemaViewer">
+            <img
+              src="schema.svg"
+              alt="Full CHIRPdb entity-relationship diagram showing all tables and their relationships"
+              id="schemaImg"
+            />
+          </div>
+        </div>
       </div>
 
       <h2>The four areas of the database</h2>
@@ -1157,11 +1210,13 @@
         var zoomOutBtn = document.getElementById("zoomOut");
         var fitBtn = document.getElementById("zoomFit");
         var resetBtn = document.getElementById("zoomReset");
+        var fsBtn = document.getElementById("zoomFullscreen");
 
         var MIN_PCT = 15;
         var MAX_PCT = 400;
         var STEP = 20;
         var pct = 100;
+        var userZoomed = false;
 
         function apply(nextPct) {
           pct = Math.max(MIN_PCT, Math.min(MAX_PCT, Math.round(nextPct)));
@@ -1177,25 +1232,79 @@
         }
 
         zoomInBtn.addEventListener("click", function () {
+          userZoomed = true;
           apply(pct + STEP);
         });
         zoomOutBtn.addEventListener("click", function () {
+          userZoomed = true;
           apply(pct - STEP);
         });
         resetBtn.addEventListener("click", function () {
+          userZoomed = true;
           apply(100);
         });
-        fitBtn.addEventListener("click", fitToContainer);
+        fitBtn.addEventListener("click", function () {
+          userZoomed = false;
+          fitToContainer();
+        });
 
         viewer.addEventListener(
           "wheel",
           function (e) {
             if (!(e.ctrlKey || e.metaKey)) return;
             e.preventDefault();
+            userZoomed = true;
             apply(pct - e.deltaY * 0.4);
           },
           { passive: false },
         );
+
+        var hasFullscreen =
+          document.fullscreenEnabled ||
+          viewer.requestFullscreen ||
+          viewer.webkitRequestFullscreen;
+
+        function isFullscreen() {
+          return (
+            (document.fullscreenElement || document.webkitFullscreenElement) ===
+            viewer
+          );
+        }
+
+        if (!hasFullscreen) {
+          fsBtn.style.display = "none";
+        } else {
+          fsBtn.addEventListener("click", function () {
+            if (isFullscreen()) {
+              (document.exitFullscreen || document.webkitExitFullscreen).call(
+                document,
+              );
+            } else {
+              (viewer.requestFullscreen || viewer.webkitRequestFullscreen).call(
+                viewer,
+              );
+            }
+          });
+
+          ["fullscreenchange", "webkitfullscreenchange"].forEach(
+            function (evt) {
+              document.addEventListener(evt, function () {
+                var active = isFullscreen();
+                viewer.classList.toggle("is-fullscreen", active);
+                fsBtn.textContent = active ? "Exit full screen" : "Full screen";
+                userZoomed = false;
+                fitToContainer();
+              });
+            },
+          );
+        }
+
+        var resizeTimer;
+        window.addEventListener("resize", function () {
+          if (userZoomed) return;
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(fitToContainer, 100);
+        });
 
         if (img.complete && img.naturalWidth) {
           fitToContainer();
