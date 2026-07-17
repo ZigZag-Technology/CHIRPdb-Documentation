@@ -250,7 +250,7 @@
         border: 1px solid var(--border);
         background: var(--bg-soft);
       }
-      .timeline__section--tsc .timeline__bar {
+      .timeline__section--funding2 .timeline__bar {
         border-color: rgba(245, 130, 32, 0.4);
       }
       .timeline__seg {
@@ -583,7 +583,7 @@
           <div class="timeline__sections" id="timelineSections">
             <div class="timeline__section" id="sectionPre">
               <div class="timeline__section-head">
-                <span class="timeline__section-label">LRF funded</span>
+                <span class="timeline__section-label">Funding 1</span>
               </div>
               <div class="timeline__bar">
                 <div class="timeline__seg timeline__seg--mvp" data-key="mvp">
@@ -596,15 +596,15 @@
             </div>
 
             <div
-              class="timeline__section timeline__section--tsc"
-              id="sectionTsc"
+              class="timeline__section timeline__section--funding2"
+              id="sectionFunding2"
             >
               <div class="timeline__section-head">
                 <span
                   class="timeline__section-label timeline__section-label--live"
-                  >TSC funded · 83 days</span
+                  >Funding 2 · 83 days</span
                 >
-                <span class="timeline__section-note" id="tscNote"></span>
+                <span class="timeline__section-note" id="funding2Note"></span>
               </div>
               <div class="timeline__bar">
                 <div class="timeline__seg timeline__seg--live" data-key="p1">
@@ -797,22 +797,22 @@
         fmt(PHASE1_ELAPSED) +
         " of " +
         TOTAL_POST_MVP +
-        " TSC-funded days. MVP was delivered under separate LRF funding.";
+        " days under Funding 2. MVP was delivered under separate Funding 1.";
 
-      // Section proportions — MVP vs the 83-day TSC budget
+      // Section proportions — MVP vs the 83-day Funding 2 budget
       const totalWithMvp = MVP_DAYS + TOTAL_POST_MVP;
       document.getElementById("sectionPre").style.flex = MVP_DAYS + " 0 0";
-      document.getElementById("sectionTsc").style.flex =
+      document.getElementById("sectionFunding2").style.flex =
         TOTAL_POST_MVP + " 0 0";
 
-      // Segment widths within the TSC bar (relative to 83 days)
-      const tscSegments = [
+      // Segment widths within the Funding 2 bar (relative to 83 days)
+      const funding2Segments = [
         { key: "p1", days: PHASE1_ALLOC },
         { key: "p2", days: P2_DAYS },
         { key: "p3", days: P3_DAYS },
         { key: "p5", days: P5_DAYS },
       ];
-      tscSegments.forEach((s) => {
+      funding2Segments.forEach((s) => {
         const el = document.querySelector(
           '.timeline__seg[data-key="' + s.key + '"]',
         );
@@ -826,8 +826,8 @@
       document.querySelector('.timeline__seg[data-key="mvp"]').style.flexBasis =
         "100%";
 
-      // TSC section note
-      document.getElementById("tscNote").textContent =
+      // Funding 2 section note
+      document.getElementById("funding2Note").textContent =
         "Day " + fmt(PHASE1_ELAPSED) + " / 83";
 
       // Phase 1 row stats
