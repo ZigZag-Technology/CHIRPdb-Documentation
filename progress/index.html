@@ -206,7 +206,41 @@
       /* timeline */
       .timeline {
         position: relative;
-        padding-top: 32px;
+      }
+      .timeline__sections {
+        display: flex;
+        gap: 22px;
+        align-items: flex-end;
+      }
+      .timeline__section {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .timeline__section-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+        min-height: 18px;
+      }
+      .timeline__section-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-mute);
+        white-space: nowrap;
+      }
+      .timeline__section-label--live {
+        color: var(--orange-deep);
+      }
+      .timeline__section-note {
+        font-size: 11px;
+        color: var(--text-mute);
+        font-weight: 600;
+        white-space: nowrap;
       }
       .timeline__bar {
         display: flex;
@@ -215,6 +249,9 @@
         overflow: hidden;
         border: 1px solid var(--border);
         background: var(--bg-soft);
+      }
+      .timeline__section--tsc .timeline__bar {
+        border-color: rgba(245, 130, 32, 0.4);
       }
       .timeline__seg {
         position: relative;
@@ -243,7 +280,7 @@
           rgba(245, 130, 32, 0.2) var(--live-fill, 0%),
           rgba(245, 130, 32, 0.2) 100%
         );
-        color: #fff;
+        color: var(--navy-deep);
       }
       .timeline__seg--pending {
         background: rgba(21, 55, 94, 0.08);
@@ -253,7 +290,9 @@
       .timeline__seg--pending + .timeline__seg--pending {
         background: rgba(21, 55, 94, 0.12);
       }
-      .timeline__seg--pending + .timeline__seg--pending + .timeline__seg--pending {
+      .timeline__seg--pending
+        + .timeline__seg--pending
+        + .timeline__seg--pending {
         background: rgba(21, 55, 94, 0.08);
       }
       .timeline__seg-label {
@@ -276,53 +315,15 @@
         text-transform: none;
       }
 
-      .timeline__marker {
-        position: absolute;
-        top: 24px;
-        bottom: -8px;
-        width: 2px;
-        background: var(--navy-deep);
-        transform: translateX(-1px);
-        pointer-events: none;
-        z-index: 5;
-      }
-      .timeline__marker::before {
-        content: "";
-        position: absolute;
-        top: -6px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: var(--navy-deep);
-        border: 2px solid #fff;
-        box-shadow: 0 0 0 2px var(--navy-deep);
-      }
-      .timeline__marker-label {
-        position: absolute;
-        top: -28px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--navy-deep);
-        color: #fff;
-        font-size: 10.5px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        padding: 4px 8px;
-        border-radius: 999px;
-        white-space: nowrap;
-      }
-      .timeline__marker-label::after {
-        content: "";
-        position: absolute;
-        bottom: -4px;
-        left: 50%;
-        transform: translateX(-50%) rotate(45deg);
-        width: 6px;
-        height: 6px;
-        background: var(--navy-deep);
+      @media (max-width: 640px) {
+        .timeline__sections {
+          flex-direction: column;
+          gap: 18px;
+          align-items: stretch;
+        }
+        .timeline__section {
+          width: 100% !important;
+        }
       }
 
       .timeline__legend {
@@ -536,7 +537,15 @@
         <p class="hero__lede">
           A day-by-day view of where the CHIRPdb build stands against its
           allocated budget. Phases map to the delivery packages on the
-          <a href="../roadmap/index.html" style="color: var(--orange); font-weight: 600; text-decoration: none;">roadmap</a>.
+          <a
+            href="../roadmap/index.html"
+            style="
+              color: var(--orange);
+              font-weight: 600;
+              text-decoration: none;
+            "
+            >roadmap</a
+          >.
         </p>
       </div>
     </section>
@@ -571,40 +580,59 @@
         </div>
 
         <div class="timeline">
-          <div class="timeline__bar" id="timelineBar">
-            <div class="timeline__seg timeline__seg--mvp" data-key="mvp">
-              <span class="timeline__seg-label">
-                <span class="seg-title">MVP</span>
-                <span class="seg-days">19.5d</span>
-              </span>
+          <div class="timeline__sections" id="timelineSections">
+            <div class="timeline__section" id="sectionPre">
+              <div class="timeline__section-head">
+                <span class="timeline__section-label">LRF funded</span>
+              </div>
+              <div class="timeline__bar">
+                <div class="timeline__seg timeline__seg--mvp" data-key="mvp">
+                  <span class="timeline__seg-label">
+                    <span class="seg-title">MVP</span>
+                    <span class="seg-days">19.5d</span>
+                  </span>
+                </div>
+              </div>
             </div>
-            <div class="timeline__seg timeline__seg--live" data-key="p1">
-              <span class="timeline__seg-label">
-                <span class="seg-title">Phase 1</span>
-                <span class="seg-days">35d</span>
-              </span>
+
+            <div
+              class="timeline__section timeline__section--tsc"
+              id="sectionTsc"
+            >
+              <div class="timeline__section-head">
+                <span
+                  class="timeline__section-label timeline__section-label--live"
+                  >TSC funded · 83 days</span
+                >
+                <span class="timeline__section-note" id="tscNote"></span>
+              </div>
+              <div class="timeline__bar">
+                <div class="timeline__seg timeline__seg--live" data-key="p1">
+                  <span class="timeline__seg-label">
+                    <span class="seg-title">Phase 1</span>
+                    <span class="seg-days">35d</span>
+                  </span>
+                </div>
+                <div class="timeline__seg timeline__seg--pending" data-key="p2">
+                  <span class="timeline__seg-label">
+                    <span class="seg-title">Phase 2</span>
+                    <span class="seg-days">23d</span>
+                  </span>
+                </div>
+                <div class="timeline__seg timeline__seg--pending" data-key="p3">
+                  <span class="timeline__seg-label">
+                    <span class="seg-title">P3</span>
+                    <span class="seg-days">10d</span>
+                  </span>
+                </div>
+                <div class="timeline__seg timeline__seg--pending" data-key="p5">
+                  <span class="timeline__seg-label">
+                    <span class="seg-title">Phase 5</span>
+                    <span class="seg-days">15d</span>
+                  </span>
+                </div>
+              </div>
             </div>
-            <div class="timeline__seg timeline__seg--pending" data-key="p2">
-              <span class="timeline__seg-label">
-                <span class="seg-title">Phase 2</span>
-                <span class="seg-days">23d</span>
-              </span>
-            </div>
-            <div class="timeline__seg timeline__seg--pending" data-key="p3">
-              <span class="timeline__seg-label">
-                <span class="seg-title">P3</span>
-                <span class="seg-days">10d</span>
-              </span>
-            </div>
-            <div class="timeline__seg timeline__seg--pending" data-key="p5">
-              <span class="timeline__seg-label">
-                <span class="seg-title">Phase 5</span>
-                <span class="seg-days">15d</span>
-              </span>
-            </div>
-          </div>
-          <div class="timeline__marker" id="marker">
-            <span class="timeline__marker-label">Today</span>
           </div>
 
           <div class="timeline__legend">
@@ -613,11 +641,15 @@
               Delivered
             </div>
             <div class="legend-item">
-              <span class="legend-item__swatch legend-item__swatch--live"></span>
+              <span
+                class="legend-item__swatch legend-item__swatch--live"
+              ></span>
               In progress
             </div>
             <div class="legend-item">
-              <span class="legend-item__swatch legend-item__swatch--pending"></span>
+              <span
+                class="legend-item__swatch legend-item__swatch--pending"
+              ></span>
               Not started
             </div>
           </div>
@@ -629,10 +661,9 @@
           <div class="card__kicker">Phase breakdown</div>
           <h2 class="card__title">Each package on its own</h2>
           <p class="card__sub">
-            Phase numbers match the delivery packages on the roadmap.
-            Phases 4, 6 and 7 (P4 · broader corpus, P6 · analytical
-            frontend, P7 · conversational layer) sit outside this
-            83-day budget.
+            Phase numbers match the delivery packages on the roadmap. Phases 4,
+            6 and 7 (P4 · broader corpus, P6 · analytical frontend, P7 ·
+            conversational layer) sit outside this 83-day budget.
           </p>
         </div>
 
@@ -642,11 +673,12 @@
             <span class="phase__name">Foundation MVP</span>
             <span class="phase__tag phase__tag--done">Complete</span>
           </div>
-          <div class="phase__stats">
-            <strong>19.5</strong> / 19.5 days
-          </div>
+          <div class="phase__stats"><strong>19.5</strong> / 19.5 days</div>
           <div class="phase__bar">
-            <div class="phase__bar-fill phase__bar-fill--done" style="width: 100%"></div>
+            <div
+              class="phase__bar-fill phase__bar-fill--done"
+              style="width: 100%"
+            ></div>
           </div>
         </div>
 
@@ -658,7 +690,11 @@
           </div>
           <div class="phase__stats" id="p1Stats"></div>
           <div class="phase__bar">
-            <div class="phase__bar-fill phase__bar-fill--live" id="p1Fill" style="width: 0"></div>
+            <div
+              class="phase__bar-fill phase__bar-fill--live"
+              id="p1Fill"
+              style="width: 0"
+            ></div>
           </div>
         </div>
 
@@ -668,9 +704,7 @@
             <span class="phase__name">P2 · Verification &amp; provenance</span>
             <span class="phase__tag phase__tag--pending">Not started</span>
           </div>
-          <div class="phase__stats">
-            <strong>0</strong> / 23 days
-          </div>
+          <div class="phase__stats"><strong>0</strong> / 23 days</div>
           <div class="phase__bar">
             <div class="phase__bar-fill" style="width: 0"></div>
           </div>
@@ -682,9 +716,7 @@
             <span class="phase__name">P3 · Semantic layer</span>
             <span class="phase__tag phase__tag--pending">Not started</span>
           </div>
-          <div class="phase__stats">
-            <strong>0</strong> / 10 days
-          </div>
+          <div class="phase__stats"><strong>0</strong> / 10 days</div>
           <div class="phase__bar">
             <div class="phase__bar-fill" style="width: 0"></div>
           </div>
@@ -696,9 +728,7 @@
             <span class="phase__name">P5 · Production hardening</span>
             <span class="phase__tag phase__tag--pending">Not started</span>
           </div>
-          <div class="phase__stats">
-            <strong>0</strong> / 15 days
-          </div>
+          <div class="phase__stats"><strong>0</strong> / 15 days</div>
           <div class="phase__bar">
             <div class="phase__bar-fill" style="width: 0"></div>
           </div>
@@ -718,7 +748,11 @@
           <div class="headline__note" id="overallNote"></div>
         </div>
         <div class="overall-bar">
-          <div class="overall-bar__fill" id="overallFill" style="width: 0"></div>
+          <div
+            class="overall-bar__fill"
+            id="overallFill"
+            style="width: 0"
+          ></div>
         </div>
         <div class="overall-bar__note">
           <span>Day 0</span>
@@ -758,45 +792,67 @@
 
       document.getElementById("tileP1").innerHTML =
         fmt(PHASE1_ELAPSED) +
-        '<span class="unit">of ' + PHASE1_ALLOC + ' days</span>';
+        '<span class="unit">of ' +
+        PHASE1_ALLOC +
+        " days</span>";
       document.getElementById("tileP1Sub").textContent =
         fmt(phase1Pct) + "% elapsed · " + fmt(phase1Remaining) + " days to go";
 
       document.getElementById("timelineSub").textContent =
-        "Day " + fmt(PHASE1_ELAPSED) + " of " + TOTAL_POST_MVP +
-        " post-MVP days. MVP shown on the left for context.";
+        "Day " +
+        fmt(PHASE1_ELAPSED) +
+        " of " +
+        TOTAL_POST_MVP +
+        " TSC-funded days. MVP was delivered under separate LRF funding.";
 
-      // Timeline segment widths
+      // Section proportions — MVP vs the 83-day TSC budget
       const totalWithMvp = MVP_DAYS + TOTAL_POST_MVP;
-      const segments = [
-        { key: "mvp", days: MVP_DAYS },
+      document.getElementById("sectionPre").style.flex = MVP_DAYS + " 0 0";
+      document.getElementById("sectionTsc").style.flex =
+        TOTAL_POST_MVP + " 0 0";
+
+      // Segment widths within the TSC bar (relative to 83 days)
+      const tscSegments = [
         { key: "p1", days: PHASE1_ALLOC },
         { key: "p2", days: P2_DAYS },
         { key: "p3", days: P3_DAYS },
         { key: "p5", days: P5_DAYS },
       ];
-      segments.forEach((s) => {
-        const el = document.querySelector('.timeline__seg[data-key="' + s.key + '"]');
-        el.style.flexBasis = (s.days / totalWithMvp) * 100 + "%";
+      tscSegments.forEach((s) => {
+        const el = document.querySelector(
+          '.timeline__seg[data-key="' + s.key + '"]',
+        );
+        el.style.flexBasis = (s.days / TOTAL_POST_MVP) * 100 + "%";
       });
       document
         .querySelector('.timeline__seg[data-key="p1"]')
         .style.setProperty("--live-fill", phase1Pct + "%");
 
-      // Today marker
-      const markerDay = MVP_DAYS + PHASE1_ELAPSED;
-      const markerPct = (markerDay / totalWithMvp) * 100;
-      document.getElementById("marker").style.left = markerPct + "%";
+      // MVP fills its own bar
+      document.querySelector('.timeline__seg[data-key="mvp"]').style.flexBasis =
+        "100%";
+
+      // TSC section note
+      document.getElementById("tscNote").textContent =
+        "Day " + fmt(PHASE1_ELAPSED) + " / 83";
 
       // Phase 1 row stats
       document.getElementById("p1Stats").innerHTML =
-        "<strong>" + fmt(PHASE1_ELAPSED) + "</strong> / " + PHASE1_ALLOC +
-        " days · " + fmt(phase1Pct) + "%";
+        "<strong>" +
+        fmt(PHASE1_ELAPSED) +
+        "</strong> / " +
+        PHASE1_ALLOC +
+        " days · " +
+        fmt(phase1Pct) +
+        "%";
 
       // Overall note
       document.getElementById("overallNote").innerHTML =
-        "<strong>" + fmt(PHASE1_ELAPSED) + "</strong> days elapsed · <strong>" +
-        fmt(TOTAL_POST_MVP - PHASE1_ELAPSED) + "</strong> days remaining";
+        "<strong>" +
+        fmt(PHASE1_ELAPSED) +
+        "</strong> days elapsed · <strong>" +
+        fmt(TOTAL_POST_MVP - PHASE1_ELAPSED) +
+        "</strong> days remaining";
 
       // Fill animations
       requestAnimationFrame(() => {
