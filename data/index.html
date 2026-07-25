@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CHIRPdb — How Your Data Is Stored</title>
+    <title>CHIRPdb - How Your Data Is Stored</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -559,7 +559,7 @@
         <p class="eyebrow">CHIRP Maritime · CHIRPdb</p>
         <h1>How your incident data is stored</h1>
         <p class="lede">
-          CHIRPdb takes published maritime incident reports — PDF documents —
+          CHIRPdb takes published maritime incident reports - PDF documents -
           and turns them into structured, searchable data. This page explains
           what the database holds, how the pieces fit together, and the
           principles that keep the data trustworthy.
@@ -568,7 +568,7 @@
     </div>
 
     <div class="container">
-      <h2>From PDF to searchable data — the three stages</h2>
+      <h2>From PDF to searchable data - the three stages</h2>
       <p>
         Every report goes through the same journey, and the database is
         organised around it.
@@ -581,14 +581,14 @@
           <p>
             The PDF is read and broken down: who published it, what incident it
             describes, which vessels and people were involved, and its full text
-            — sentence by sentence, in reading order.
+            - sentence by sentence, in reading order.
           </p>
         </div>
         <div class="flow__step">
           <span class="flow__num">Stage 2</span>
           <div class="flow__title">Correction</div>
           <p>
-            PDFs are messy — broken lines, headers bleeding into text. An AI
+            PDFs are messy - broken lines, headers bleeding into text. An AI
             pass cleans up the extracted text so the analysis that follows works
             from an accurate version of the report.
           </p>
@@ -606,7 +606,7 @@
 
       <div class="callout">
         <strong>Every finding is traceable.</strong> A safety issue or SHIELD
-        code isn't just a label on a report — it links back to the exact passage
+        code isn't just a label on a report - it links back to the exact passage
         of text it was drawn from. You can always ask "show me the sentences
         behind this finding."
       </div>
@@ -629,12 +629,12 @@
         <strong>Provisional</strong> means the automated pipeline has finished;
         <strong>Verified</strong> means an analyst has confirmed the results. If
         the AI correction ever fails, the report is kept with its original
-        extracted text and flagged for attention — a document is never lost.
+        extracted text and flagged for attention - a document is never lost.
       </p>
 
       <h2>The whole schema at a glance</h2>
       <p>
-        This is the complete entity-relationship diagram — every table in the
+        This is the complete entity-relationship diagram - every table in the
         database and every connection between them. It's dense by design; the
         sections that follow break it into readable pieces.
       </p>
@@ -680,7 +680,7 @@
         <h3>1 · The report and the incident</h3>
         <p>
           The factual record: each report, who published it (MAIB and other
-          investigating bodies), and the incident it describes — what happened,
+          investigating bodies), and the incident it describes - what happened,
           when, where, how severe. Each incident links to the vessels involved,
           and each vessel to the people affected aboard it.
         </p>
@@ -695,7 +695,7 @@
           The full text of every report, stored sentence by sentence in original
           reading order, with headings preserved. Sentences are grouped into
           passages for analysis, and every person, vessel or place named in the
-          narrative is recognised and recorded — including when the same thing
+          narrative is recognised and recorded - including when the same thing
           is referred to in different ways ("the Master", "Captain Smith").
         </p>
         <div class="holds">
@@ -709,7 +709,7 @@
         <p>
           What the analysis extracts and what analysts verify: safety issues,
           recommendations (and which organisations they're directed at, with
-          implementation tracked over time), and SHIELD causal-factor codes —
+          implementation tracked over time), and SHIELD causal-factor codes -
           the shared vocabulary that makes incidents comparable and countable
           across thousands of reports.
         </p>
@@ -724,7 +724,7 @@
         <p>
           Information many reports point at but none owns: the SHIELD taxonomy
           itself, legislation that safety issues cite, and the organisations
-          recommendations are addressed to. Stored once, referenced everywhere —
+          recommendations are addressed to. Stored once, referenced everywhere -
           so "all recommendations directed at organisation X" is one question,
           not a search through every report.
         </p>
@@ -784,7 +784,7 @@
 
       <h3>Analysis notes</h3>
       <p>
-        The most general finding: a typed note about a passage — a summary, an
+        The most general finding: a typed note about a passage - a summary, an
         interpretation, a classification. Each note records what kind of
         analysis it is and its content, so different analytical passes can sit
         side by side on the same text without interfering.
@@ -805,7 +805,7 @@
             <div class="tbl__label">Analysis note</div>
             <div class="tbl__name">analysis</div>
             <div class="tbl__fields">
-              analysis_type — what kind<br />content — the note itself
+              analysis_type - what kind<br />content - the note itself
             </div>
           </div>
         </div>
@@ -816,7 +816,7 @@
         SHIELD is CHIRP's taxonomy of human factors in maritime incidents. It's
         seeded into the database as reference data: <strong>96 codes</strong> in
         <strong>20 categories</strong> under three top-level groups. Because the
-        codes are a controlled vocabulary — not free text — "how many incidents
+        codes are a controlled vocabulary - not free text - "how many incidents
         involved fatigue?" is a count, not a judgement call.
       </p>
 
@@ -859,7 +859,7 @@
       </div>
 
       <p class="dim">
-        Each code has a short identifier, a title, and a full definition — for
+        Each code has a short identifier, a title, and a full definition - for
         example
         <span class="code-chip">PPC2</span>Fatigue:
         <em
@@ -914,7 +914,7 @@
 
       <h3>Safety issues</h3>
       <p>
-        A named safety concern the report raises — each one anchored to the
+        A named safety concern the report raises - each one anchored to the
         passage it came from, carrying its own verification flag, and optionally
         linked to the legislation it relates to. The legislation register is
         shared reference data, so every issue citing the same regulation points
@@ -954,7 +954,7 @@
         <div class="diagram__caption">
           The link between an issue and legislation
           (<code>safety_issue_legislation</code>) also stores the passage of
-          text that made the connection — so the citation itself is traceable.
+          text that made the connection - so the citation itself is traceable.
         </div>
       </div>
 
@@ -962,8 +962,8 @@
       <p>
         The actions a report calls for. Each recommendation records the action
         in the report's own words and which organisations it is directed at.
-        Because one recommendation can address several organisations — and each
-        may act on it at a different time — implementation is tracked
+        Because one recommendation can address several organisations - and each
+        may act on it at a different time - implementation is tracked
         <em>per organisation</em>, with the date stamped automatically when it's
         marked implemented.
       </p>
@@ -997,7 +997,7 @@
         <div class="diagram__caption">
           The link between them (<code>recommendation_organisations</code>)
           carries
-          <code>is_implemented</code> and <code>implemented_at</code> — so
+          <code>is_implemented</code> and <code>implemented_at</code> - so
           "which recommendations to organisation X are still open?" is a direct
           query.
         </div>
@@ -1009,8 +1009,8 @@
         <strong>who and what each report is about</strong>. A typical report
         mentions a master, a chief officer, one or more named vessels, an
         operating company, a port, specific equipment. The narrative entity
-        model records each of these as a first-class thing — not just words in a
-        sentence — so questions like
+        model records each of these as a first-class thing - not just words in a
+        sentence - so questions like
         <em>"every report involving this vessel"</em> or
         <em>"every sentence that mentions the chief engineer"</em>
         become directly answerable.
@@ -1019,7 +1019,7 @@
       <h3>Five kinds of entity</h3>
       <p>
         Entity types are a controlled vocabulary, seeded into the database. New
-        types can be added by inserting a row — no engineering work — but the
+        types can be added by inserting a row - no engineering work - but the
         analysis can only ever use types from this list, which keeps the data
         countable and consistent.
       </p>
@@ -1035,42 +1035,42 @@
           <tr>
             <td>person</td>
             <td>
-              Individual person — e.g. master, chief officer, pilot, crew member
+              Individual person - e.g. master, chief officer, pilot, crew member
             </td>
           </tr>
           <tr>
             <td>vessel</td>
-            <td>Ship or vessel — e.g. named ship or vessel class reference</td>
+            <td>Ship or vessel - e.g. named ship or vessel class reference</td>
           </tr>
           <tr>
             <td>organisation</td>
             <td>
-              Organisation or body — e.g. port authority, flag state, operator,
+              Organisation or body - e.g. port authority, flag state, operator,
               classification society
             </td>
           </tr>
           <tr>
             <td>location</td>
             <td>
-              Geographic location — e.g. port, anchorage, waterway, country
+              Geographic location - e.g. port, anchorage, waterway, country
             </td>
           </tr>
           <tr>
             <td>equipment</td>
             <td>
-              Equipment, instruments, or systems — e.g. life jacket, radar, VHF
+              Equipment, instruments, or systems - e.g. life jacket, radar, VHF
               radio, fire suppression system
             </td>
           </tr>
         </tbody>
       </table>
 
-      <h3>Entities and mentions — two layers</h3>
+      <h3>Entities and mentions - two layers</h3>
       <p>
         The model separates the <strong>thing</strong> from the
         <strong>places it appears</strong>. An entity is one real-world thing
         within a report, with a single canonical name. A mention is one
-        occurrence of it in one sentence — recording the exact words used and
+        occurrence of it in one sentence - recording the exact words used and
         precisely where in the sentence they sit (the character positions).
         That's what lets "the Master", "Captain Smith" and "he" all resolve to
         the same person while every individual reference stays findable.
@@ -1104,7 +1104,7 @@
             <div class="tbl__label">Mention</div>
             <div class="tbl__name">narrative_entity_mentions</div>
             <div class="tbl__fields">
-              surface_form — words used<br />char_span — exact position
+              surface_form - words used<br />char_span - exact position
             </div>
           </div>
           <div class="dg-link">
@@ -1118,7 +1118,7 @@
           </div>
         </div>
         <div class="diagram__caption">
-          Mentions anchor to sentences — the stored, corrected text — so the
+          Mentions anchor to sentences - the stored, corrected text - so the
           recorded character positions always index into a real string. The
           database itself enforces that an entity's mentions can only sit in
           sentences of the entity's own report.
@@ -1135,18 +1135,18 @@
         </div>
         <ul class="example__notes">
           <li>
-            <strong>One person entity</strong> — canonical name
-            <em>Captain Smith</em>, type <code>person</code> — with two
+            <strong>One person entity</strong> - canonical name
+            <em>Captain Smith</em>, type <code>person</code> - with two
             mentions: "The Master" and "Captain Smith", each stored with its
             exact character positions in the sentence.
           </li>
           <li>
-            <strong>One vessel entity</strong> — canonical name
-            <em>Loverval</em>, type <code>vessel</code> — with one mention.
+            <strong>One vessel entity</strong> - canonical name
+            <em>Loverval</em>, type <code>vessel</code> - with one mention.
           </li>
           <li>
             Ask "show every sentence about this person" and both references come
-            back — even though the words differ.
+            back - even though the words differ.
           </li>
         </ul>
       </div>
@@ -1158,7 +1158,7 @@
         <p>
           The schema follows a database standard called Third Normal Form: each
           piece of information lives in exactly one place, and everything else
-          refers to it. No copies drifting out of date — correct a vessel's name
+          refers to it. No copies drifting out of date - correct a vessel's name
           once and every report reflects it. In the few cases where a value is
           deliberately duplicated for speed, the database itself enforces that
           the copies always agree.
@@ -1168,7 +1168,7 @@
       <div class="principle">
         <h3>Controlled vocabularies, not free text</h3>
         <p>
-          Classifications — SHIELD codes, entity types — come from managed
+          Classifications - SHIELD codes, entity types - come from managed
           lists, not typed-in text. "Fatigue" is always the same code, so
           counting and comparing across reports actually works. New codes can be
           added without engineering work.
@@ -1189,7 +1189,7 @@
         <h3>Human judgement is recorded, not assumed</h3>
         <p>
           AI-extracted findings start unverified. Analyst confirmation is an
-          explicit, timestamped step — so you can always distinguish "the
+          explicit, timestamped step - so you can always distinguish "the
           machine suggested this" from "a person confirmed this", and report on
           either.
         </p>
