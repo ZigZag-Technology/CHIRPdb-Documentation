@@ -56,6 +56,122 @@
         }
       }
 
+      .changelog {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+      }
+      .changelog__inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .changelog__toggle {
+        appearance: none;
+        background: none;
+        border: 0;
+        width: 100%;
+        padding: 14px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        cursor: pointer;
+        color: var(--text);
+        font: inherit;
+      }
+      .changelog__toggle:focus-visible {
+        outline: 2px solid var(--orange);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+      .changelog__title {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--orange);
+      }
+      .changelog__title::after {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--text-soft);
+      }
+      .changelog__count {
+        color: var(--text-soft);
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+      .changelog__chevron {
+        color: var(--text-soft);
+        font-size: 14px;
+        transition: transform 0.2s ease;
+      }
+      .changelog__toggle[aria-expanded="true"] .changelog__chevron {
+        transform: rotate(180deg);
+      }
+      .changelog__body {
+        padding-bottom: 20px;
+      }
+      .changelog__body[hidden] {
+        display: none;
+      }
+      .changelog__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      .changelog__table th,
+      .changelog__table td {
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border-soft);
+        vertical-align: top;
+      }
+      .changelog__table th {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-soft);
+        font-weight: 700;
+        background: var(--bg-soft);
+      }
+      .changelog__table td:first-child {
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+        color: var(--text-soft);
+        width: 120px;
+      }
+      .changelog__table td:last-child {
+        white-space: nowrap;
+        color: var(--text-soft);
+        width: 140px;
+      }
+      @media (max-width: 640px) {
+        .changelog__inner {
+          padding: 0 18px;
+        }
+        .changelog__table th,
+        .changelog__table td {
+          padding: 8px 8px;
+          font-size: 13px;
+        }
+        .changelog__table td:first-child {
+          width: auto;
+        }
+        .changelog__table td:last-child {
+          width: auto;
+          white-space: normal;
+        }
+      }
+
       .overview {
         background: var(--bg-soft);
         padding: 72px 24px;
@@ -959,6 +1075,78 @@
         <span class="header__tag">CHIRPdb Roadmap</span>
       </div>
     </header>
+
+    <section class="changelog" aria-labelledby="changelogTitle">
+      <div class="changelog__inner">
+        <button
+          type="button"
+          class="changelog__toggle"
+          aria-expanded="false"
+          aria-controls="changelogBody"
+          id="changelogToggle"
+        >
+          <span class="changelog__title" id="changelogTitle">
+            Changelog
+            <span class="changelog__count">Last updated 14 Jul 2026</span>
+          </span>
+          <span class="changelog__chevron" aria-hidden="true">▾</span>
+        </button>
+        <div class="changelog__body" id="changelogBody" hidden>
+          <table class="changelog__table">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Description</th>
+                <th scope="col">Author</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>14 Jul 2026</td>
+                <td>Added Step 1 &mdash; &ldquo;Ingesting MAIB reports through the MVP pipeline&rdquo; &mdash; as the DSG-facing corpus feed. Grew P1 from 5 to 6 steps and renumbered every subsequent step.</td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>14 Jul 2026</td>
+                <td>Reworked Step 5 from a built-software &ldquo;single search across the database&rdquo; into an AI-powered vector-embeddings API endpoint. Kind reclassified from Built to AI.</td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>14 Jul 2026</td>
+                <td>Renamed Step 4 to &ldquo;Narrative entity extraction &mdash; recognising who and what each report is about&rdquo; for technical clarity.</td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>14 Jul 2026</td>
+                <td>Added the &ldquo;DSG goal&rdquo; milestone divider after Step 4 to mark the Alan Turing Data Study Group handoff point.</td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>14 Jul 2026</td>
+                <td>Simplified Step 1 to a static, non-expandable card &mdash; no expanded detail below the title and summary.</td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var btn = document.getElementById("changelogToggle");
+          var body = document.getElementById("changelogBody");
+          if (!btn || !body) return;
+          btn.addEventListener("click", function () {
+            var open = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", open ? "false" : "true");
+            if (open) {
+              body.setAttribute("hidden", "");
+            } else {
+              body.removeAttribute("hidden");
+            }
+          });
+        })();
+      </script>
+    </section>
 
     <section class="overview">
       <div class="overview__inner">

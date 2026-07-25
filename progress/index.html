@@ -59,6 +59,37 @@
         }
       }
 
+      .updated-banner {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+      }
+      .updated-banner__inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--text-soft);
+      }
+      .updated-banner__label {
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 11px;
+        color: var(--orange);
+      }
+      .updated-banner__date {
+        font-weight: 600;
+        color: var(--text);
+      }
+      @media (max-width: 640px) {
+        .updated-banner__inner {
+          padding: 10px 18px;
+        }
+      }
+
       .wrap {
         max-width: 1000px;
         margin: 0 auto;
@@ -550,6 +581,13 @@
       </div>
     </section>
 
+    <div class="updated-banner">
+      <div class="updated-banner__inner">
+        <span class="updated-banner__label">Last updated</span>
+        <span class="updated-banner__date">25 Jul 2026</span>
+      </div>
+    </div>
+
     <main class="wrap">
       <div class="tiles">
         <div class="tile tile--done">
@@ -767,7 +805,7 @@
     <script>
       const MVP_DAYS = 19.5;
       const PHASE1_ALLOC = 35;
-      const PHASE1_ELAPSED = 5.33;
+      const PHASE1_ELAPSED = 15.5;
       const P2_DAYS = 23;
       const P3_DAYS = 10;
       const P5_DAYS = 15;
