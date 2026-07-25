@@ -154,6 +154,34 @@
         color: var(--text-soft);
         width: 140px;
       }
+      .changelog__table tr.is-milestone td {
+        background: var(--orange-tint);
+        border-bottom-color: rgba(245, 130, 32, 0.35);
+        color: var(--navy-deep);
+        font-weight: 500;
+      }
+      .changelog__table tr.is-milestone td:first-child {
+        border-left: 3px solid var(--orange);
+        color: var(--orange-deep);
+        font-weight: 700;
+      }
+      .changelog__table tr.is-milestone td:last-child {
+        color: var(--text-soft);
+        font-weight: 500;
+      }
+      .changelog__milestone-tag {
+        display: inline-block;
+        margin-right: 8px;
+        padding: 2px 7px;
+        background: var(--orange);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 4px;
+        vertical-align: 1px;
+      }
       @media (max-width: 640px) {
         .changelog__inner {
           padding: 0 18px;
@@ -1110,52 +1138,105 @@
             <tbody>
               <tr>
                 <td>25 Jul 2026</td>
-                <td>Simplified Step 1 to a static, non-expandable card - no expanded detail below the title and summary.</td>
+                <td>
+                  Simplified Step 1 to a static, non-expandable card - no
+                  expanded detail below the title and summary.
+                </td>
                 <td>Jack Casstles-Jones</td>
               </tr>
               <tr>
                 <td>14 Jul 2026</td>
-                <td>Added Step 1 - &ldquo;Ingesting MAIB reports through the MVP pipeline&rdquo; - as the DSG-facing corpus feed. Grew P1 from 5 to 6 steps and renumbered every subsequent step.</td>
+                <td>
+                  Added Step 1 - &ldquo;Ingesting MAIB reports through the MVP
+                  pipeline&rdquo; - as the DSG-facing corpus feed. Grew P1 from
+                  5 to 6 steps and renumbered every subsequent step.
+                </td>
                 <td>Jack Casstles-Jones</td>
               </tr>
               <tr>
                 <td>14 Jul 2026</td>
-                <td>Reworked Step 5 from a built-software &ldquo;single search across the database&rdquo; into an AI-powered vector-embeddings API endpoint. Kind reclassified from Built to AI.</td>
+                <td>
+                  Reworked Step 5 from a built-software &ldquo;single search
+                  across the database&rdquo; into an AI-powered
+                  vector-embeddings API endpoint. Kind reclassified from Built
+                  to AI.
+                </td>
                 <td>Jack Casstles-Jones</td>
               </tr>
               <tr>
                 <td>14 Jul 2026</td>
-                <td>Renamed Step 4 to &ldquo;Narrative entity extraction - recognising who and what each report is about&rdquo; for technical clarity.</td>
+                <td>
+                  Renamed Step 4 to &ldquo;Narrative entity extraction -
+                  recognising who and what each report is about&rdquo; for
+                  technical clarity.
+                </td>
                 <td>Jack Casstles-Jones</td>
               </tr>
               <tr>
                 <td>14 Jul 2026</td>
-                <td>Added the &ldquo;DSG goal&rdquo; milestone divider after Step 4 to mark the Alan Turing Data Study Group handoff point.</td>
+                <td>
+                  Added the &ldquo;DSG goal&rdquo; milestone divider after Step
+                  4 to mark the Alan Turing Data Study Group handoff point.
+                </td>
                 <td>Jack Casstles-Jones</td>
               </tr>
               <tr>
                 <td>25 Jun 2026</td>
-                <td>Added a Foundation MVP card at the top of the roadmap with three deliverables: LLM-enhanced ingestion pipeline, narrative entity model, and full-text search endpoint. Wrapped the parallel early steps in a &ldquo;Happen simultaneously&rdquo; group.</td>
+                <td>
+                  Added a Foundation MVP card at the top of the roadmap with
+                  three deliverables: LLM-enhanced ingestion pipeline, narrative
+                  entity model, and full-text search endpoint. Wrapped the
+                  parallel early steps in a &ldquo;Happen simultaneously&rdquo;
+                  group.
+                </td>
                 <td>Jack Casstles-Jones</td>
               </tr>
               <tr>
                 <td>25 Jun 2026</td>
-                <td>Refined Step 2 to focus on MAIB spreadsheets alone, dropping the CHIRP internal-spreadsheet ingestion scope.</td>
+                <td>
+                  Refined Step 2 to focus on MAIB spreadsheets alone, dropping
+                  the CHIRP internal-spreadsheet ingestion scope.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr class="is-milestone">
+                <td>
+                  <span class="changelog__milestone-tag">Milestone</span>18 Jun
+                  2026
+                </td>
+                <td>
+                  Phase day-budgets defined: MVP 19.5d, Phase 1 (Foundation)
+                  35d, Phase 2 (Verification &amp; provenance) 23d, Phase 3
+                  (Semantic layer) 10d, Phase 5 (Production hardening) 15d.
+                  These estimates anchor the progress tracker.
+                </td>
                 <td>Jack Casstles-Jones</td>
               </tr>
               <tr>
                 <td>18 Jun 2026</td>
-                <td>Added Production Hardening as its own delivery package (P5, single step) and split the old Multi-jurisdiction package into &ldquo;Broader corpus &amp; legislation&rdquo;. Grew the package count from 6 to 7.</td>
+                <td>
+                  Added Production Hardening as its own delivery package (P5,
+                  single step) and split the old Multi-jurisdiction package into
+                  &ldquo;Broader corpus &amp; legislation&rdquo;. Grew the
+                  package count from 6 to 7.
+                </td>
                 <td>Jack Casstles-Jones</td>
               </tr>
               <tr>
                 <td>18 Jun 2026</td>
-                <td>Removed the hero section from the top of the roadmap page.</td>
+                <td>
+                  Removed the hero section from the top of the roadmap page.
+                </td>
                 <td>Jack Casstles-Jones</td>
               </tr>
               <tr>
                 <td>18 Jun 2026</td>
-                <td>Roadmap first published: 17 numbered post-MVP steps across six delivery packages (Foundation, Verification &amp; provenance, Semantic layer, Multi-jurisdiction, Analytical frontend, Conversational layer).</td>
+                <td>
+                  Roadmap first published: 17 numbered post-MVP steps across six
+                  delivery packages (Foundation, Verification &amp; provenance,
+                  Semantic layer, Multi-jurisdiction, Analytical frontend,
+                  Conversational layer).
+                </td>
                 <td>Jack Casstles-Jones</td>
               </tr>
             </tbody>
@@ -1695,9 +1776,9 @@
               <div class="step__ai-role">
                 <span class="step__ai-role-label">AI's role</span>
                 <span class="step__ai-role-text"
-                  >An embedding model turns each piece of extracted content
-                  into a vector as part of this step, and turns each incoming
-                  query into one the same way. The endpoint returns the closest
+                  >An embedding model turns each piece of extracted content into
+                  a vector as part of this step, and turns each incoming query
+                  into one the same way. The endpoint returns the closest
                   matches by vector similarity. The AI work sits inside the
                   endpoint; callers just hit an API.</span
                 >
