@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CHIRPdb Dataset — Data Study Group guide</title>
+    <title>CHIRPdb Dataset - Data Study Group guide</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -136,7 +136,7 @@
           A structured database of UK Marine Accident Investigation Branch
           (MAIB) maritime incident reports, hosted for you as a standard
           PostgreSQL database. This page orients you: what you have, how it was
-          built, how the tables fit together, and — most importantly — how far
+          built, how the tables fit together, and - most importantly - how far
           to trust each field. The <a href="dictionary.html">data dictionary</a>
           is the per-column reference.
         </p>
@@ -147,7 +147,7 @@
       <h2>What you have</h2>
       <p>
         Read access to a running PostgreSQL database and the paperwork to make
-        sense of it — nothing else. No access to CHIRP's application, pipeline or
+        sense of it - nothing else. No access to CHIRP's application, pipeline or
         APIs; everything you need is in the three pieces below.
       </p>
       <div class="haves">
@@ -168,14 +168,14 @@
         <div class="have">
           <div class="have__title">The schema diagram</div>
           <p>
-            The entity-relationship diagram — every table and every link between
+            The entity-relationship diagram - every table and every link between
             them, below.
           </p>
         </div>
       </div>
 
       <h2>Working with the database</h2>
-      <p>It is ordinary PostgreSQL — two things worth knowing before you query:</p>
+      <p>It is ordinary PostgreSQL - two things worth knowing before you query:</p>
       <ul>
         <li>
           <strong>Every table is readable.</strong> All tables allow public
@@ -184,7 +184,7 @@
         <li>
           <strong><code>tsvector</code> columns are generated.</strong> The
           full-text search columns are computed automatically from their source
-          text and are read-only — query them for search, don't write them.
+          text and are read-only - query them for search, don't write them.
         </li>
       </ul>
 
@@ -192,7 +192,7 @@
       <p>
         Each published MAIB report (a PDF) is broken into sentence-level text
         plus the report's own stated incident particulars, and is linked to
-        structured incident data — occurrences, vessels, affected persons —
+        structured incident data - occurrences, vessels, affected persons -
         drawn from the MAIB Data Portal spreadsheets. An analysis pipeline then
         extracts findings from the text: safety issues, recommendations, named
         entities, and causal-factor classifications from CHIRP's SHIELD
@@ -211,13 +211,13 @@
           <div class="split__head">Populated</div>
           <ul>
             <li>
-              <strong>Reports &amp; text</strong> — <code>documents</code>,
+              <strong>Reports &amp; text</strong> - <code>documents</code>,
               <code>authors</code>, <code>sentences</code>, and the
               report-derived <code>document_particulars</code> /
               <code>document_vessels</code>.
             </li>
             <li>
-              <strong>Spreadsheet incident data</strong> —
+              <strong>Spreadsheet incident data</strong> -
               <code>occurrences</code>, <code>vessels</code>,
               <code>affected_persons</code>, <code>affected_persons_ppe</code>,
               the report&harr;occurrence link on
@@ -225,7 +225,7 @@
               <code>taxonomy_terms</code> / <code>ppe_items</code>.
             </li>
             <li>
-              <strong>Seeded vocabularies</strong> — <code>shield_codes</code> /
+              <strong>Seeded vocabularies</strong> - <code>shield_codes</code> /
               <code>shield_code_categories</code> (full SHIELD taxonomy) and
               <code>narrative_entity_types</code>. Loaded but not yet referenced.
             </li>
@@ -236,23 +236,23 @@
           <ul>
             <li>
               <code>chunks</code>, <code>chunk_sentences</code>,
-              <code>analysis</code> — no chunking pass.
+              <code>analysis</code> - no chunking pass.
             </li>
             <li>
-              <code>chunk_shield_codes</code> — taxonomy loaded, no code applied
+              <code>chunk_shield_codes</code> - taxonomy loaded, no code applied
               to any passage yet.
             </li>
             <li>
               <code>safety_issues</code>, <code>recommendations</code> and their
-              junctions — no findings extraction.
+              junctions - no findings extraction.
             </li>
             <li>
               <code>narrative_entities</code>,
-              <code>narrative_entity_mentions</code> — no NER/coreference pass.
+              <code>narrative_entity_mentions</code> - no NER/coreference pass.
             </li>
             <li>
               <code>organisations</code>, <code>legislation</code>, the
-              identifier tables — nothing populates them at this stage.
+              identifier tables - nothing populates them at this stage.
             </li>
           </ul>
         </div>
@@ -315,7 +315,7 @@
         <code>document_vessels</code>; the MAIB Data Portal spreadsheet's account
         in <code>occurrences</code> / <code>vessels</code> /
         <code>affected_persons</code>; the two join through a nullable
-        <code>documents.occurrence_id</code> FK — several reports can point at
+        <code>documents.occurrence_id</code> FK - several reports can point at
         one occurrence (e.g. an interim then a final). Tree-shaped
         classifications (event type, ship type, place on board, injury,
         deviation) are normalised into <code>taxonomy_terms</code>. The full
@@ -348,7 +348,7 @@
         legend.
       </p>
 
-      <h2>Where each value comes from — and how far to trust it</h2>
+      <h2>Where each value comes from - and how far to trust it</h2>
       <p>
         This is the point of the dictionary. The database shows you structure;
         it cannot tell you which values are MAIB fact, which a model produced,
@@ -358,33 +358,33 @@
       <table class="legend">
         <tr>
           <td><span class="src src--maib">MAIB</span></td>
-          <td>MAIB-sourced — from the report PDF (content or file metadata) or the MAIB Data Portal spreadsheet.</td>
+          <td>MAIB-sourced - from the report PDF (content or file metadata) or the MAIB Data Portal spreadsheet.</td>
         </tr>
         <tr>
           <td><span class="src src--pipe">Pipeline</span></td>
-          <td>Pipeline-derived, deterministic — computed on ingest, no model involved.</td>
+          <td>Pipeline-derived, deterministic - computed on ingest, no model involved.</td>
         </tr>
         <tr>
           <td><span class="src src--aiu">AI-U</span></td>
-          <td>AI-generated, <strong>unverified</strong> — produced by an LLM or NLP model, not confirmed by a human.</td>
+          <td>AI-generated, <strong>unverified</strong> - produced by an LLM or NLP model, not confirmed by a human.</td>
         </tr>
         <tr>
           <td><span class="src src--aiv">AI-V</span></td>
-          <td>AI-generated, <strong>human-verified</strong> — model output an analyst has confirmed.</td>
+          <td>AI-generated, <strong>human-verified</strong> - model output an analyst has confirmed.</td>
         </tr>
         <tr>
           <td><span class="src src--sys">System</span></td>
-          <td>System metadata — surrogate keys, timestamps, status flags, generated search columns, seeded reference data.</td>
+          <td>System metadata - surrogate keys, timestamps, status flags, generated search columns, seeded reference data.</td>
         </tr>
         <tr>
           <td><span class="src src--unc">UNCLEAR</span></td>
-          <td>Purpose or population not documented — flagged for author input rather than guessed.</td>
+          <td>Purpose or population not documented - flagged for author input rather than guessed.</td>
         </tr>
       </table>
       <p>
         Two rules run throughout. <strong>Row-level verification:</strong> tables
         with an <code>is_verified</code> flag hold AI-generated content whose
-        status varies per row — treat <code>is_verified = true</code> as AI-V,
+        status varies per row - treat <code>is_verified = true</code> as AI-V,
         everything else AI-U. <strong>Sentence text</strong> is extracted by a
         vision LLM reading each page image, with deterministic passes on top, so
         it is AI-U, qualified by the parent <code>documents.status</code>
@@ -394,7 +394,7 @@
         Practical upshot: the analysis layer is empty here, so nearly all
         content is <span class="src src--maib">MAIB</span> or
         <span class="src src--pipe">Pipeline</span>. Where you do see
-        <span class="src src--aiu">AI-U</span> — the sentence text — remember it
+        <span class="src src--aiu">AI-U</span> - the sentence text - remember it
         is a vision model's reading of the page image, not a byte-exact copy of
         the PDF.
       </div>
@@ -404,7 +404,7 @@
       <ul>
         <li>
           <strong>UK jurisdiction only.</strong> All reports come from the UK
-          MAIB — patterns describe UK-flagged vessels and UK waters, not global
+          MAIB - patterns describe UK-flagged vessels and UK waters, not global
           shipping.
         </li>
         <li>
@@ -415,7 +415,7 @@
         </li>
         <li>
           <strong>Spreadsheet coverage window.</strong> The MAIB Data Portal
-          extract feeding <code>occurrences</code> covers roughly 2018 onward —
+          extract feeding <code>occurrences</code> covers roughly 2018 onward -
           it is not a full historical record, and an older report may have no
           matching spreadsheet occurrence.
         </li>
@@ -423,20 +423,20 @@
           <strong>Text extraction is AI-driven and imperfect.</strong> Each page
           was rendered to an image and read by a vision LLM, with deterministic
           passes on top. Expect residual artefacts: merged/split sentences,
-          headers absorbed into text, occasional transcription slips, and —
-          where <code>documents.extraction_fallback = true</code> — a degraded
+          headers absorbed into text, occasional transcription slips, and -
+          where <code>documents.extraction_fallback = true</code> - a degraded
           result for some pages.
         </li>
         <li>
           <strong>Sentence text is AI-produced, not byte-exact.</strong> It is
-          the model's reading of the page image — a faithful-but-not-verbatim
+          the model's reading of the page image - a faithful-but-not-verbatim
           transcription. <code>status = 'verified'</code> documents are
           analyst-confirmed; <code>extracted</code> ones are not.
         </li>
         <li>
           <strong>Mixed categorical vocabularies.</strong> Report-stated fields
           (<code>document_particulars.accident_type</code> / <code>severity</code>,
-          <code>document_vessels.vessel_type</code>) are free text — normalise
+          <code>document_vessels.vessel_type</code>) are free text - normalise
           before counting. Spreadsheet classifications are normalised into
           <code>taxonomy_terms</code> and referenced by <code>*_term_id</code>.
           Coordinates are verbatim text, not validated geo types.
@@ -446,7 +446,7 @@
       <h2>What is not included</h2>
       <ul>
         <li>The original MAIB PDF files (only extracted text and the source <code>url</code> per document).</li>
-        <li>Vector embeddings — the schema has no embedding columns; nothing pgvector-dependent is present.</li>
+        <li>Vector embeddings - the schema has no embedding columns; nothing pgvector-dependent is present.</li>
         <li>Pipeline observability (LLM traces, extraction logs) and any application authentication data.</li>
       </ul>
 
