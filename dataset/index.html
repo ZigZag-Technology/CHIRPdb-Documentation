@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHIRPdb Dataset - Data Study Group guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/chirp.css" />
+    <style>
+      :root {
+        --navy-tint: #eaf0f7;
+        --navy-soft-tint: #eef2f8;
+      }
+      body { background: var(--bg-soft); color: var(--text); line-height: 1.65; }
+      .container { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+
+      .intro-wide { background: var(--bg-card); border-bottom: 1px solid var(--border); }
+      .intro-wide__inner { max-width: 1100px; margin: 0 auto; padding: 48px 24px 40px; }
+
+      .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--orange); margin-bottom: 12px; }
+      h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 16px; color: var(--navy-deep); }
+      .lede { font-size: 17px; color: var(--text-soft); max-width: 720px; margin-bottom: 8px; }
+      h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.015em; color: var(--navy-deep); margin: 56px 0 12px; padding-top: 24px; border-top: 1px solid var(--border); }
+      h3 { font-size: 17px; margin: 24px 0 8px; }
+      p { margin-bottom: 14px; }
+      p.dim { color: var(--text-soft); font-size: 15px; }
+      strong { color: var(--navy); }
+      a { color: var(--orange-deep); }
+      ul { margin: 0 0 16px 22px; }
+      li { margin: 6px 0; }
+      code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--navy); }
+      pre { background: var(--navy-deep); color: #e8eef6; border-radius: 10px; padding: 18px 20px; overflow-x: auto; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; line-height: 1.6; margin: 16px 0; }
+      pre code { background: none; border: none; color: inherit; padding: 0; }
+
+      /* "what you have" cards */
+      .haves { display: flex; gap: 12px; flex-wrap: wrap; margin: 24px 0; }
+      .have { flex: 1; min-width: 220px; background: var(--bg-card); border: 1px solid var(--border); border-top: 4px solid var(--navy); border-radius: 10px; padding: 18px 20px; }
+      .have:nth-child(2) { border-top-color: var(--orange); }
+      .have:nth-child(3) { border-top-color: var(--navy-soft); }
+      .have__title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+      .have p { font-size: 14px; color: var(--text-soft); margin: 0; }
+
+      /* pipeline flow */
+      .flow { display: flex; gap: 12px; margin: 28px 0; flex-wrap: wrap; }
+      .flow__step { flex: 1; min-width: 200px; background: var(--bg-card); border: 1px solid var(--border); border-top: 4px solid var(--navy); border-radius: 10px; padding: 18px 20px; }
+      .flow__step:nth-child(2) { border-top-color: var(--orange); }
+      .flow__step:nth-child(3) { border-top-color: var(--navy-soft); }
+      .flow__step:nth-child(4) { border-top-color: var(--text-soft); }
+      .flow__num { display: inline-block; font-size: 12px; font-weight: 700; color: var(--text-soft); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+      .flow__title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+      .flow__step p { font-size: 14px; color: var(--text-soft); margin: 0; }
+
+      /* populated vs empty */
+      .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+      .split__col { border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; background: var(--bg-card); }
+      .split__col--yes { border-left: 5px solid #1f7a3d; }
+      .split__col--no { border-left: 5px solid var(--text-mute); }
+      .split__head { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px; }
+      .split__col--yes .split__head { color: #1f7a3d; }
+      .split__col--no .split__head { color: var(--text-soft); }
+      .split ul { margin: 0 0 0 18px; }
+      .split li { font-size: 14px; color: var(--text-soft); }
+      .split code { font-size: 12px; }
+
+      /* source legend */
+      .legend { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14.5px; }
+      .legend td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+      .legend td:first-child { white-space: nowrap; width: 1%; }
+      .src { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.4px; border-radius: 4px; padding: 2px 8px; }
+      .src--maib { background: #e7eef7; color: #15375e; }
+      .src--pipe { background: #e6f0ee; color: #1c5c50; }
+      .src--aiu  { background: #fdeede; color: #b45f06; }
+      .src--aiv  { background: #e4f3e7; color: #1f7a3d; }
+      .src--sys  { background: #eceef2; color: #5a6478; }
+      .src--unc  { background: #fbe6e6; color: #b3261e; }
+
+      .callout { background: var(--navy-soft-tint); border-left: 4px solid var(--navy-soft); border-radius: 0 8px 8px 0; padding: 16px 20px; font-size: 15px; margin: 24px 0; }
+      .callout--warn { background: var(--orange-soft); border-left-color: var(--orange); }
+
+      /* row counts */
+      .counts { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; }
+      .counts th, .counts td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+      .counts th { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-soft); background: var(--bg-soft); }
+      .counts td:first-child { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; color: var(--navy); }
+      .counts td:last-child { text-align: right; color: var(--text-soft); }
+
+      .cta { display: block; background: var(--bg-card); border: 1px solid var(--border); border-left: 5px solid var(--orange); border-radius: 10px; padding: 20px 24px; text-decoration: none; margin: 28px 0; }
+      .cta__title { font-size: 17px; font-weight: 700; color: var(--navy-deep); margin-bottom: 4px; }
+      .cta__desc { font-size: 14px; color: var(--text-soft); }
+
+      /* full schema viewer (same component as the stakeholder data guide) */
+      .schema-wide { width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; padding: 0 24px; }
+      .schema-wide__inner { max-width: 1320px; margin: 0 auto; }
+      .schema-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 20px 0 14px; }
+      .schema-toolbar__zoom { font-size: 13px; font-weight: 700; color: var(--navy-deep); min-width: 46px; text-align: center; }
+      .schema-toolbar__hint { font-size: 13px; color: var(--text-soft); }
+      .schema-viewer { border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); overflow: auto; max-height: min(80vh, 900px); margin: 0 0 8px; }
+      .schema-viewer.is-fullscreen { max-height: none; height: 100vh; border-radius: 0; background: var(--bg-card); }
+      .schema-viewer img { display: block; }
+
+      .page-footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-soft); }
+      @media (max-width: 640px) {
+        .container { padding: 0 16px 60px; }
+        .intro-wide__inner { padding: 28px 16px 24px; }
+        .schema-wide { padding: 0 16px; }
+        h1 { font-size: 27px; }
+        .flow, .haves, .split { flex-direction: column; grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a href="../index.html" class="logo">
+          <img
+            src="https://chirp.co.uk/app/uploads/2024/07/chirp-logo-blue.svg"
+            alt="CHIRP"
+            class="logo__img"
+          />
+        </a>
+        <div class="header__spacer"></div>
+        <span class="header__tag">CHIRPdb Dataset · DSG</span>
+      </div>
+    </header>
+
+    <div class="intro-wide">
+      <div class="intro-wide__inner">
+        <p class="eyebrow">Alan Turing Institute · Data Study Group</p>
+        <h1>The CHIRPdb dataset</h1>
+        <p class="lede">
+          A structured database of UK Marine Accident Investigation Branch
+          (MAIB) maritime incident reports, hosted for you as a standard
+          PostgreSQL database. This page orients you: what you have, how it was
+          built, how the tables fit together, and - most importantly - how far
+          to trust each field. The <a href="dictionary.html">data dictionary</a>
+          is the per-column reference.
+        </p>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>What you have</h2>
+      <p>
+        Read access to a running PostgreSQL database and the paperwork to make
+        sense of it - nothing else. No access to CHIRP's application, pipeline or
+        APIs; everything you need is in the three pieces below.
+      </p>
+      <div class="haves">
+        <div class="have">
+          <div class="have__title">The database</div>
+          <p>
+            A standard PostgreSQL instance your IT service hosts. Connect with
+            any Postgres client and query it read-only.
+          </p>
+        </div>
+        <div class="have">
+          <div class="have__title">This data dictionary</div>
+          <p>
+            Every table and column defined, with the provenance and trust of
+            each field. The <a href="dictionary.html">companion page</a>.
+          </p>
+        </div>
+        <div class="have">
+          <div class="have__title">The schema diagram</div>
+          <p>
+            The entity-relationship diagram - every table and every link between
+            them, below.
+          </p>
+        </div>
+      </div>
+
+      <h2>Working with the database</h2>
+      <p>It is ordinary PostgreSQL - two things worth knowing before you query:</p>
+      <ul>
+        <li>
+          <strong>Every table is readable.</strong> All tables allow public
+          read; there is nothing to unlock first.
+        </li>
+        <li>
+          <strong><code>tsvector</code> columns are generated.</strong> The
+          full-text search columns are computed automatically from their source
+          text and are read-only - query them for search, don't write them.
+        </li>
+      </ul>
+
+      <h2>What the dataset is</h2>
+      <p>
+        Each published MAIB report (a PDF) is broken into sentence-level text
+        plus the report's own stated incident particulars, and is linked to
+        structured incident data - occurrences, vessels, affected persons -
+        drawn from the MAIB Data Portal spreadsheets. An analysis pipeline then
+        extracts findings from the text: safety issues, recommendations, named
+        entities, and causal-factor classifications from CHIRP's SHIELD
+        taxonomy. Every extracted finding is traceable back to the exact
+        sentences of the source report.
+      </p>
+
+      <h2>What is actually populated</h2>
+      <p>
+        The schema documents the full system, but the database as delivered
+        populates only part of it. Know which layers carry data before you build
+        on them.
+      </p>
+      <div class="split">
+        <div class="split__col split__col--yes">
+          <div class="split__head">Populated</div>
+          <ul>
+            <li>
+              <strong>Reports &amp; text</strong> - <code>documents</code>,
+              <code>authors</code>, <code>sentences</code>, and the
+              report-derived <code>document_particulars</code> /
+              <code>document_vessels</code>.
+            </li>
+            <li>
+              <strong>Spreadsheet incident data</strong> -
+              <code>occurrences</code>, <code>vessels</code>,
+              <code>affected_persons</code>, <code>affected_persons_ppe</code>,
+              the report&harr;occurrence link on
+              <code>documents.occurrence_id</code>, and the vocabularies
+              <code>taxonomy_terms</code> / <code>ppe_items</code>.
+            </li>
+            <li>
+              <strong>Seeded vocabularies</strong> - <code>shield_codes</code> /
+              <code>shield_code_categories</code> (full SHIELD taxonomy) and
+              <code>narrative_entity_types</code>. Loaded but not yet referenced.
+            </li>
+          </ul>
+        </div>
+        <div class="split__col split__col--no">
+          <div class="split__head">Empty</div>
+          <ul>
+            <li>
+              <code>chunks</code>, <code>chunk_sentences</code>,
+              <code>analysis</code> - no chunking pass.
+            </li>
+            <li>
+              <code>chunk_shield_codes</code> - taxonomy loaded, no code applied
+              to any passage yet.
+            </li>
+            <li>
+              <code>safety_issues</code>, <code>recommendations</code> and their
+              junctions - no findings extraction.
+            </li>
+            <li>
+              <code>narrative_entities</code>,
+              <code>narrative_entity_mentions</code> - no NER/coreference pass.
+            </li>
+            <li>
+              <code>organisations</code>, <code>legislation</code>, the
+              identifier tables - nothing populates them at this stage.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>How the data was produced</h2>
+      <p>
+        The data flows through pipeline stages, and the tables mirror them.
+        Provenance is preserved as a chain of links, not copied data: any
+        finding traces to its passage, the passage to its sentences, each
+        sentence to its document and position.
+      </p>
+      <div class="flow">
+        <div class="flow__step">
+          <span class="flow__num">Stage 1</span>
+          <div class="flow__title">Ingest</div>
+          <p>
+            An MAIB report PDF is registered as a <code>documents</code> row and
+            each page is rasterised to an image; the report's own stated facts go
+            to <code>document_particulars</code> and
+            <code>document_vessels</code>.
+          </p>
+        </div>
+        <div class="flow__step">
+          <span class="flow__num">Stage 2</span>
+          <div class="flow__title">Extraction</div>
+          <p>
+            A vision LLM reads each page image and returns its text and
+            structure directly; deterministic passes then run on top (normalise
+            metadata, rejoin broken lines, repair lossy pages), stored as ordered
+            <code>sentences</code>. Lifecycle:
+            <code>queued → extracting → extracted → verified</code>.
+          </p>
+        </div>
+        <div class="flow__step">
+          <span class="flow__num">Stage 3</span>
+          <div class="flow__title">Spreadsheet enrichment</div>
+          <p>
+            MAIB Data Portal data is loaded independently:
+            <code>occurrences → vessels → affected_persons</code>, classified
+            via <code>taxonomy_terms</code>, linked to reports through
+            <code>documents.occurrence_id</code>.
+          </p>
+        </div>
+        <div class="flow__step">
+          <span class="flow__num">Stage 4</span>
+          <div class="flow__title">Analysis</div>
+          <p>
+            Sentences are grouped into <code>chunks</code> and findings extracted
+            against them: SHIELD taggings, safety issues, recommendations,
+            entities. <em>(Not populated in this database.)</em>
+          </p>
+        </div>
+      </div>
+
+      <h2>How the tables fit together</h2>
+      <p>
+        Two incident-data sources are kept apart and linked, not merged: the
+        report PDF's own account lives in <code>document_particulars</code> /
+        <code>document_vessels</code>; the MAIB Data Portal spreadsheet's account
+        in <code>occurrences</code> / <code>vessels</code> /
+        <code>affected_persons</code>; the two join through a nullable
+        <code>documents.occurrence_id</code> FK - several reports can point at
+        one occurrence (e.g. an interim then a final). Tree-shaped
+        classifications (event type, ship type, place on board, injury,
+        deviation) are normalised into <code>taxonomy_terms</code>. The full
+        entity-relationship diagram:
+      </p>
+
+      <div class="schema-wide">
+        <div class="schema-wide__inner">
+          <div class="schema-toolbar">
+            <button type="button" class="btn" id="zoomOut" aria-label="Zoom out">&minus;</button>
+            <span class="schema-toolbar__zoom" id="zoomLabel">100%</span>
+            <button type="button" class="btn" id="zoomIn" aria-label="Zoom in">&plus;</button>
+            <button type="button" class="btn" id="zoomFit">Fit width</button>
+            <button type="button" class="btn" id="zoomReset">Actual size</button>
+            <button type="button" class="btn" id="zoomFullscreen">Full screen</button>
+            <span class="schema-toolbar__hint">Scroll to pan, or hold Ctrl/Cmd and scroll to zoom.</span>
+          </div>
+          <div class="schema-viewer" id="schemaViewer">
+            <img
+              src="../data/schema.svg"
+              alt="CHIRPdb entity-relationship diagram showing all tables and their relationships"
+              id="schemaImg"
+            />
+          </div>
+        </div>
+      </div>
+      <p class="dim">
+        The <a href="dictionary.html">data dictionary</a> is authoritative for
+        table and column definitions; the diagram is the map, the dictionary the
+        legend.
+      </p>
+
+      <h2>Where each value comes from - and how far to trust it</h2>
+      <p>
+        This is the point of the dictionary. The database shows you structure;
+        it cannot tell you which values are MAIB fact, which a model produced,
+        and which a human has since confirmed. Every column is labelled with one
+        of:
+      </p>
+      <table class="legend">
+        <tr>
+          <td><span class="src src--maib">MAIB</span></td>
+          <td>MAIB-sourced - from the report PDF (content or file metadata) or the MAIB Data Portal spreadsheet.</td>
+        </tr>
+        <tr>
+          <td><span class="src src--pipe">Pipeline</span></td>
+          <td>Pipeline-derived, deterministic - computed on ingest, no model involved.</td>
+        </tr>
+        <tr>
+          <td><span class="src src--aiu">AI-U</span></td>
+          <td>AI-generated, <strong>unverified</strong> - produced by an LLM or NLP model, not confirmed by a human.</td>
+        </tr>
+        <tr>
+          <td><span class="src src--aiv">AI-V</span></td>
+          <td>AI-generated, <strong>human-verified</strong> - model output an analyst has confirmed.</td>
+        </tr>
+        <tr>
+          <td><span class="src src--sys">System</span></td>
+          <td>System metadata - surrogate keys, timestamps, status flags, generated search columns, seeded reference data.</td>
+        </tr>
+      </table>
+      <p>
+        Two rules run throughout. <strong>Row-level verification:</strong> tables
+        with an <code>is_verified</code> flag hold AI-generated content whose
+        status varies per row - treat <code>is_verified = true</code> as AI-V,
+        everything else AI-U. <strong>Sentence text</strong> is extracted by a
+        vision LLM reading each page image, with deterministic passes on top, so
+        it is AI-U, qualified by the parent <code>documents.status</code>
+        (<code>verified</code> = analyst-confirmed).
+      </p>
+      <div class="callout">
+        Practical upshot: the analysis layer is empty here, so nearly all
+        content is <span class="src src--maib">MAIB</span> or
+        <span class="src src--pipe">Pipeline</span>. Where you do see
+        <span class="src src--aiu">AI-U</span> - the sentence text - remember it
+        is a vision model's reading of the page image, not a byte-exact copy of
+        the PDF.
+      </div>
+
+      <h2>Known limitations</h2>
+      <p>Read these before drawing conclusions from the data.</p>
+      <ul>
+        <li>
+          <strong>UK jurisdiction only.</strong> All reports come from the UK
+          MAIB - patterns describe UK-flagged vessels and UK waters, not global
+          shipping.
+        </li>
+        <li>
+          <strong>MAIB reporting thresholds.</strong> Only accidents meeting
+          MAIB's criteria are investigated. This is not a random sample; minor
+          and unreported occurrences are absent by construction, so incidence
+          rates cannot be estimated from it.
+        </li>
+        <li>
+          <strong>Spreadsheet coverage window.</strong> The MAIB Data Portal
+          extract feeding <code>occurrences</code> covers roughly 2018 onward -
+          it is not a full historical record, and an older report may have no
+          matching spreadsheet occurrence.
+        </li>
+        <li>
+          <strong>Text extraction is AI-driven and imperfect.</strong> Each page
+          was rendered to an image and read by a vision LLM, with deterministic
+          passes on top. Expect residual artefacts: merged/split sentences,
+          headers absorbed into text, occasional transcription slips, and -
+          where <code>documents.extraction_fallback = true</code> - a degraded
+          result for some pages.
+        </li>
+        <li>
+          <strong>Sentence text is AI-produced, not byte-exact.</strong> It is
+          the model's reading of the page image - a faithful-but-not-verbatim
+          transcription. <code>status = 'verified'</code> documents are
+          analyst-confirmed; <code>extracted</code> ones are not.
+        </li>
+        <li>
+          <strong>Mixed categorical vocabularies.</strong> Report-stated fields
+          (<code>document_particulars.accident_type</code> / <code>severity</code>,
+          <code>document_vessels.vessel_type</code>) are free text - normalise
+          before counting. Spreadsheet classifications are normalised into
+          <code>taxonomy_terms</code> and referenced by <code>*_term_id</code>.
+          Coordinates are verbatim text, not validated geo types.
+        </li>
+      </ul>
+
+      <h2>What is not included</h2>
+      <ul>
+        <li>The original MAIB PDF files (only extracted text and the source <code>url</code> per document).</li>
+        <li>Vector embeddings - the schema has no embedding columns; nothing pgvector-dependent is present.</li>
+        <li>Pipeline observability (LLM traces, extraction logs) and any application authentication data.</li>
+      </ul>
+
+      <h2>Row counts</h2>
+      <p class="dim">
+        Populated tables carry data; the analysis and findings layer is empty in
+        the database (see above). Seeded vocabularies are loaded reference data.
+      </p>
+      <table class="counts">
+        <thead><tr><th>Table</th><th>Rows</th></tr></thead>
+        <tbody>
+          <tr><td>documents</td><td>796</td></tr>
+          <tr><td>document_particulars</td><td>796</td></tr>
+          <tr><td>document_vessels</td><td>796</td></tr>
+          <tr><td>occurrences</td><td>9,063</td></tr>
+          <tr><td>vessels</td><td>9,830</td></tr>
+          <tr><td>affected_persons</td><td>3,040</td></tr>
+          <tr><td>affected_persons_ppe</td><td>924</td></tr>
+          <tr><td>taxonomy_terms</td><td>410</td></tr>
+          <tr><td>ppe_items</td><td>9</td></tr>
+          <tr><td>sentences</td><td>≈293,400</td></tr>
+          <tr><td>chunks · analysis · findings · entities</td><td>0 (empty)</td></tr>
+          <tr><td>shield_codes</td><td>96 (seeded)</td></tr>
+          <tr><td>shield_code_categories</td><td>20 (seeded)</td></tr>
+          <tr><td>narrative_entity_types</td><td>5 (seeded)</td></tr>
+        </tbody>
+      </table>
+
+      <a class="cta" href="dictionary.html">
+        <div class="cta__title">Full data dictionary →</div>
+        <div class="cta__desc">
+          Every table and column, with per-field provenance and constraints.
+          The reference to keep open while you query.
+        </div>
+      </a>
+
+      <p class="page-footer">
+        Tandem Creative Dev · prepared for Zig Zag AI / CHIRP, for the Alan
+        Turing Institute Data Study Group · 2026<br />
+        Documentation conventions: data dictionary follows DAMA-DMBOK; this
+        overview follows the Datasheets for Datasets framing.
+      </p>
+    </div>
+
+    <script>
+      (function () {
+        var viewer = document.getElementById("schemaViewer");
+        var img = document.getElementById("schemaImg");
+        var label = document.getElementById("zoomLabel");
+        var zoomInBtn = document.getElementById("zoomIn");
+        var zoomOutBtn = document.getElementById("zoomOut");
+        var fitBtn = document.getElementById("zoomFit");
+        var resetBtn = document.getElementById("zoomReset");
+        var fsBtn = document.getElementById("zoomFullscreen");
+
+        var MIN_PCT = 15;
+        var MAX_PCT = 400;
+        var STEP = 20;
+        var pct = 100;
+        var userZoomed = false;
+
+        function apply(nextPct) {
+          pct = Math.max(MIN_PCT, Math.min(MAX_PCT, Math.round(nextPct)));
+          var natural = img.naturalWidth || 2346;
+          img.style.width = (natural * pct) / 100 + "px";
+          label.textContent = pct + "%";
+        }
+        function fitToContainer() {
+          var natural = img.naturalWidth || 2346;
+          var available = viewer.clientWidth - 4;
+          apply((available / natural) * 100);
+        }
+        zoomInBtn.addEventListener("click", function () { userZoomed = true; apply(pct + STEP); });
+        zoomOutBtn.addEventListener("click", function () { userZoomed = true; apply(pct - STEP); });
+        resetBtn.addEventListener("click", function () { userZoomed = true; apply(100); });
+        fitBtn.addEventListener("click", function () { userZoomed = false; fitToContainer(); });
+        viewer.addEventListener("wheel", function (e) {
+          if (!(e.ctrlKey || e.metaKey)) return;
+          e.preventDefault();
+          userZoomed = true;
+          apply(pct - e.deltaY * 0.4);
+        }, { passive: false });
+
+        var hasFullscreen = document.fullscreenEnabled || viewer.requestFullscreen || viewer.webkitRequestFullscreen;
+        function isFullscreen() {
+          return (document.fullscreenElement || document.webkitFullscreenElement) === viewer;
+        }
+        if (!hasFullscreen) {
+          fsBtn.style.display = "none";
+        } else {
+          fsBtn.addEventListener("click", function () {
+            if (isFullscreen()) {
+              (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+            } else {
+              (viewer.requestFullscreen || viewer.webkitRequestFullscreen).call(viewer);
+            }
+          });
+          ["fullscreenchange", "webkitfullscreenchange"].forEach(function (evt) {
+            document.addEventListener(evt, function () {
+              var active = isFullscreen();
+              viewer.classList.toggle("is-fullscreen", active);
+              fsBtn.textContent = active ? "Exit full screen" : "Full screen";
+              userZoomed = false;
+              fitToContainer();
+            });
+          });
+        }
+        var resizeTimer;
+        window.addEventListener("resize", function () {
+          if (userZoomed) return;
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(fitToContainer, 100);
+        });
+        if (img.complete && img.naturalWidth) { fitToContainer(); }
+        else { img.addEventListener("load", fitToContainer); }
+      })();
+    </script>
+  </body>
+</html>
