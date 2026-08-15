@@ -56,6 +56,150 @@
         }
       }
 
+      .changelog {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+      }
+      .changelog__inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .changelog__toggle {
+        appearance: none;
+        background: none;
+        border: 0;
+        width: 100%;
+        padding: 14px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        cursor: pointer;
+        color: var(--text);
+        font: inherit;
+      }
+      .changelog__toggle:focus-visible {
+        outline: 2px solid var(--orange);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+      .changelog__title {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--orange);
+      }
+      .changelog__title::after {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--text-soft);
+      }
+      .changelog__count {
+        color: var(--text-soft);
+        font-weight: 600;
+        font-size: 13px;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+      .changelog__chevron {
+        color: var(--text-soft);
+        font-size: 14px;
+        transition: transform 0.2s ease;
+      }
+      .changelog__toggle[aria-expanded="true"] .changelog__chevron {
+        transform: rotate(180deg);
+      }
+      .changelog__body {
+        padding-bottom: 20px;
+      }
+      .changelog__body[hidden] {
+        display: none;
+      }
+      .changelog__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      .changelog__table th,
+      .changelog__table td {
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border-soft);
+        vertical-align: top;
+      }
+      .changelog__table th {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-soft);
+        font-weight: 700;
+        background: var(--bg-soft);
+      }
+      .changelog__table td:first-child {
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+        color: var(--text-soft);
+        width: 120px;
+      }
+      .changelog__table td:last-child {
+        white-space: nowrap;
+        color: var(--text-soft);
+        width: 140px;
+      }
+      .changelog__table tr.is-milestone td {
+        background: var(--orange-tint);
+        border-bottom-color: rgba(245, 130, 32, 0.35);
+        color: var(--navy-deep);
+        font-weight: 500;
+      }
+      .changelog__table tr.is-milestone td:first-child {
+        border-left: 3px solid var(--orange);
+        color: var(--orange-deep);
+        font-weight: 700;
+      }
+      .changelog__table tr.is-milestone td:last-child {
+        color: var(--text-soft);
+        font-weight: 500;
+      }
+      .changelog__milestone-tag {
+        display: inline-block;
+        margin-right: 8px;
+        padding: 2px 7px;
+        background: var(--orange);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 4px;
+        vertical-align: 1px;
+      }
+      @media (max-width: 640px) {
+        .changelog__inner {
+          padding: 0 18px;
+        }
+        .changelog__table th,
+        .changelog__table td {
+          padding: 8px 8px;
+          font-size: 13px;
+        }
+        .changelog__table td:first-child {
+          width: auto;
+        }
+        .changelog__table td:last-child {
+          width: auto;
+          white-space: normal;
+        }
+      }
+
       .overview {
         background: var(--bg-soft);
         padding: 72px 24px;
@@ -619,6 +763,13 @@
         font-family: inherit;
         -webkit-tap-highlight-color: transparent;
       }
+      .step--static .step__header {
+        cursor: default;
+      }
+      .step--static .step__card:hover {
+        border-color: var(--border);
+        box-shadow: var(--shadow-sm);
+      }
       .step__title-block {
         flex: 1;
         min-width: 0;
@@ -960,6 +1111,202 @@
       </div>
     </header>
 
+    <section class="changelog" aria-labelledby="changelogTitle">
+      <div class="changelog__inner">
+        <button
+          type="button"
+          class="changelog__toggle"
+          aria-expanded="false"
+          aria-controls="changelogBody"
+          id="changelogToggle"
+        >
+          <span class="changelog__title" id="changelogTitle">
+            Changelog
+            <span class="changelog__count">Last updated 28 Jul 2026</span>
+          </span>
+          <span class="changelog__chevron" aria-hidden="true">▾</span>
+        </button>
+        <div class="changelog__body" id="changelogBody" hidden>
+          <table class="changelog__table">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Description</th>
+                <th scope="col">Author</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>28 Jul 2026</td>
+                <td>
+                  Named the USA as the second-jurisdiction source in Step 4
+                  and lifted the step out of the pre-DSG &ldquo;Happen
+                  simultaneously&rdquo; group, so it runs pre-DSG but on its
+                  own track.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>25 Jul 2026</td>
+                <td>
+                  Simplified Step 1 to a static, non-expandable card - no
+                  expanded detail below the title and summary.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr class="is-milestone">
+                <td>
+                  <span class="changelog__milestone-tag">Milestone</span>21 Jul
+                  2026
+                </td>
+                <td>
+                  Locked the DSG minimum safe depth with CHIRP: sentence-level
+                  extraction with heading hierarchy and document
+                  reconstruction, plus SHIELD codes stored in the database
+                  as-is (linking deferred). Split the old
+                  &ldquo;reading every report reliably&rdquo; step into a
+                  pre-DSG Step 2 (sentences) and a post-DSG Step 5
+                  (recommendations and safety issues as structured records).
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>21 Jul 2026</td>
+                <td>
+                  Moved second-jurisdiction ingestion pre-DSG as Step 4 to
+                  broaden the sample size the Data Study Group has to work
+                  from. Moved narrative entity extraction below the DSG
+                  milestone (now Step 6). Renumbered every following step;
+                  grew total step count from 18 to 19.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>17 Jul 2026</td>
+                <td>
+                  Recorded the usable MAIB corpus size in Step 1: 659 reports
+                  out of 796, with 137 scanned pre-2005 documents excluded
+                  because OCR is out of scope.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>14 Jul 2026</td>
+                <td>
+                  Added Step 1 - &ldquo;Ingesting MAIB reports through the MVP
+                  pipeline&rdquo; - as the DSG-facing corpus feed. Grew P1 from
+                  5 to 6 steps and renumbered every subsequent step.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>14 Jul 2026</td>
+                <td>
+                  Reworked Step 5 from a built-software &ldquo;single search
+                  across the database&rdquo; into an AI-powered
+                  vector-embeddings API endpoint. Kind reclassified from Built
+                  to AI.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>14 Jul 2026</td>
+                <td>
+                  Renamed Step 4 to &ldquo;Narrative entity extraction -
+                  recognising who and what each report is about&rdquo; for
+                  technical clarity.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>14 Jul 2026</td>
+                <td>
+                  Added the &ldquo;DSG goal&rdquo; milestone divider after Step
+                  4 to mark the Alan Turing Data Study Group handoff point.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>25 Jun 2026</td>
+                <td>
+                  Added a Foundation MVP card at the top of the roadmap with
+                  three deliverables: LLM-enhanced ingestion pipeline, narrative
+                  entity model, and full-text search endpoint. Wrapped the
+                  parallel early steps in a &ldquo;Happen simultaneously&rdquo;
+                  group.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>25 Jun 2026</td>
+                <td>
+                  Refined Step 2 to focus on MAIB spreadsheets alone, dropping
+                  the CHIRP internal-spreadsheet ingestion scope.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr class="is-milestone">
+                <td>
+                  <span class="changelog__milestone-tag">Milestone</span>18 Jun
+                  2026
+                </td>
+                <td>
+                  Phase day-budgets defined: MVP 19.5d, Phase 1 (Foundation)
+                  35d, Phase 2 (Verification &amp; provenance) 23d, Phase 3
+                  (Semantic layer) 10d, Phase 5 (Production hardening) 15d.
+                  These estimates anchor the progress tracker.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>18 Jun 2026</td>
+                <td>
+                  Added Production Hardening as its own delivery package (P5,
+                  single step) and split the old Multi-jurisdiction package into
+                  &ldquo;Broader corpus &amp; legislation&rdquo;. Grew the
+                  package count from 6 to 7.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>18 Jun 2026</td>
+                <td>
+                  Removed the hero section from the top of the roadmap page.
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+              <tr>
+                <td>18 Jun 2026</td>
+                <td>
+                  Roadmap first published: 17 numbered post-MVP steps across six
+                  delivery packages (Foundation, Verification &amp; provenance,
+                  Semantic layer, Multi-jurisdiction, Analytical frontend,
+                  Conversational layer).
+                </td>
+                <td>Jack Casstles-Jones</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var btn = document.getElementById("changelogToggle");
+          var body = document.getElementById("changelogBody");
+          if (!btn || !body) return;
+          btn.addEventListener("click", function () {
+            var open = btn.getAttribute("aria-expanded") === "true";
+            btn.setAttribute("aria-expanded", open ? "false" : "true");
+            if (open) {
+              body.setAttribute("hidden", "");
+            } else {
+              body.removeAttribute("hidden");
+            }
+          });
+        })();
+      </script>
+    </section>
+
     <section class="overview">
       <div class="overview__inner">
         <div class="overview__head">
@@ -975,8 +1322,8 @@
             <div class="pipeline__num">Stage 1</div>
             <div class="pipeline__title">Reports come in</div>
             <div class="pipeline__desc">
-              AI reads each maritime accident report — the entire document, not
-              just the headlines — and pulls out structured information: who was
+              AI reads each maritime accident report - the entire document, not
+              just the headlines - and pulls out structured information: who was
               involved, what happened, where, when, what was recommended.
               Alongside that, structured spreadsheets recording the same
               accidents are read in too.
@@ -1039,7 +1386,7 @@
             <div class="pipeline__desc">
               The verified data lives in a structured database with maps,
               timelines, dashboards, and search on top of it. This part is
-              ordinary software — predictable, reliable, no AI making decisions
+              ordinary software - predictable, reliable, no AI making decisions
               about what you see.
             </div>
             <div class="pipeline__tag pipeline__tag--built">
@@ -1069,7 +1416,7 @@
             <div class="pipeline__title">Ask questions in plain language</div>
             <div class="pipeline__desc">
               Optionally, an AI assistant on top that can answer questions in
-              plain English — but every answer is grounded in the database, with
+              plain English - but every answer is grounded in the database, with
               every claim linked back to the underlying reports. No invented
               facts.
             </div>
@@ -1105,7 +1452,7 @@
               <strong>One principle behind the whole thing:</strong> AI does the
               reading and the heavy lifting; humans always have the final say on
               what counts as a fact. The system never silently adds, modifies,
-              or "discovers" things in the database on its own — every
+              or "discovers" things in the database on its own - every
               AI-generated piece of information goes through a human reviewer
               before it's relied on for analysis or reporting.
             </p>
@@ -1135,6 +1482,114 @@
         <div class="controls__actions">
           <button class="btn" id="expandAll">Expand all</button>
           <button class="btn" id="collapseAll">Collapse all</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="packages">
+      <div class="packages__inner">
+        <div class="packages__head">
+          <div class="packages__kicker">Delivery</div>
+          <h2>How this <span class="accent">breaks down</span>.</h2>
+          <p class="packages__lead">
+            The 19 steps cluster into seven packages. Each one is scoped,
+            quoted, and delivered as its own piece of work.
+          </p>
+        </div>
+
+        <div class="packages__grid">
+          <div class="package package--contracted">
+            <div class="package__row">
+              <span class="package__num">P1</span>
+              <span class="package__steps">Steps 1, 2, 3, 4, 5, 6, 7</span>
+            </div>
+            <div class="package__title">Foundation</div>
+            <div class="package__desc">
+              The AI ingestion pipeline (sentences, recommendations, and
+              safety issues), the recognition of people, vessels, and places
+              in each report, the search interface, and validation against a
+              second country's reports.
+            </div>
+            <div class="package__status">Already contracted</div>
+          </div>
+
+          <div class="package">
+            <div class="package__row">
+              <span class="package__num">P2</span>
+              <span class="package__steps">Steps 8, 9, 10, 11</span>
+            </div>
+            <div class="package__title">Verification &amp; provenance</div>
+            <div class="package__desc">
+              The review tool for CHIRP staff, the audit trail behind every
+              change, original PDFs stored alongside the data, and richer
+              filtering.
+            </div>
+          </div>
+
+          <div class="package">
+            <div class="package__row">
+              <span class="package__num">P3</span>
+              <span class="package__steps">Step 12</span>
+            </div>
+            <div class="package__title">Semantic layer</div>
+            <div class="package__desc">
+              The AI similarity work - finding incidents that are related in
+              meaning, not just in keywords.
+            </div>
+          </div>
+
+          <div class="package">
+            <div class="package__row">
+              <span class="package__num">P4</span>
+              <span class="package__steps">Steps 13, 14</span>
+            </div>
+            <div class="package__title">Broader corpus &amp; legislation</div>
+            <div class="package__desc">
+              More report types and formats plus linking each finding to the
+              relevant legislation.
+            </div>
+          </div>
+
+          <div class="package package--essential">
+            <div class="package__row">
+              <span class="package__num">P5</span>
+              <span class="package__steps">Step 15</span>
+            </div>
+            <div class="package__title">Production hardening</div>
+            <div class="package__desc">
+              Authentication, role-based access, API tokens, rate limiting, and
+              monitoring - the security and operational floor needed before
+              external partners like the Alan Turing Institute interact with the
+              system.
+            </div>
+            <div class="package__status package__status--essential">
+              Essential
+            </div>
+          </div>
+
+          <div class="package">
+            <div class="package__row">
+              <span class="package__num">P6</span>
+              <span class="package__steps">Steps 16, 17</span>
+            </div>
+            <div class="package__title">Analytical frontend</div>
+            <div class="package__desc">
+              Maps, timelines, dashboards, and recommendation tracking - the
+              visual surface on top of a verified, hardened corpus.
+            </div>
+          </div>
+
+          <div class="package">
+            <div class="package__row">
+              <span class="package__num">P7</span>
+              <span class="package__steps">Steps 18, 19</span>
+            </div>
+            <div class="package__title">Conversational layer</div>
+            <div class="package__desc">
+              Plain-language questions about the corpus, and AI-assisted
+              drafting for CHIRP staff - both grounded in verified data.
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1180,7 +1635,7 @@
                   </p>
                   <p class="step__deliverable-desc">
                     Replaces the NLP pipeline to handle the full range of MAIB
-                    report formats — footnotes, page breaks, tables, sidebars —
+                    report formats - footnotes, page breaks, tables, sidebars -
                     without bespoke rules. Validated against the MAIB corpus and
                     one additional jurisdiction.
                   </p>
@@ -1190,7 +1645,7 @@
                   <p class="step__deliverable-desc">
                     Extended schema that tracks named actors, vessels,
                     organisations, locations, and equipment through each report
-                    — linked at the sentence level so downstream analysis can
+                    - linked at the sentence level so downstream analysis can
                     trace how any actor or object is referenced across an
                     incident.
                   </p>
@@ -1201,7 +1656,7 @@
                   </p>
                   <p class="step__deliverable-desc">
                     A new API endpoint enabling structured queries across
-                    documents, entities, recommendations, and safety issues —
+                    documents, entities, recommendations, and safety issues -
                     validating that the ingestion and extraction work has
                     produced genuinely queryable data.
                   </p>
@@ -1216,10 +1671,10 @@
 
       <h3 class="roadmap__section-title">Post-MVP</h3>
 
-      <article class="step step--ai" data-step="1" data-kind="ai">
+      <article class="step step--ai step--static" data-step="1" data-kind="ai">
         <div class="step__node">01</div>
         <div class="step__card">
-          <button class="step__header" aria-expanded="false">
+          <div class="step__header">
             <div class="step__title-block">
               <div class="step__meta">
                 <span class="step__tag step__tag--ai">AI-powered</span>
@@ -1228,47 +1683,11 @@
                 Ingesting MAIB reports through the MVP pipeline
               </h2>
               <p class="step__summary">
-                Running the MVP ingestion pipeline over the MAIB report archive
-                to produce the structured corpus the Alan Turing Data Study
-                Group will work from.
+                Running the MVP ingestion pipeline over the 659 usable MAIB
+                reports - excluding 137 scanned pre-2005 documents where OCR
+                is out of scope - to produce the structured corpus the Alan
+                Turing Data Study Group will work from.
               </p>
-            </div>
-            <span class="step__chev" aria-hidden="true">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M4 6l4 4 4-4" />
-              </svg>
-            </span>
-          </button>
-          <div class="step__body">
-            <div class="step__body-inner">
-              <div class="step__detail">
-                <p>
-                  The MVP ingestion pipeline is run over every MAIB report,
-                  producing structured records — sentences, recommendations,
-                  safety issues — for the whole archive. First end-to-end output
-                  of the ingestion work.
-                </p>
-                <p>
-                  That corpus is what the Alan Turing Institute's Data Study
-                  Group will work against during their week-long collaboration,
-                  and what every downstream step builds on.
-                </p>
-              </div>
-              <div class="step__ai-role">
-                <span class="step__ai-role-label">AI's role</span>
-                <span class="step__ai-role-text"
-                  >The MVP pipeline is AI-driven — an agentic system reads each
-                  PDF end-to-end and extracts structured content. This step is
-                  that pipeline running at scale over the MAIB archive.</span
-                >
-              </div>
             </div>
           </div>
         </div>
@@ -1285,12 +1704,13 @@
                   <span class="step__tag step__tag--ai">AI-powered</span>
                 </div>
                 <h2 class="step__title">
-                  Reading every report reliably, whatever shape it comes in
+                  Sentence-level extraction with heading hierarchy
                 </h2>
                 <p class="step__summary">
-                  An AI ingestion pipeline that pulls sentences,
-                  recommendations, and safety issues out of any report layout —
-                  not just the predictable ones.
+                  Reading each report to get every sentence back in the right
+                  order, with the heading structure preserved and SHIELD codes
+                  stored as-is. The minimum safe depth for the Data Study
+                  Group.
                 </p>
               </div>
               <span class="step__chev" aria-hidden="true">
@@ -1311,24 +1731,30 @@
                 <div class="step__detail">
                   <p>
                     Today the existing pipeline reliably understands roughly six
-                    in every ten MAIB reports — the ones in a predictable
+                    in every ten MAIB reports - the ones in a predictable
                     format.
                   </p>
                   <p>
                     We're replacing that with an AI-driven pipeline that reads
-                    each report end-to-end and pulls out the structured
-                    information regardless of how the document is laid out. It
-                    works on whole documents, not just summaries or headlines.
+                    each report end-to-end, pulls out every sentence, and ties
+                    each one to its place in the heading tree. That's enough for
+                    the DSG to reconstruct the full report from the database and
+                    work from the original text in the original order.
+                  </p>
+                  <p>
+                    SHIELD codes appear throughout MAIB reports and are stored
+                    in the database as they appear in the text. Linking each
+                    code to the entities it references comes later.
                   </p>
                 </div>
                 <div class="step__ai-role">
                   <span class="step__ai-role-label">AI's role</span>
                   <span class="step__ai-role-text"
-                    >An agentic system reads the full PDF, identifies sentences,
-                    sections, recommendations, and safety issues, and outputs
-                    them in a structured form the database can store. A human
-                    reviewer (see Step 7) verifies the result before it's relied
-                    on.</span
+                    >An agentic system reads the full PDF, identifies each
+                    sentence and section heading, and stores them in the
+                    database in a form that preserves document order and
+                    structure. A human reviewer (see Step 8) verifies the
+                    result before it's relied on.</span
                   >
                 </div>
               </div>
@@ -1374,7 +1800,7 @@
                     columns into the database alongside the data extracted from
                     the PDFs. Where a spreadsheet records an incident the
                     database doesn't have yet, that gap gets surfaced for review
-                    — never silently created.
+                    - never silently created.
                   </p>
                 </div>
                 <div class="step__ai-role">
@@ -1391,6 +1817,7 @@
             </div>
           </div>
         </article>
+
       </div>
 
       <article class="step step--ai" data-step="4" data-kind="ai">
@@ -1402,11 +1829,137 @@
                 <span class="step__tag step__tag--ai">AI-powered</span>
               </div>
               <h2 class="step__title">
-                Narrative entity extraction — recognising who and what each
+                Proving the AI pipeline works on USA reports
+              </h2>
+              <p class="step__summary">
+                Running the same ingestion approach against reports from the
+                USA's maritime accident investigators - broadening the sample
+                size the Data Study Group has to work from.
+              </p>
+            </div>
+            <span class="step__chev" aria-hidden="true">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M4 6l4 4 4-4" />
+              </svg>
+            </span>
+          </button>
+          <div class="step__body">
+            <div class="step__body-inner">
+              <div class="step__detail">
+                <p>
+                  Once the AI ingestion pipeline is in place, we point it at
+                  reports from the United States. That proves two things: the
+                  system isn't quietly tied to UK formatting conventions, and
+                  adding further countries later is a manageable piece of work
+                  rather than a fresh build.
+                </p>
+                <p>
+                  Sample size is the other reason this runs pre-DSG. 659 MAIB
+                  reports thins out quickly once split by vessel type and
+                  accident category; adding the USA gives the Data Study
+                  Group a broader base to draw patterns from.
+                </p>
+              </div>
+              <div class="step__ai-role">
+                <span class="step__ai-role-label">AI's role</span>
+                <span class="step__ai-role-text"
+                  >The same model that handles MAIB reports is pointed at the
+                  USA source. Its output is checked against a human-labelled
+                  test set so we can measure how well it transfers.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="roadmap__milestone">
+        <span class="roadmap__milestone-label">DSG goal</span>
+      </div>
+
+      <article class="step step--ai" data-step="5" data-kind="ai">
+        <div class="step__node">05</div>
+        <div class="step__card">
+          <button class="step__header" aria-expanded="false">
+            <div class="step__title-block">
+              <div class="step__meta">
+                <span class="step__tag step__tag--ai">AI-powered</span>
+              </div>
+              <h2 class="step__title">
+                Extracting recommendations and safety issues as structured
+                records
+              </h2>
+              <p class="step__summary">
+                Going beyond sentences to identify each recommendation and
+                safety issue as its own queryable record.
+              </p>
+            </div>
+            <span class="step__chev" aria-hidden="true">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M4 6l4 4 4-4" />
+              </svg>
+            </span>
+          </button>
+          <div class="step__body">
+            <div class="step__body-inner">
+              <div class="step__detail">
+                <p>
+                  Every MAIB report contains recommendations and identified
+                  safety issues. Once the sentences and structure are in the
+                  database from Step 2, we go further and pull each of these
+                  out as its own structured record - filterable, countable,
+                  and later linkable to the legislation and entities it
+                  touches.
+                </p>
+                <p>
+                  This is post-DSG because the DSG can already find
+                  recommendations and safety issues in the raw text.
+                  Structured extraction makes them queryable at scale for
+                  everyone who follows.
+                </p>
+              </div>
+              <div class="step__ai-role">
+                <span class="step__ai-role-label">AI's role</span>
+                <span class="step__ai-role-text"
+                  >The same model that extracted sentences identifies which of
+                  them are recommendations or safety issues and pulls them out
+                  as separate records with their own fields. Human reviewers
+                  confirm these in Step 8.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step step--ai" data-step="6" data-kind="ai">
+        <div class="step__node">06</div>
+        <div class="step__card">
+          <button class="step__header" aria-expanded="false">
+            <div class="step__title-block">
+              <div class="step__meta">
+                <span class="step__tag step__tag--ai">AI-powered</span>
+              </div>
+              <h2 class="step__title">
+                Narrative entity extraction - recognising who and what each
                 report is about
               </h2>
               <p class="step__summary">
-                The AI doesn't just store sentences — it tracks the named
+                The AI doesn't just store sentences - it tracks the named
                 actors, equipment, and locations through the whole document.
               </p>
             </div>
@@ -1430,7 +1983,7 @@
                   A typical incident report mentions a master, a chief officer,
                   one or more named vessels, the operating company, the port,
                   specific pieces of equipment. Today those references aren't
-                  tracked individually — they're just text.
+                  tracked individually - they're just text.
                 </p>
                 <p>
                   The AI will start recognising each as a named entity and
@@ -1447,7 +2000,7 @@
                   >The same language model that reads each report identifies the
                   people, vessels, organisations, locations, and equipment it
                   mentions, and links them to the sentences they appear in.
-                  Human reviewers confirm or correct these in Step 7.</span
+                  Human reviewers confirm or correct these in Step 8.</span
                 >
               </div>
             </div>
@@ -1455,12 +2008,8 @@
         </div>
       </article>
 
-      <div class="roadmap__milestone">
-        <span class="roadmap__milestone-label">DSG goal</span>
-      </div>
-
-      <article class="step step--ai" data-step="5" data-kind="ai">
-        <div class="step__node">05</div>
+      <article class="step step--ai" data-step="7" data-kind="ai">
+        <div class="step__node">07</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1471,7 +2020,7 @@
                 A search endpoint powered by vector embeddings
               </h2>
               <p class="step__summary">
-                An API endpoint — not a UI — that lets other systems query the
+                An API endpoint - not a UI - that lets other systems query the
                 corpus by meaning, using vector embeddings of every sentence,
                 entity, recommendation, and safety issue.
               </p>
@@ -1493,9 +2042,9 @@
             <div class="step__body-inner">
               <div class="step__detail">
                 <p>
-                  As part of this step, the content produced by steps 2–4 —
-                  sentences, recommendations, safety issues, and named entities
-                  — gets turned into vector embeddings, mathematical
+                  As part of this step, the content produced by steps 2, 5,
+                  and 6 - sentences, recommendations, safety issues, and named
+                  entities - gets turned into vector embeddings, mathematical
                   representations of meaning. Nothing is embedded before this
                   step; the embeddings only exist once this endpoint is built.
                 </p>
@@ -1503,7 +2052,7 @@
                   The endpoint queries those embeddings alongside standard
                   structured filters, so matches come back by meaning rather
                   than by exact wording. It isn't a search box researchers click
-                  into — it's a machine-facing API that other parts of the
+                  into - it's a machine-facing API that other parts of the
                   system call: the review tool, the plain-language assistant
                   later, and any partner integrations. If the ingestion has done
                   its job, the endpoint's results reflect that.
@@ -1512,9 +2061,9 @@
               <div class="step__ai-role">
                 <span class="step__ai-role-label">AI's role</span>
                 <span class="step__ai-role-text"
-                  >An embedding model turns each piece of extracted content
-                  into a vector as part of this step, and turns each incoming
-                  query into one the same way. The endpoint returns the closest
+                  >An embedding model turns each piece of extracted content into
+                  a vector as part of this step, and turns each incoming query
+                  into one the same way. The endpoint returns the closest
                   matches by vector similarity. The AI work sits inside the
                   endpoint; callers just hit an API.</span
                 >
@@ -1524,62 +2073,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="6" data-kind="ai">
-        <div class="step__node">06</div>
-        <div class="step__card">
-          <button class="step__header" aria-expanded="false">
-            <div class="step__title-block">
-              <div class="step__meta">
-                <span class="step__tag step__tag--ai">AI-powered</span>
-              </div>
-              <h2 class="step__title">
-                Proving the AI pipeline works on a second country's reports
-              </h2>
-              <p class="step__summary">
-                Testing the same ingestion approach against reports from another
-                maritime authority.
-              </p>
-            </div>
-            <span class="step__chev" aria-hidden="true">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M4 6l4 4 4-4" />
-              </svg>
-            </span>
-          </button>
-          <div class="step__body">
-            <div class="step__body-inner">
-              <div class="step__detail">
-                <p>
-                  Once the AI ingestion pipeline is in place, we put it to the
-                  test against reports from one additional country — either the
-                  United States or Germany. That proves two things: that the
-                  system isn't quietly tied to UK formatting conventions, and
-                  that adding further countries later is a manageable piece of
-                  work rather than a fresh build.
-                </p>
-              </div>
-              <div class="step__ai-role">
-                <span class="step__ai-role-label">AI's role</span>
-                <span class="step__ai-role-text"
-                  >The same model that handles MAIB reports is pointed at a new
-                  source. Its output is checked against a human-labelled test
-                  set so we can measure how well it transfers.</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <article class="step step--built" data-step="7" data-kind="built">
-        <div class="step__node">07</div>
+      <article class="step step--built" data-step="8" data-kind="built">
+        <div class="step__node">08</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1615,7 +2110,7 @@
                   before it's used for analysis or for engagement with
                   regulators. CHIRP staff get a clear, focused web tool for
                   reviewing each report's extracted entities, classifications,
-                  recommendations, and safety issues — accepting what's right,
+                  recommendations, and safety issues - accepting what's right,
                   fixing what's wrong, and flagging anything that's unclear.
                 </p>
                 <p>
@@ -1627,7 +2122,7 @@
               <div class="step__ai-role">
                 <span class="step__ai-role-label">Not AI</span>
                 <span class="step__ai-role-text"
-                  >A normal web app — forms, buttons, lists. The intelligence
+                  >A normal web app - forms, buttons, lists. The intelligence
                   here is the human reviewer, not the software.</span
                 >
               </div>
@@ -1636,8 +2131,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="8" data-kind="built">
-        <div class="step__node">08</div>
+      <article class="step step--built" data-step="9" data-kind="built">
+        <div class="step__node">09</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1671,7 +2166,7 @@
                   always trace why a record looks the way it does, tell at a
                   glance what's been human-verified versus AI-generated, and
                   demonstrate that quality controls are in place to anyone who
-                  needs to see them — researchers, regulators, or partners.
+                  needs to see them - researchers, regulators, or partners.
                 </p>
               </div>
               <div class="step__ai-role">
@@ -1687,8 +2182,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="9" data-kind="built">
-        <div class="step__node">09</div>
+      <article class="step step--built" data-step="10" data-kind="built">
+        <div class="step__node">10</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1738,8 +2233,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="10" data-kind="built">
-        <div class="step__node">10</div>
+      <article class="step step--built" data-step="11" data-kind="built">
+        <div class="step__node">11</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1772,12 +2267,12 @@
               <div class="step__detail">
                 <p>
                   As the corpus grows, blunt search becomes less useful. This
-                  step adds the ability to ask sharper questions — for example,
+                  step adds the ability to ask sharper questions - for example,
                   <em
                     >incidents involving fishing vessels in the North Sea
                     between 2020 and 2024 where loss of life occurred</em
                   >
-                  — without needing technical help to get them answered.
+                  - without needing technical help to get them answered.
                 </p>
               </div>
               <div class="step__ai-role">
@@ -1792,8 +2287,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="11" data-kind="ai">
-        <div class="step__node">11</div>
+      <article class="step step--ai" data-step="12" data-kind="ai">
+        <div class="step__node">12</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1804,7 +2299,7 @@
                 Finding incidents that are similar in meaning, not just in words
               </h2>
               <p class="step__summary">
-                AI-driven similarity matching — surfacing related cases even
+                AI-driven similarity matching - surfacing related cases even
                 when they don't share the same vocabulary.
               </p>
             </div>
@@ -1827,7 +2322,7 @@
                 <p>
                   Two reports might describe the same kind of incident using
                   completely different words. The system will start recognising
-                  that they're related — so a search for
+                  that they're related - so a search for
                   <em>"fatigue-related navigation error"</em> surfaces cases
                   that never used those exact words but describe the same
                   underlying situation.
@@ -1852,8 +2347,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="12" data-kind="ai">
-        <div class="step__node">12</div>
+      <article class="step step--ai" data-step="13" data-kind="ai">
+        <div class="step__node">13</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1904,7 +2399,7 @@
                   >The same ingestion pipeline reads the new document types.
                   Where a format has its own conventions, the model is adapted
                   with format-specific prompts. Human reviewers verify the
-                  output in Step 7.</span
+                  output in Step 8.</span
                 >
               </div>
             </div>
@@ -1912,8 +2407,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="13" data-kind="ai">
-        <div class="step__node">13</div>
+      <article class="step step--ai" data-step="14" data-kind="ai">
+        <div class="step__node">14</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1945,11 +2440,11 @@
             <div class="step__body-inner">
               <div class="step__detail">
                 <p>
-                  Maritime safety operates under a stack of regulations — the
+                  Maritime safety operates under a stack of regulations - the
                   Merchant Shipping Act, MARPOL, COLREGs, MCA codes, and many
                   more. Linking each report to the specific laws and codes it
                   relates to makes the corpus useful for regulatory analysis,
-                  advocacy, and policy work — letting researchers and CHIRP
+                  advocacy, and policy work - letting researchers and CHIRP
                   staff see what regulatory landscape each incident sits in.
                 </p>
               </div>
@@ -1966,8 +2461,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="14" data-kind="built">
-        <div class="step__node">14</div>
+      <article class="step step--built" data-step="15" data-kind="built">
+        <div class="step__node">15</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -1979,7 +2474,7 @@
               </h2>
               <p class="step__summary">
                 Logins, role-based access, API tokens, rate limiting, monitoring
-                — what's needed before the Alan Turing Institute and other
+                - what's needed before the Alan Turing Institute and other
                 partners can use the system.
               </p>
             </div>
@@ -2001,8 +2496,8 @@
               <div class="step__detail">
                 <p>
                   Up to here, the database has been an internal CHIRP and Tandem
-                  tool. Once external partners — the Alan Turing Institute data
-                  scientists, partner organisations, future researchers — need
+                  tool. Once external partners - the Alan Turing Institute data
+                  scientists, partner organisations, future researchers - need
                   access, the system has to be hardened to production standards.
                 </p>
                 <p>
@@ -2022,7 +2517,7 @@
               <div class="step__ai-role">
                 <span class="step__ai-role-label">Not AI</span>
                 <span class="step__ai-role-text"
-                  >Standard production engineering — the security, identity, and
+                  >Standard production engineering - the security, identity, and
                   operational floor any production system needs. None of it
                   involves AI.</span
                 >
@@ -2032,8 +2527,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="15" data-kind="built">
-        <div class="step__node">15</div>
+      <article class="step step--built" data-step="16" data-kind="built">
+        <div class="step__node">16</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -2069,14 +2564,14 @@
                 </p>
                 <p>
                   Designed for CHIRP Maritime, partner organisations, and
-                  stakeholders — not for data scientists.
+                  stakeholders - not for data scientists.
                 </p>
               </div>
               <div class="step__ai-role">
                 <span class="step__ai-role-label">Not AI</span>
                 <span class="step__ai-role-text"
                   >Standard data visualisation. The numbers shown are exactly
-                  what's in the database — no AI judgement layered on top.</span
+                  what's in the database - no AI judgement layered on top.</span
                 >
               </div>
             </div>
@@ -2084,8 +2579,8 @@
         </div>
       </article>
 
-      <article class="step step--built" data-step="16" data-kind="built">
-        <div class="step__node">16</div>
+      <article class="step step--built" data-step="17" data-kind="built">
+        <div class="step__node">17</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -2096,7 +2591,7 @@
                 Tracking what happened to recommendations
               </h2>
               <p class="step__summary">
-                Following recommendations over time — were they acted on? Did
+                Following recommendations over time - were they acted on? Did
                 similar ones recur?
               </p>
             </div>
@@ -2133,7 +2628,7 @@
                 <span class="step__ai-role-text"
                   >Structured tracking of recommendation status over time. The
                   "similar recommendations" links lean on the similarity work
-                  from Step 11, but the tracking itself is plain database
+                  from Step 12, but the tracking itself is plain database
                   logic.</span
                 >
               </div>
@@ -2142,8 +2637,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="17" data-kind="ai">
-        <div class="step__node">17</div>
+      <article class="step step--ai" data-step="18" data-kind="ai">
+        <div class="step__node">18</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -2154,7 +2649,7 @@
                 Asking the corpus questions in plain language
               </h2>
               <p class="step__summary">
-                An AI assistant that answers questions about the corpus — with
+                An AI assistant that answers questions about the corpus - with
                 every claim cited back to the underlying reports.
               </p>
             </div>
@@ -2186,7 +2681,7 @@
                 </p>
                 <p>
                   Nothing ungrounded. Every answer cited. The AI is summarising
-                  what's in the database — it can't invent things that aren't.
+                  what's in the database - it can't invent things that aren't.
                 </p>
               </div>
               <div class="step__ai-role">
@@ -2203,8 +2698,8 @@
         </div>
       </article>
 
-      <article class="step step--ai" data-step="18" data-kind="ai">
-        <div class="step__node">18</div>
+      <article class="step step--ai" data-step="19" data-kind="ai">
+        <div class="step__node">19</div>
         <div class="step__card">
           <button class="step__header" aria-expanded="false">
             <div class="step__title-block">
@@ -2213,7 +2708,7 @@
               </div>
               <h2 class="step__title">AI-assisted drafting for CHIRP staff</h2>
               <p class="step__summary">
-                Help with summarising, paraphrasing, and cross-referencing —
+                Help with summarising, paraphrasing, and cross-referencing -
                 always a draft, never a finished product.
               </p>
             </div>
@@ -2237,7 +2732,7 @@
                   A starting point, not a deliverable. When CHIRP staff are
                   writing reports, briefings, or follow-up communications, the
                   system can offer draft summaries, paraphrasing, and suggested
-                  cross-references — always positioned as a draft for the human
+                  cross-references - always positioned as a draft for the human
                   to refine.
                 </p>
                 <p>The AI drafts. The human decides.</p>
@@ -2260,113 +2755,6 @@
       </div>
     </main>
 
-    <section class="packages">
-      <div class="packages__inner">
-        <div class="packages__head">
-          <div class="packages__kicker">Delivery</div>
-          <h2>How this <span class="accent">breaks down</span>.</h2>
-          <p class="packages__lead">
-            The 18 steps cluster into seven packages. Each one is scoped,
-            quoted, and delivered as its own piece of work.
-          </p>
-        </div>
-
-        <div class="packages__grid">
-          <div class="package package--contracted">
-            <div class="package__row">
-              <span class="package__num">P1</span>
-              <span class="package__steps">Steps 1, 2, 3, 4, 5, 6</span>
-            </div>
-            <div class="package__title">Foundation</div>
-            <div class="package__desc">
-              The AI ingestion pipeline, the recognition of people, vessels, and
-              places in each report, the search interface, and validation
-              against a second country's reports.
-            </div>
-            <div class="package__status">Already contracted</div>
-          </div>
-
-          <div class="package">
-            <div class="package__row">
-              <span class="package__num">P2</span>
-              <span class="package__steps">Steps 7, 8, 9, 10</span>
-            </div>
-            <div class="package__title">Verification &amp; provenance</div>
-            <div class="package__desc">
-              The review tool for CHIRP staff, the audit trail behind every
-              change, original PDFs stored alongside the data, and richer
-              filtering.
-            </div>
-          </div>
-
-          <div class="package">
-            <div class="package__row">
-              <span class="package__num">P3</span>
-              <span class="package__steps">Step 11</span>
-            </div>
-            <div class="package__title">Semantic layer</div>
-            <div class="package__desc">
-              The AI similarity work — finding incidents that are related in
-              meaning, not just in keywords.
-            </div>
-          </div>
-
-          <div class="package">
-            <div class="package__row">
-              <span class="package__num">P4</span>
-              <span class="package__steps">Steps 12, 13</span>
-            </div>
-            <div class="package__title">Broader corpus &amp; legislation</div>
-            <div class="package__desc">
-              More report types and formats plus linking each finding to the
-              relevant legislation.
-            </div>
-          </div>
-
-          <div class="package package--essential">
-            <div class="package__row">
-              <span class="package__num">P5</span>
-              <span class="package__steps">Step 14</span>
-            </div>
-            <div class="package__title">Production hardening</div>
-            <div class="package__desc">
-              Authentication, role-based access, API tokens, rate limiting, and
-              monitoring — the security and operational floor needed before
-              external partners like the Alan Turing Institute interact with the
-              system.
-            </div>
-            <div class="package__status package__status--essential">
-              Essential
-            </div>
-          </div>
-
-          <div class="package">
-            <div class="package__row">
-              <span class="package__num">P6</span>
-              <span class="package__steps">Steps 15, 16</span>
-            </div>
-            <div class="package__title">Analytical frontend</div>
-            <div class="package__desc">
-              Maps, timelines, dashboards, and recommendation tracking — the
-              visual surface on top of a verified, hardened corpus.
-            </div>
-          </div>
-
-          <div class="package">
-            <div class="package__row">
-              <span class="package__num">P7</span>
-              <span class="package__steps">Steps 17, 18</span>
-            </div>
-            <div class="package__title">Conversational layer</div>
-            <div class="package__desc">
-              Plain-language questions about the corpus, and AI-assisted
-              drafting for CHIRP staff — both grounded in verified data.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <footer class="footer">
       <div class="footer__inner">
         <div class="footer__logo">
@@ -2383,6 +2771,7 @@
       function setOpen(step, open) {
         const body = step.querySelector(".step__body");
         const header = step.querySelector(".step__header");
+        if (!body || !header) return;
         if (open) {
           step.classList.add("is-open");
           header.setAttribute("aria-expanded", "true");
@@ -2395,6 +2784,7 @@
       }
 
       steps.forEach((step) => {
+        if (step.classList.contains("step--static")) return;
         const header = step.querySelector(".step__header");
         header.addEventListener("click", () => {
           setOpen(step, !step.classList.contains("is-open"));
