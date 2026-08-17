@@ -52,20 +52,35 @@ def inline(text):
     return re.sub(r"\x00(\d+)\x00", restore, text)
 
 
-SRC_TOKENS = ["Source", "MAIB", "Pipeline", "AI-U", "AI-V", "System", "UNCLEAR"]
+SRC_TOKENS = ["Source", "MAIB", "Pipeline",
+              "AI-U", "AI-V", "System", "UNCLEAR"]
 BADGE_CLASS = {"Source": "source", "MAIB": "maib", "Pipeline": "pipe",
                "AI-U": "aiu", "AI-V": "aiv", "System": "sys", "UNCLEAR": "unc"}
 
 
+def _leading_token(text):
+    return next((t for t in SRC_TOKENS
+                 if text == t or text.startswith(t + " ") or text.startswith(t + " -")), None)
+
+
 def source_cell(raw):
-    stripped = raw.strip()
-    for tok in SRC_TOKENS:
-        if stripped == tok or stripped.startswith(tok + " ") or stripped.startswith(tok + " -"):
-            rest = stripped[len(tok):]
-            badge = '<span class="src src--%s">%s</span>' % (
-                BADGE_CLASS[tok], tok)
-            return badge + (" " + inline(rest.strip()) if rest.strip() else "")
-    return inline(stripped)
+    """Badge the leading label(s); a slashed pair (Pipeline / AI-U) badges both."""
+    rest = raw.strip()
+    toks = []
+    while True:
+        tok = _leading_token(rest)
+        if tok is None:
+            break
+        toks.append(tok)
+        rest = rest[len(tok):].strip()
+        if not rest.startswith("/"):
+            break
+        rest = rest[1:].strip()
+    if not toks:
+        return inline(raw.strip())
+    badges = " / ".join('<span class="src src--%s">%s</span>' % (BADGE_CLASS[t], t)
+                        for t in toks)
+    return badges + (" " + inline(rest) if rest else "")
 
 
 def slug(text):
