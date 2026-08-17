@@ -408,6 +408,12 @@
         </tr>
       </table>
       <p>
+        A slashed label -
+        <span class="src src--pipe">Pipeline</span> /
+        <span class="src src--aiu">AI-U</span> - marks a column whose extractor
+        is deterministic with a model fallback.
+      </p>
+      <p>
         Two rules run throughout. <strong>Row-level verification:</strong> tables
         with an <code>is_verified</code> flag hold AI-generated content whose
         status varies per row - treat <code>is_verified = true</code> as AI-V,
@@ -526,8 +532,9 @@
 
       <h2>Row counts</h2>
       <p class="dim">
-        Populated tables carry data; the analysis and findings layer is empty in
-        the database (see above). Seeded vocabularies are loaded reference data.
+        As of 17 August 2026. Populated tables carry data; the analysis and
+        findings layer is empty in the database (see above). Seeded vocabularies
+        are loaded reference data.
       </p>
       <table class="counts">
         <thead><tr><th>Table</th><th>Rows</th></tr></thead>
