@@ -42,6 +42,7 @@
       .have { flex: 1; min-width: 220px; background: var(--bg-card); border: 1px solid var(--border); border-top: 4px solid var(--navy); border-radius: 10px; padding: 18px 20px; }
       .have:nth-child(2) { border-top-color: var(--orange); }
       .have:nth-child(3) { border-top-color: var(--navy-soft); }
+      .have:nth-child(4) { border-top-color: var(--text-soft); }
       .have__title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
       .have p { font-size: 14px; color: var(--text-soft); margin: 0; }
 
@@ -72,7 +73,8 @@
       .legend td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
       .legend td:first-child { white-space: nowrap; width: 1%; }
       .src { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.4px; border-radius: 4px; padding: 2px 8px; }
-      .src--maib { background: #e7eef7; color: #15375e; }
+      .src--source { background: #e7eef7; color: #15375e; }
+      .src--maib { background: #dde7f4; color: #0f2a4a; }
       .src--pipe { background: #e6f0ee; color: #1c5c50; }
       .src--aiu  { background: #fdeede; color: #b45f06; }
       .src--aiv  { background: #e4f3e7; color: #1f7a3d; }
@@ -133,12 +135,14 @@
         <p class="eyebrow">Alan Turing Institute · Data Study Group</p>
         <h1>The CHIRPdb dataset</h1>
         <p class="lede">
-          A structured database of UK Marine Accident Investigation Branch
-          (MAIB) maritime incident reports, hosted for you as a standard
-          PostgreSQL database. This page orients you: what you have, how it was
-          built, how the tables fit together, and - most importantly - how far
-          to trust each field. The <a href="dictionary.html">data dictionary</a>
-          is the per-column reference.
+          A structured database of maritime incident reports from two
+          investigating bodies - the UK Marine Accident Investigation Branch
+          (MAIB) and the US National Transportation Safety Board (NTSB) - hosted
+          for you as a standard PostgreSQL database. This page orients you: what
+          you have, how it was built, how the tables fit together, and - most
+          importantly - how far to trust each field. The
+          <a href="dictionary.html">data dictionary</a> is the per-column
+          reference.
         </p>
       </div>
     </div>
@@ -146,9 +150,10 @@
     <div class="container">
       <h2>What you have</h2>
       <p>
-        Read access to a running PostgreSQL database and the paperwork to make
-        sense of it - nothing else. No access to CHIRP's application, pipeline or
-        APIs; everything you need is in the three pieces below.
+        Read access to a running PostgreSQL database, the source report PDFs,
+        and the paperwork to make sense of both. No access to CHIRP's
+        application, pipeline or APIs; everything you need is in the four pieces
+        below.
       </p>
       <div class="haves">
         <div class="have">
@@ -172,6 +177,14 @@
             them, below.
           </p>
         </div>
+        <div class="have">
+          <div class="have__title">The source PDFs</div>
+          <p>
+            Every MAIB and NTSB report the database was built from, supplied as
+            zip archives through your IT service. Match a document row to its
+            file with <code>documents.filename</code>.
+          </p>
+        </div>
       </div>
 
       <h2>Working with the database</h2>
@@ -190,14 +203,20 @@
 
       <h2>What the dataset is</h2>
       <p>
-        Each published MAIB report (a PDF) is broken into sentence-level text
-        plus the report's own stated incident particulars, and is linked to
-        structured incident data - occurrences, vessels, affected persons -
-        drawn from the MAIB Data Portal spreadsheets. An analysis pipeline then
-        extracts findings from the text: safety issues, recommendations, named
-        entities, and causal-factor classifications from CHIRP's SHIELD
-        taxonomy. Every extracted finding is traceable back to the exact
-        sentences of the source report.
+        Each published report (a PDF, from MAIB or NTSB) is broken into
+        sentence-level text plus the report's own stated incident particulars.
+        MAIB reports are additionally linked to structured incident data -
+        occurrences, vessels, affected persons - drawn from the MAIB Data Portal
+        spreadsheets; NTSB has no equivalent spreadsheet source, so that layer
+        is MAIB-only. An analysis pipeline then extracts findings from the text:
+        safety issues, recommendations, named entities, and causal-factor
+        classifications from CHIRP's SHIELD taxonomy. Every extracted finding is
+        traceable back to the exact sentences of the source report.
+      </p>
+      <p>
+        <code>documents.jurisdiction</code> separates the two corpora:
+        <code>'UK'</code> for the 796 MAIB reports, <code>'US'</code> for the
+        456 NTSB reports - 1,252 documents in all.
       </p>
 
       <h2>What is actually populated</h2>
@@ -214,15 +233,17 @@
               <strong>Reports &amp; text</strong> - <code>documents</code>,
               <code>authors</code>, <code>sentences</code>, and the
               report-derived <code>document_particulars</code> /
-              <code>document_vessels</code>.
+              <code>document_vessels</code>. Both corpora, split by
+              <code>documents.jurisdiction</code>.
             </li>
             <li>
-              <strong>Spreadsheet incident data</strong> -
+              <strong>Spreadsheet incident data (MAIB only)</strong> -
               <code>occurrences</code>, <code>vessels</code>,
               <code>affected_persons</code>, <code>affected_persons_ppe</code>,
               the report&harr;occurrence link on
               <code>documents.occurrence_id</code>, and the vocabularies
-              <code>taxonomy_terms</code> / <code>ppe_items</code>.
+              <code>taxonomy_terms</code> / <code>ppe_items</code>. No NTSB
+              document carries an <code>occurrence_id</code>.
             </li>
             <li>
               <strong>Seeded vocabularies</strong> - <code>shield_codes</code> /
@@ -270,10 +291,13 @@
           <span class="flow__num">Stage 1</span>
           <div class="flow__title">Ingest</div>
           <p>
-            An MAIB report PDF is registered as a <code>documents</code> row and
-            each page is rasterised to an image; the report's own stated facts go
-            to <code>document_particulars</code> and
-            <code>document_vessels</code>.
+            A report PDF - MAIB or NTSB - is registered as a
+            <code>documents</code> row and each page is rasterised to an image;
+            the report's own stated facts go to
+            <code>document_particulars</code> and
+            <code>document_vessels</code>, and
+            <code>documents.jurisdiction</code> records which corpus it belongs
+            to.
           </p>
         </div>
         <div class="flow__step">
@@ -293,8 +317,9 @@
           <p>
             MAIB Data Portal data is loaded independently:
             <code>occurrences → vessels → affected_persons</code>, classified
-            via <code>taxonomy_terms</code>, linked to reports through
-            <code>documents.occurrence_id</code>.
+            via <code>taxonomy_terms</code>, linked to MAIB reports through
+            <code>documents.occurrence_id</code>. <em>(MAIB only - NTSB
+            publishes no comparable dataset.)</em>
           </p>
         </div>
         <div class="flow__step">
@@ -312,11 +337,11 @@
       <p>
         Two incident-data sources are kept apart and linked, not merged: the
         report PDF's own account lives in <code>document_particulars</code> /
-        <code>document_vessels</code>; the MAIB Data Portal spreadsheet's account
-        in <code>occurrences</code> / <code>vessels</code> /
-        <code>affected_persons</code>; the two join through a nullable
-        <code>documents.occurrence_id</code> FK - several reports can point at
-        one occurrence (e.g. an interim then a final). Tree-shaped
+        <code>document_vessels</code> (both corpora); the MAIB Data Portal
+        spreadsheet's account in <code>occurrences</code> / <code>vessels</code> /
+        <code>affected_persons</code> (MAIB only); the two join through a
+        nullable <code>documents.occurrence_id</code> FK - several reports can
+        point at one occurrence (e.g. an interim then a final). Tree-shaped
         classifications (event type, ship type, place on board, injury,
         deviation) are normalised into <code>taxonomy_terms</code>. The full
         entity-relationship diagram:
@@ -351,14 +376,19 @@
       <h2>Where each value comes from - and how far to trust it</h2>
       <p>
         This is the point of the dictionary. The database shows you structure;
-        it cannot tell you which values are MAIB fact, which a model produced,
+        it cannot tell you which values are source fact, which a model produced,
         and which a human has since confirmed. Every column is labelled with one
-        of:
+        of the five below - the first two both mean "the source said so", and
+        differ only in which source: a report PDF, or the MAIB spreadsheet.
       </p>
       <table class="legend">
         <tr>
+          <td><span class="src src--source">Source</span></td>
+          <td>Source-document field - from the report PDF, MAIB or NTSB (content or file metadata).</td>
+        </tr>
+        <tr>
           <td><span class="src src--maib">MAIB</span></td>
-          <td>MAIB-sourced - from the report PDF (content or file metadata) or the MAIB Data Portal spreadsheet.</td>
+          <td>MAIB Data Portal field - from the MAIB spreadsheet extract, on the tables it feeds (<code>occurrences</code>, <code>vessels</code>, <code>affected_persons</code> and their vocabularies). UK incidents only.</td>
         </tr>
         <tr>
           <td><span class="src src--pipe">Pipeline</span></td>
@@ -378,6 +408,12 @@
         </tr>
       </table>
       <p>
+        A slashed label -
+        <span class="src src--pipe">Pipeline</span> /
+        <span class="src src--aiu">AI-U</span> - marks a column whose extractor
+        is deterministic with a model fallback.
+      </p>
+      <p>
         Two rules run throughout. <strong>Row-level verification:</strong> tables
         with an <code>is_verified</code> flag hold AI-generated content whose
         status varies per row - treat <code>is_verified = true</code> as AI-V,
@@ -388,7 +424,8 @@
       </p>
       <div class="callout">
         Practical upshot: the analysis layer is empty here, so nearly all
-        content is <span class="src src--maib">MAIB</span> or
+        content is <span class="src src--source">Source</span>,
+        <span class="src src--maib">MAIB</span> or
         <span class="src src--pipe">Pipeline</span>. Where you do see
         <span class="src src--aiu">AI-U</span> - the sentence text - remember it
         is a vision model's reading of the page image, not a byte-exact copy of
@@ -399,15 +436,30 @@
       <p>Read these before drawing conclusions from the data.</p>
       <ul>
         <li>
-          <strong>UK jurisdiction only.</strong> All reports come from the UK
-          MAIB - patterns describe UK-flagged vessels and UK waters, not global
-          shipping.
+          <strong>Two jurisdictions, not a global sample.</strong> Reports come
+          from the UK MAIB (796 documents, published 2015-2026) and the US NTSB
+          (456 documents, 2010-2026) - patterns describe UK and US waters and
+          the vessels those two bodies investigate, not global shipping. Split
+          or control by <code>documents.jurisdiction</code>: the corpora differ
+          in body, report format, date span and field coverage, so pooling them
+          silently mixes populations.
         </li>
         <li>
-          <strong>MAIB reporting thresholds.</strong> Only accidents meeting
-          MAIB's criteria are investigated. This is not a random sample; minor
-          and unreported occurrences are absent by construction, so incidence
-          rates cannot be estimated from it.
+          <strong>Different reporting thresholds either side.</strong> Each body
+          investigates only accidents meeting its own criteria, and those
+          criteria differ. This is not a random sample; minor and unreported
+          occurrences are absent by construction, so incidence rates cannot be
+          estimated from it, and MAIB/NTSB counts are not comparable as rates.
+        </li>
+        <li>
+          <strong>Spreadsheet incident data is MAIB-only, and sparsely
+          linked.</strong> <code>occurrences</code>, <code>vessels</code>,
+          <code>affected_persons</code> and <code>affected_persons_ppe</code>
+          come from the MAIB Data Portal and cover UK incidents alone; no NTSB
+          document has an <code>occurrence_id</code>. Even on the MAIB side the
+          report&harr;occurrence link is partial: 58 of the 796 MAIB documents
+          carry one. Treat the occurrence tables as an incident dataset in their
+          own right, not as an enrichment of every report.
         </li>
         <li>
           <strong>Spreadsheet coverage window.</strong> The MAIB Data Portal
@@ -416,24 +468,57 @@
           matching spreadsheet occurrence.
         </li>
         <li>
+          <strong>Report-stated particulars are sparser for NTSB.</strong>
+          <code>document_particulars</code> and <code>document_vessels</code>
+          exist for every document, but fields are filled only where the report
+          states them, and NTSB reports state fewer. Of 456 NTSB / 796 MAIB
+          rows: <code>accident_date</code> 198 / 796,
+          <code>accident_location</code> 208 / 731, <code>severity</code>
+          71 / 305, <code>accident_type</code> 130 / 279,
+          <code>loss_of_life</code> 33 / 183;
+          <code>document_vessels.port_of_origin</code> and
+          <code>destination</code> are empty for NTSB (286 / 262 for MAIB),
+          while <code>vessel_name</code> is better covered for NTSB (400 / 299).
+        </li>
+        <li>
+          <strong><code>authors</code> is not canonicalised.</strong> Its 22
+          rows carry PDF-metadata name variants of the two bodies
+          (<code>MAIB</code>, <code>Marine Accident Investigation Branch</code>,
+          <code>www.maib.gov.uk</code>; <code>NTSB</code>,
+          <code>National Transportation Safety Board</code>, the typo
+          <code>NSTB</code>) plus individual people named as a PDF's author. Use
+          <code>documents.jurisdiction</code> to identify the publishing body,
+          not <code>authors.name</code>.
+        </li>
+        <li>
           <strong>Text extraction is AI-driven and imperfect.</strong> Each page
           was rendered to an image and read by a vision LLM, with deterministic
           passes on top. Expect residual artefacts: merged/split sentences,
           headers absorbed into text, occasional transcription slips, and -
           where <code>documents.extraction_fallback = true</code> - a degraded
-          result for some pages.
+          result for some pages. 201 documents are flagged that way (182 MAIB,
+          19 NTSB).
         </li>
         <li>
           <strong>Sentence text is AI-produced, not byte-exact.</strong> It is
           the model's reading of the page image - a faithful-but-not-verbatim
           transcription. <code>status = 'verified'</code> documents are
-          analyst-confirmed; <code>extracted</code> ones are not.
+          analyst-confirmed; <code>extracted</code> ones are not. As delivered
+          all 1,252 documents sit at <code>extracted</code> - none has been
+          analyst-verified. The source PDFs ship with the dataset, so anything
+          that matters can be checked against the original page.
         </li>
         <li>
           <strong>Mixed categorical vocabularies.</strong> Report-stated fields
           (<code>document_particulars.accident_type</code> / <code>severity</code>,
           <code>document_vessels.vessel_type</code>) are free text - normalise
-          before counting. Spreadsheet classifications are normalised into
+          before counting, and note MAIB and NTSB word them differently, so the
+          free text is doubly heterogeneous. Identifiers differ too:
+          <code>publication_number</code> is a MAIB <code>Publication_No</code>
+          for UK reports and an NTSB report number (<code>MAB-</code>,
+          <code>MIR-</code>, <code>MAR-</code>) for US ones, and
+          <code>document_type</code> is a GOV.UK publication class that is null
+          for every NTSB document. Spreadsheet classifications are normalised into
           <code>taxonomy_terms</code> and referenced by <code>*_term_id</code>.
           Coordinates are verbatim text, not validated geo types.
         </li>
@@ -441,29 +526,30 @@
 
       <h2>What is not included</h2>
       <ul>
-        <li>The original MAIB PDF files (only extracted text and the source <code>url</code> per document).</li>
         <li>Vector embeddings - the schema has no embedding columns; nothing pgvector-dependent is present.</li>
         <li>Pipeline observability (LLM traces, extraction logs) and any application authentication data.</li>
       </ul>
 
       <h2>Row counts</h2>
       <p class="dim">
-        Populated tables carry data; the analysis and findings layer is empty in
-        the database (see above). Seeded vocabularies are loaded reference data.
+        As of 17 August 2026. Populated tables carry data; the analysis and
+        findings layer is empty in the database (see above). Seeded vocabularies
+        are loaded reference data.
       </p>
       <table class="counts">
         <thead><tr><th>Table</th><th>Rows</th></tr></thead>
         <tbody>
-          <tr><td>documents</td><td>796</td></tr>
-          <tr><td>document_particulars</td><td>796</td></tr>
-          <tr><td>document_vessels</td><td>796</td></tr>
-          <tr><td>occurrences</td><td>9,063</td></tr>
-          <tr><td>vessels</td><td>9,830</td></tr>
-          <tr><td>affected_persons</td><td>3,040</td></tr>
-          <tr><td>affected_persons_ppe</td><td>924</td></tr>
+          <tr><td>documents</td><td>1,252 (796 MAIB, 456 NTSB)</td></tr>
+          <tr><td>document_particulars</td><td>1,252</td></tr>
+          <tr><td>document_vessels</td><td>1,252</td></tr>
+          <tr><td>authors</td><td>22</td></tr>
+          <tr><td>occurrences</td><td>9,063 (MAIB only)</td></tr>
+          <tr><td>vessels</td><td>9,830 (MAIB only)</td></tr>
+          <tr><td>affected_persons</td><td>3,040 (MAIB only)</td></tr>
+          <tr><td>affected_persons_ppe</td><td>924 (MAIB only)</td></tr>
           <tr><td>taxonomy_terms</td><td>410</td></tr>
           <tr><td>ppe_items</td><td>9</td></tr>
-          <tr><td>sentences</td><td>≈293,400</td></tr>
+          <tr><td>sentences</td><td>341,057 (293,454 MAIB, 47,603 NTSB)</td></tr>
           <tr><td>chunks · analysis · findings · entities</td><td>0 (empty)</td></tr>
           <tr><td>shield_codes</td><td>96 (seeded)</td></tr>
           <tr><td>shield_code_categories</td><td>20 (seeded)</td></tr>
