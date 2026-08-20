@@ -210,7 +210,8 @@
         spreadsheets; NTSB has no equivalent spreadsheet source, so that layer
         is MAIB-only. An analysis pipeline then extracts findings from the text:
         safety issues, recommendations, named entities, and causal-factor
-        classifications from CHIRP's SHIELD taxonomy. Every extracted finding is
+        classifications from CHIRP's SHIELD taxonomy - 113 factors in 24
+        categories under four layers. Every extracted finding is
         traceable back to the exact sentences of the source report.
       </p>
       <p>
@@ -247,7 +248,8 @@
             </li>
             <li>
               <strong>Seeded vocabularies</strong> - <code>shield_codes</code> /
-              <code>shield_code_categories</code> (full SHIELD taxonomy) and
+              <code>shield_code_categories</code> / <code>shield_layers</code>
+              (full SHIELD taxonomy, all three tiers) and
               <code>narrative_entity_types</code>. Loaded but not yet referenced.
             </li>
           </ul>
@@ -551,8 +553,9 @@
           <tr><td>ppe_items</td><td>9</td></tr>
           <tr><td>sentences</td><td>341,057 (293,454 MAIB, 47,603 NTSB)</td></tr>
           <tr><td>chunks · analysis · findings · entities</td><td>0 (empty)</td></tr>
-          <tr><td>shield_codes</td><td>96 (seeded)</td></tr>
-          <tr><td>shield_code_categories</td><td>20 (seeded)</td></tr>
+          <tr><td>shield_codes</td><td>113 (seeded)</td></tr>
+          <tr><td>shield_code_categories</td><td>24 (seeded)</td></tr>
+          <tr><td>shield_layers</td><td>4 (seeded)</td></tr>
           <tr><td>narrative_entity_types</td><td>5 (seeded)</td></tr>
         </tbody>
       </table>
