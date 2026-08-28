@@ -88,27 +88,30 @@ def slug(text):
 
 
 # ---- SHIELD iceberg diagram ------------------------------------------------
-# Seeded taxonomy: 3 groups, 20 categories (name, code-count), rendered as an
+# Seeded taxonomy: 4 groups, 24 categories (name, code-count), rendered as an
 # iceberg - acts at the tip, preconditions below the waterline, leadership deep.
 _ICEBERG_TIERS = [
-    ("tip", "1 / 3", "A &middot; ACTS", "Active failures - the visible tip", [
+    ("tip", "1 / 4", "A &middot; ACTS", "Active failures - the visible tip", [
         ("Perception", 4), ("Planning &amp; Decision Making", 3),
         ("Intentional Deviation", 4), ("Response Execution", 6), ("Communicating", 2)]),
-    ("mid", "2 / 3", "P &middot; PRECONDITIONS", "Conditions that set the stage - below the waterline", [
+    ("mid", "2 / 4", "P &middot; PRECONDITIONS", "Conditions that set the stage - below the waterline", [
         ("Physical Environment", 9), ("Equipment &amp; Workplace", 6),
         ("Interpersonal Communication", 4), ("Team / Group", 6), ("Misperception", 4),
         ("Awareness", 7), ("Memory", 3), ("Mental Workload",
                                           4), ("Personal Factors", 7),
         ("Physiological Condition", 5), ("Drugs &amp; Nutrition", 3),
         ("Competence, Skills &amp; Capability", 4)]),
-    ("deep", "3 / 3", "L &middot; OPERATIONAL LEADERSHIP", "Leadership decisions affecting safety - deepest", [
+    ("deep", "3 / 4", "L &middot; OPERATIONAL LEADERSHIP", "Leadership decisions affecting safety - deeper still", [
         ("Personnel Leadership", 4), ("Operations Planning", 6), ("Task Leadership", 5)]),
+    ("floor", "4 / 4", "O &middot; ORGANISATION", "Decisions and policies at organisational level - the base", [
+        ("Culture", 2), ("Safety Management", 5), ("Resources", 6),
+        ("Economy &amp; Business", 4)]),
 ]
 
 
 def _build_iceberg():
     parts = ['<div class="iceberg" role="img" aria-label="SHIELD taxonomy iceberg: '
-             'Acts above the waterline, Preconditions and Operational Leadership below.">']
+             'Acts above the waterline, Preconditions, Operational Leadership and Organisation below.">']
     for cls, frac, title, note, cats in _ICEBERG_TIERS:
         parts.append('<div class="ice ice--%s">' % cls)
         parts.append('<div class="ice__bar"><span class="ice__frac">%s</span>'
@@ -317,6 +320,7 @@ PAGE = """<!doctype html>
       .ice { padding: 14px 16px 18px; }
       .ice--tip { background: linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0.05)); }
       .ice--mid { border-top: 2px solid rgba(255,255,255,0.65); box-shadow: inset 0 3px 10px rgba(0,0,0,0.15); }
+      .ice--floor .ice__cat { background: rgba(10,30,58,0.72); }
       .ice__bar { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; background: rgba(255,255,255,0.92); border-radius: 7px; padding: 8px 14px; margin-bottom: 12px; }
       .ice__frac { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12px; font-weight: 700; color: var(--text-mute); }
       .ice__title { font-size: 15px; font-weight: 800; letter-spacing: 0.02em; color: var(--navy-deep); }
