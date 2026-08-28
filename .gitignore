@@ -29,3 +29,7 @@ yarn-error.log*
 *.log
 .cache/
 .tmp/
+
+# Secrets - Solidtime API token
+.env
+.env.local

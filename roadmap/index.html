@@ -2246,7 +2246,8 @@
               </h2>
               <p class="step__summary">
                 Richer filtering across vessel type, date, outcome, country,
-                classification, and more.
+                classification, and more - added as parameters on the API
+                routes, not a screen or a command-line tool.
               </p>
             </div>
             <span class="step__chev" aria-hidden="true">
@@ -2272,14 +2273,24 @@
                     >incidents involving fishing vessels in the North Sea
                     between 2020 and 2024 where loss of life occurred</em
                   >
-                  - without needing technical help to get them answered.
+                  - expressed as filters on the existing API routes rather than
+                  as free-text search.
+                </p>
+                <p>
+                  Nothing visual ships here, and there is no command-line tool.
+                  The work is entirely server-side: new filter parameters on the
+                  endpoints introduced in step 7, and the query support behind
+                  them. The callers are other systems - the review tool, the
+                  plain-language assistant, partner integrations. Researchers
+                  only get hold of these filters once step 16 puts a visual
+                  application in front of them.
                 </p>
               </div>
               <div class="step__ai-role">
                 <span class="step__ai-role-label">Not AI</span>
                 <span class="step__ai-role-text"
-                  >Database filtering. Same input, same output, every
-                  time.</span
+                  >Database filtering behind an API route. Same input, same
+                  output, every time.</span
                 >
               </div>
             </div>
