@@ -171,6 +171,16 @@ def build():
     tasks = api("/v1/organizations/%s/tasks" % org)
     by_id = {t["id"]: t for t in tasks}
 
+    # A task renamed or deleted in Solidtime would otherwise leave its phase
+    # silently reading zero on a client-facing page. Fail loudly instead.
+    known = {t["name"].strip().lower() for t in tasks
+             if not project or t.get("project_id") == project["id"]}
+    missing = [name for phase in PHASES for name in phase["tasks"]
+               if name.strip().lower() not in known]
+    if missing:
+        sys.exit("Configured tasks not found in Solidtime: %s\nRun --list to "
+                 "see the current names." % ", ".join(repr(m) for m in missing))
+
     params = {"group": "task"}
     if project:
         params["project_ids"] = [project["id"]]
