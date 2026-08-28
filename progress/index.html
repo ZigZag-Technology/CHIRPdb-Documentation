@@ -718,7 +718,7 @@
           <div class="phase__label">
             Phase 1
             <span class="phase__name">P1 · Foundation</span>
-            <span class="phase__tag phase__tag--live">In progress</span>
+            <span class="phase__tag" id="p1Tag"></span>
           </div>
           <div class="phase__stats" id="p1Stats"></div>
           <div class="phase__bar">
@@ -734,11 +734,11 @@
           <div class="phase__label">
             Phase 2
             <span class="phase__name">P2 · Verification &amp; provenance</span>
-            <span class="phase__tag phase__tag--pending">Not started</span>
+            <span class="phase__tag" id="p2Tag"></span>
           </div>
-          <div class="phase__stats"><strong>0</strong> / 23 days</div>
+          <div class="phase__stats" id="p2Stats"></div>
           <div class="phase__bar">
-            <div class="phase__bar-fill" style="width: 0"></div>
+            <div class="phase__bar-fill" id="p2Fill" style="width: 0"></div>
           </div>
         </div>
 
@@ -746,11 +746,11 @@
           <div class="phase__label">
             Phase 3
             <span class="phase__name">P3 · Semantic layer</span>
-            <span class="phase__tag phase__tag--pending">Not started</span>
+            <span class="phase__tag" id="p3Tag"></span>
           </div>
-          <div class="phase__stats"><strong>0</strong> / 10 days</div>
+          <div class="phase__stats" id="p3Stats"></div>
           <div class="phase__bar">
-            <div class="phase__bar-fill" style="width: 0"></div>
+            <div class="phase__bar-fill" id="p3Fill" style="width: 0"></div>
           </div>
         </div>
 
@@ -758,11 +758,11 @@
           <div class="phase__label">
             Phase 5
             <span class="phase__name">P5 · Production hardening</span>
-            <span class="phase__tag phase__tag--pending">Not started</span>
+            <span class="phase__tag" id="p5Tag"></span>
           </div>
-          <div class="phase__stats"><strong>0</strong> / 15 days</div>
+          <div class="phase__stats" id="p5Stats"></div>
           <div class="phase__bar">
-            <div class="phase__bar-fill" style="width: 0"></div>
+            <div class="phase__bar-fill" id="p5Fill" style="width: 0"></div>
           </div>
         </div>
       </div>
@@ -810,6 +810,9 @@
       // Do not edit by hand - re-run the script instead.
       const LAST_UPDATED = "28 Aug 2026";
       const P1_ELAPSED = 50.5;
+      const P2_ELAPSED = 0;
+      const P3_ELAPSED = 0.23;
+      const P5_ELAPSED = 0;
       // --- END gen_progress ---
       const P2_DAYS = 23;
       const P3_DAYS = 10;
@@ -823,12 +826,21 @@
           : rounded.toFixed(2).replace(/0$/, "").replace(/\.$/, "");
       };
 
+      // One row per post-MVP phase. Elapsed values come from the generated
+      // block above; allocations are contractual and stay hand-set.
+      const PHASES = [
+        { key: "p1", alloc: PHASE1_ALLOC, elapsed: P1_ELAPSED },
+        { key: "p2", alloc: P2_DAYS, elapsed: P2_ELAPSED },
+        { key: "p3", alloc: P3_DAYS, elapsed: P3_ELAPSED },
+        { key: "p5", alloc: P5_DAYS, elapsed: P5_ELAPSED },
+      ];
+      const TOTAL_ELAPSED = PHASES.reduce((sum, p) => sum + p.elapsed, 0);
+
       const phase1Pct = (P1_ELAPSED / PHASE1_ALLOC) * 100;
       // A phase can overrun its allocation - the number keeps climbing past
       // 100% but the bar stops at the end of its track.
-      const phase1BarPct = Math.min(100, phase1Pct);
       const phase1Over = P1_ELAPSED > PHASE1_ALLOC;
-      const overallPct = (P1_ELAPSED / TOTAL_POST_MVP) * 100;
+      const overallPct = (TOTAL_ELAPSED / TOTAL_POST_MVP) * 100;
       const phase1Remaining = PHASE1_ALLOC - P1_ELAPSED;
 
       document.getElementById("tileP1").innerHTML =
@@ -843,7 +855,7 @@
 
       document.getElementById("timelineSub").textContent =
         "Day " +
-        fmt(P1_ELAPSED) +
+        fmt(TOTAL_ELAPSED) +
         " of " +
         TOTAL_POST_MVP +
         " days under Funding 2. MVP was delivered under separate Funding 1.";
@@ -867,41 +879,66 @@
         );
         el.style.flexBasis = (s.days / TOTAL_POST_MVP) * 100 + "%";
       });
-      document
-        .querySelector('.timeline__seg[data-key="p1"]')
-        .style.setProperty("--live-fill", phase1BarPct + "%");
-
       // MVP fills its own bar
       document.querySelector('.timeline__seg[data-key="mvp"]').style.flexBasis =
         "100%";
 
       // Funding 2 section note
       document.getElementById("funding2Note").textContent =
-        "Day " + fmt(P1_ELAPSED) + " / 83";
+        "Day " + fmt(TOTAL_ELAPSED) + " / 83";
 
-      // Phase 1 row stats
-      document.getElementById("p1Stats").innerHTML =
-        "<strong>" +
-        fmt(P1_ELAPSED) +
-        "</strong> / " +
-        PHASE1_ALLOC +
-        " days · " +
-        fmt(phase1Pct) +
-        "%";
+      // Phase rows: stats, status tag and bar, derived from tracked time
+      PHASES.forEach((phase) => {
+        const pct = (phase.elapsed / phase.alloc) * 100;
+        const done = phase.elapsed >= phase.alloc;
+        const started = phase.elapsed > 0;
+
+        document.getElementById(phase.key + "Stats").innerHTML =
+          "<strong>" +
+          fmt(phase.elapsed) +
+          "</strong> / " +
+          phase.alloc +
+          " days · " +
+          fmt(pct) +
+          "%";
+
+        const tag = document.getElementById(phase.key + "Tag");
+        tag.textContent = started ? "In progress" : "Not started";
+        tag.className =
+          "phase__tag phase__tag--" + (started ? "live" : "pending");
+
+        const fill = document.getElementById(phase.key + "Fill");
+        fill.className =
+          "phase__bar-fill" + (started ? " phase__bar-fill--live" : "");
+        fill.dataset.pct = Math.min(100, pct);
+
+        // Timeline segment tracks the same state
+        const seg = document.querySelector(
+          '.timeline__seg[data-key="' + phase.key + '"]',
+        );
+        if (seg) {
+          seg.className =
+            "timeline__seg timeline__seg--" + (started ? "live" : "pending");
+          seg.style.setProperty("--live-fill", Math.min(100, pct) + "%");
+        }
+      });
 
       // Overall note
       document.getElementById("overallNote").innerHTML =
         "<strong>" +
-        fmt(P1_ELAPSED) +
+        fmt(TOTAL_ELAPSED) +
         "</strong> days elapsed · <strong>" +
-        fmt(TOTAL_POST_MVP - P1_ELAPSED) +
+        fmt(TOTAL_POST_MVP - TOTAL_ELAPSED) +
         "</strong> days remaining";
 
       document.getElementById("lastUpdated").textContent = LAST_UPDATED;
 
       // Fill animations
       requestAnimationFrame(() => {
-        document.getElementById("p1Fill").style.width = phase1BarPct + "%";
+        PHASES.forEach((phase) => {
+          const fill = document.getElementById(phase.key + "Fill");
+          fill.style.width = fill.dataset.pct + "%";
+        });
         document.getElementById("overallFill").style.width = overallPct + "%";
       });
 
