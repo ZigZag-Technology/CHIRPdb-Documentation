@@ -54,7 +54,7 @@ PHASES = [
     {
         "key": "p1",
         "label": "Phase 1",
-        "alloc_days": 35,
+        "alloc_days": 50,
         "tasks": ["CHIRPdb - Phase 1"],
     },
     {

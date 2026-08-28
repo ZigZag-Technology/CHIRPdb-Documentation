@@ -605,7 +605,7 @@
         <div class="tile">
           <span class="tile__status">Not started</span>
           <div class="tile__label">Remaining · P2 + P3 + P5</div>
-          <div class="tile__value">48<span class="unit">days</span></div>
+          <div class="tile__value" id="tileRemaining"></div>
           <div class="tile__sub">After Phase 1 wraps</div>
         </div>
       </div>
@@ -613,7 +613,9 @@
       <div class="card">
         <div class="card__head">
           <div class="card__kicker">Post-MVP timeline</div>
-          <h2 class="card__title">Where we are in the 83-day plan</h2>
+          <h2 class="card__title">
+            Where we are in the <span data-total-days>83</span>-day plan
+          </h2>
           <p class="card__sub" id="timelineSub"></p>
         </div>
 
@@ -640,7 +642,7 @@
               <div class="timeline__section-head">
                 <span
                   class="timeline__section-label timeline__section-label--live"
-                  >Funding 2 · 83 days</span
+                  >Funding 2 · <span data-total-days>83</span> days</span
                 >
                 <span class="timeline__section-note" id="funding2Note"></span>
               </div>
@@ -770,7 +772,9 @@
       <div class="card">
         <div class="card__head">
           <div class="card__kicker">Overall (post-MVP)</div>
-          <h2 class="card__title">Progress across the 83-day budget</h2>
+          <h2 class="card__title">
+            Progress across the <span data-total-days>83</span>-day budget
+          </h2>
         </div>
         <div class="headline">
           <div>
@@ -788,7 +792,7 @@
         </div>
         <div class="overall-bar__note">
           <span>Day 0</span>
-          <span>Day 83</span>
+          <span>Day <span data-total-days>83</span></span>
         </div>
       </div>
     </main>
@@ -804,7 +808,7 @@
 
     <script>
       const MVP_DAYS = 19.5;
-      const PHASE1_ALLOC = 35;
+      const PHASE1_ALLOC = 50;
       // --- BEGIN gen_progress ---
       // Generated from Solidtime by scripts/gen_progress.py.
       // Do not edit by hand - re-run the script instead.
@@ -812,7 +816,7 @@
       const P1_ELAPSED = 50.5;
       const P2_ELAPSED = 0;
       const P3_ELAPSED = 0;
-      const P5_ELAPSED = 0.03;
+      const P5_ELAPSED = 0.23;
       // --- END gen_progress ---
       const P2_DAYS = 23;
       const P3_DAYS = 10;
@@ -835,6 +839,14 @@
         { key: "p5", alloc: P5_DAYS, elapsed: P5_ELAPSED },
       ];
       const TOTAL_ELAPSED = PHASES.reduce((sum, p) => sum + p.elapsed, 0);
+
+      // Allocations appear in body copy and segment labels too - derive them
+      // so a budget change stays a one-line edit.
+      document.querySelectorAll("[data-total-days]").forEach((el) => {
+        el.textContent = TOTAL_POST_MVP;
+      });
+      document.getElementById("tileRemaining").innerHTML =
+        P2_DAYS + P3_DAYS + P5_DAYS + '<span class="unit">days</span>';
 
       const phase1Pct = (P1_ELAPSED / PHASE1_ALLOC) * 100;
       // A phase can overrun its allocation - the number keeps climbing past
@@ -860,13 +872,13 @@
         TOTAL_POST_MVP +
         " days under Funding 2. MVP was delivered under separate Funding 1.";
 
-      // Section proportions - MVP vs the 83-day Funding 2 budget
+      // Section proportions - MVP vs the Funding 2 budget
       const totalWithMvp = MVP_DAYS + TOTAL_POST_MVP;
       document.getElementById("sectionPre").style.flex = MVP_DAYS + " 0 0";
       document.getElementById("sectionFunding2").style.flex =
         TOTAL_POST_MVP + " 0 0";
 
-      // Segment widths within the Funding 2 bar (relative to 83 days)
+      // Segment widths within the Funding 2 bar
       const funding2Segments = [
         { key: "p1", days: PHASE1_ALLOC },
         { key: "p2", days: P2_DAYS },
@@ -885,7 +897,7 @@
 
       // Funding 2 section note
       document.getElementById("funding2Note").textContent =
-        "Day " + fmt(TOTAL_ELAPSED) + " / 83";
+        "Day " + fmt(TOTAL_ELAPSED) + " / " + TOTAL_POST_MVP;
 
       // Phase rows: stats, status tag and bar, derived from tracked time
       PHASES.forEach((phase) => {
@@ -917,6 +929,7 @@
           '.timeline__seg[data-key="' + phase.key + '"]',
         );
         if (seg) {
+          seg.querySelector(".seg-days").textContent = phase.alloc + "d";
           seg.className =
             "timeline__seg timeline__seg--" + (started ? "live" : "pending");
           seg.style.setProperty("--live-fill", Math.min(100, pct) + "%");
