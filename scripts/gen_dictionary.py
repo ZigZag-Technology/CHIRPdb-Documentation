@@ -88,7 +88,7 @@ def slug(text):
 
 
 # ---- SHIELD iceberg diagram ------------------------------------------------
-# Seeded taxonomy: 3 groups, 20 categories (name, code-count), rendered as an
+# Seeded taxonomy: 4 groups, 24 categories (name, code-count), rendered as an
 # iceberg - acts at the tip, preconditions below the waterline, leadership deep.
 _ICEBERG_TIERS = [
     ("tip", "1 / 4", "A &middot; ACTS", "Active failures - the visible tip", [
