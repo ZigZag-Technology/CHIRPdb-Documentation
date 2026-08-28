@@ -220,19 +220,73 @@ while i < n:
                    inline(" ".join(buf).strip()))
         continue
 
-    # lists (ordered / unordered, with nested continuation) ----------------
-    if re.match(r"^\s*([-*]|\d+\.)\s+", line):
-        ordered = bool(re.match(r"^\s*\d+\.\s+", line))
-        tag = "ol" if ordered else "ul"
-        items = []
-        while i < n and (re.match(r"^\s*([-*]|\d+\.)\s+", lines[i]) or (lines[i].startswith("   ") and lines[i].strip())):
-            if re.match(r"^\s*([-*]|\d+\.)\s+", lines[i]):
-                items.append(re.sub(r"^\s*([-*]|\d+\.)\s+", "", lines[i]))
+    # lists (ordered / unordered) -----------------------------------------
+    # Column-0 markers open items. Indented lines under an item are either
+    # a nested bullet list or a continuation paragraph; a blank line stays
+    # inside the list only while it later resumes (loose lists keep their
+    # numbering instead of restarting at 1 on every gap).
+    if re.match(r"^(\d+\.|[-*])\s+", line):
+        tag = "ol" if re.match(r"^\d+\.\s+", line) else "ul"
+
+        def _resumes_after_blank(k):
+            k += 1
+            while k < n and not lines[k].strip():
+                k += 1
+            return k < n and (re.match(r"^(\d+\.|[-*])\s+", lines[k])
+                              or lines[k].startswith("  "))
+
+        raw = []
+        while i < n:
+            cur = lines[i]
+            if re.match(r"^(\d+\.|[-*])\s+", cur) or (cur[:1] == " " and cur.strip()):
+                raw.append(cur)
+            elif not cur.strip() and _resumes_after_blank(i):
+                raw.append("")
             else:
-                items[-1] += " " + lines[i].strip()
+                break
             i += 1
-        out.append("<%s>%s</%s>" % (tag, "".join("<li>%s</li>" %
-                   inline(x) for x in items), tag))
+
+        items = []
+        for r in raw:
+            if re.match(r"^(\d+\.|[-*])\s+", r):
+                items.append([r])
+            elif items:
+                items[-1].append(r)
+
+        def render_item(rows):
+            frags, buf, opened = [], [re.sub(r"^(\d+\.|[-*])\s+", "", rows[0])], False
+
+            def flush():
+                nonlocal opened
+                if any(b.strip() for b in buf):
+                    txt = inline(" ".join(b.strip() for b in buf if b.strip()))
+                    frags.append("<p>%s</p>" % txt if opened else txt)
+                    opened = True
+                buf.clear()
+
+            j = 1
+            while j < len(rows):
+                if re.match(r"^\s+(\d+\.|[-*])\s+", rows[j]):
+                    flush()
+                    ntag = "ol" if re.match(r"^\s+\d+\.\s+", rows[j]) else "ul"
+                    nitems = []
+                    while j < len(rows) and re.match(r"^\s+(\d+\.|[-*])\s+", rows[j]):
+                        nitems.append(re.sub(r"^\s+(\d+\.|[-*])\s+", "", rows[j]))
+                        j += 1
+                    frags.append("<%s>%s</%s>" % (ntag, "".join(
+                        "<li>%s</li>" % inline(x) for x in nitems), ntag))
+                    opened = True
+                    continue
+                if not rows[j].strip():
+                    flush()
+                else:
+                    buf.append(rows[j])
+                j += 1
+            flush()
+            return "".join(frags)
+
+        out.append("<%s>%s</%s>" % (tag, "".join(
+            "<li>%s</li>" % render_item(it) for it in items), tag))
         continue
 
     # blank ----------------------------------------------------------------

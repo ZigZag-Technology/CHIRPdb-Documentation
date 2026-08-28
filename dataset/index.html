@@ -188,11 +188,20 @@
       </div>
 
       <h2>Working with the database</h2>
-      <p>It is ordinary PostgreSQL - two things worth knowing before you query:</p>
+      <p>It is ordinary PostgreSQL - three things worth knowing before you query:</p>
       <ul>
         <li>
           <strong>Every table is readable.</strong> All tables allow public
           read; there is nothing to unlock first.
+        </li>
+        <li>
+          <strong>Vector columns need pgvector.</strong>
+          <code>passage_embeddings.embedding</code> and
+          <code>shield_code_embeddings.embedding</code> are
+          <code>vector(1024)</code> columns; a client without pgvector reads
+          them as text. The <code>match_shield_codes(passage_id, strategy,
+          limit)</code> function does the cosine search server-side, so you do
+          not need one.
         </li>
         <li>
           <strong><code>tsvector</code> columns are generated.</strong> The
@@ -209,22 +218,27 @@
         occurrences, vessels, affected persons - drawn from the MAIB Data Portal
         spreadsheets; NTSB has no equivalent spreadsheet source, so that layer
         is MAIB-only. An analysis pipeline then extracts findings from the text:
-        safety issues, recommendations, named entities, and causal-factor
-        classifications from CHIRP's SHIELD taxonomy - 113 factors in 24
-        categories under four layers. Every extracted finding is
-        traceable back to the exact sentences of the source report.
+        safety issues, recommendations, and named entities with every mention
+        resolved. Every finding is traceable back to the exact sentences of the
+        source report. CHIRP's SHIELD taxonomy - 113 causal-factor codes in 24
+        categories under four layers - is loaded, and every passage is embedded
+        so codes can be suggested, but no code has yet been matched to a
+        finding.
       </p>
       <p>
         <code>documents.jurisdiction</code> separates the two corpora:
         <code>'UK'</code> for the 796 MAIB reports, <code>'US'</code> for the
-        456 NTSB reports - 1,252 documents in all.
+        456 NTSB reports - 1,252 documents in all. The pipeline has been run
+        over all 1,252, so the database is populated end to end; what is absent
+        is listed under <em>What is not included</em>, and the one substantive
+        gap is that missing SHIELD link.
       </p>
 
       <h2>What is actually populated</h2>
       <p>
-        The schema documents the full system, but the database as delivered
-        populates only part of it. Know which layers carry data before you build
-        on them.
+        The database is populated end to end - every pipeline stage has run over
+        the whole corpus. Five tables are empty, for three different reasons;
+        know which before you build on them.
       </p>
       <div class="split">
         <div class="split__col split__col--yes">
@@ -247,10 +261,31 @@
               document carries an <code>occurrence_id</code>.
             </li>
             <li>
-              <strong>Seeded vocabularies</strong> - <code>shield_codes</code> /
-              <code>shield_code_categories</code> / <code>shield_layers</code>
-              (full SHIELD taxonomy, all three tiers) and
-              <code>narrative_entity_types</code>. Loaded but not yet referenced.
+              <strong>Passages &amp; findings</strong> - <code>passages</code> /
+              <code>passage_sentences</code> (one passage per finding),
+              <code>safety_issues</code> (11,254), <code>recommendations</code>
+              (4,127), <code>recommendation_organisations</code> and the
+              <code>organisations</code> they resolve to. Written by the record
+              pass over all 1,252 documents.
+            </li>
+            <li>
+              <strong>Narrative entities</strong> -
+              <code>narrative_entities</code> (545,649) and
+              <code>narrative_entity_mentions</code> (1,267,349), every mention
+              resolved to an entity and located by character span.
+            </li>
+            <li>
+              <strong>Embeddings</strong> - <code>passage_embeddings</code> (one
+              vector per passage), <code>shield_code_embeddings</code> (452),
+              <code>passage_embedding_queue</code> drained. Behind the
+              <code>match_shield_codes</code> suggestion function.
+            </li>
+            <li>
+              <strong>Seeded vocabularies</strong> - full SHIELD taxonomy
+              (<code>shield_codes</code> / <code>shield_code_categories</code> /
+              <code>shield_layers</code>), <code>narrative_entity_types</code>
+              (14), <code>embedding_models</code>,
+              <code>embedding_strategies</code>.
             </li>
           </ul>
         </div>
@@ -258,24 +293,21 @@
           <div class="split__head">Empty</div>
           <ul>
             <li>
-              <code>chunks</code>, <code>chunk_sentences</code>,
-              <code>analysis</code> - no chunking pass.
+              <code>passage_shield_codes</code> - the missing link. Taxonomy
+              loaded and every passage embedded, but no code matched to a
+              passage yet.
             </li>
             <li>
-              <code>chunk_shield_codes</code> - taxonomy loaded, no code applied
-              to any passage yet.
+              <code>analysis</code> - a spare table for a future per-passage
+              pass. Nothing writes it.
             </li>
             <li>
-              <code>safety_issues</code>, <code>recommendations</code> and their
-              junctions - no findings extraction.
+              <code>legislation</code>, <code>safety_issue_legislation</code> -
+              the legislation-attachment feature is not implemented.
             </li>
             <li>
-              <code>narrative_entities</code>,
-              <code>narrative_entity_mentions</code> - no NER/coreference pass.
-            </li>
-            <li>
-              <code>organisations</code>, <code>legislation</code>, the
-              identifier tables - nothing populates them at this stage.
+              <code>author_identifiers</code> - nothing populates it at this
+              stage.
             </li>
           </ul>
         </div>
@@ -326,11 +358,36 @@
         </div>
         <div class="flow__step">
           <span class="flow__num">Stage 4</span>
-          <div class="flow__title">Analysis</div>
+          <div class="flow__title">Record pass</div>
           <p>
-            Sentences are grouped into <code>chunks</code> and findings extracted
-            against them: SHIELD taggings, safety issues, recommendations,
-            entities. <em>(Not populated in this database.)</em>
+            Each report is read for the records it publishes - safety issues
+            (findings and general safety lessons, split by
+            <code>record_type</code>) and recommendations - each written with its
+            own <code>passages</code> row. A recommendation's
+            <code>addressee</code> is resolved into <code>organisations</code>.
+            Run over all 1,252 documents.
+          </p>
+        </div>
+        <div class="flow__step">
+          <span class="flow__num">Stage 5</span>
+          <div class="flow__title">Entity resolution</div>
+          <p>
+            A pass reads each document's sentences for the named things it talks
+            about, writing one <code>narrative_entities</code> row per distinct
+            thing and one <code>narrative_entity_mentions</code> row per
+            mention, each located by character span and typed by how it refers.
+          </p>
+        </div>
+        <div class="flow__step">
+          <span class="flow__num">Stage 6</span>
+          <div class="flow__title">Embedding</div>
+          <p>
+            Every passage is encoded under
+            <code>BAAI/bge-large-en-v1.5</code> (1024 dimensions) into
+            <code>passage_embeddings</code>, and each SHIELD code under four
+            strategies into <code>shield_code_embeddings</code>. These feed the
+            <code>match_shield_codes</code> function - but nothing has yet
+            accepted a suggestion.
           </p>
         </div>
       </div>
@@ -425,13 +482,13 @@
         (<code>verified</code> = analyst-confirmed).
       </p>
       <div class="callout">
-        Practical upshot: the analysis layer is empty here, so nearly all
-        content is <span class="src src--source">Source</span>,
-        <span class="src src--maib">MAIB</span> or
-        <span class="src src--pipe">Pipeline</span>. Where you do see
-        <span class="src src--aiu">AI-U</span> - the sentence text - remember it
-        is a vision model's reading of the page image, not a byte-exact copy of
-        the PDF.
+        Practical upshot: the analysis layer is fully populated, so
+        <span class="src src--aiu">AI-U</span> content is widespread - all
+        sentence text, every safety issue and recommendation, every narrative
+        entity and mention, and the embedding vectors. None of it has been
+        analyst-verified: no row carries <code>is_verified = true</code> and no
+        document is at <code>status = 'verified'</code>. Treat every AI-U column
+        as machine output no human has checked.
       </div>
 
       <h2>Known limitations</h2>
@@ -464,10 +521,38 @@
           own right, not as an enrichment of every report.
         </li>
         <li>
-          <strong>Spreadsheet coverage window.</strong> The MAIB Data Portal
-          extract feeding <code>occurrences</code> covers roughly 2018 onward -
-          it is not a full historical record, and an older report may have no
-          matching spreadsheet occurrence.
+          <strong>The report corpus and the spreadsheet barely overlap.</strong>
+          <code>occurrence_id</code> links only 58 reports to an occurrence -
+          just 61 of the 9,063 occurrences carry a <code>publication_number</code>
+          at all, because MAIB publishes a report for a small fraction of the
+          incidents it records. Any analysis joining report text to spreadsheet
+          incident attributes runs on those 58 documents.
+        </li>
+        <li>
+          <strong>Nothing has been verified by an analyst.</strong> Verification
+          is explicit and per-row - <code>is_verified = true</code> on
+          <code>safety_issues</code>, <code>recommendations</code> and
+          <code>passage_shield_codes</code> - and no row anywhere carries it; all
+          1,252 documents sit at <code>status = 'extracted'</code>, none at
+          <code>verified</code>. <code>narrative_entity_mentions.confidence</code>
+          is the extraction's own self-report, not a measured accuracy.
+        </li>
+        <li>
+          <strong>No SHIELD code has been applied.</strong> The taxonomy is
+          loaded in full (113 codes in 24 categories across 4 layers) and every
+          passage is embedded, so the machinery for suggesting codes exists, but
+          the link from a finding to a causal-factor code
+          (<code>passage_shield_codes</code>) has not been made. This is the main
+          analytical gap in the dataset.
+        </li>
+        <li>
+          <strong>Findings follow the report's own structure.</strong> A safety
+          issue is classified as contributory or addressed only where the report
+          itself classified it: <code>is_contributory</code> is set on 2,975 of
+          11,254 rows and <code>is_addressed</code> on 3,035;
+          <code>recommendations.reference_number</code> on 2,414 of 4,127 and
+          <code>addressee</code> on 3,159. Absence is a property of the source
+          reports, not a gap in extraction - do not impute the unfilled rows.
         </li>
         <li>
           <strong>Report-stated particulars are sparser for NTSB.</strong>
@@ -527,17 +612,32 @@
       </ul>
 
       <h2>What is not included</h2>
+      <p>Five tables are empty, for three different reasons:</p>
       <ul>
-        <li>Vector embeddings - the schema has no embedding columns; nothing pgvector-dependent is present.</li>
-        <li>Pipeline observability (LLM traces, extraction logs) and any application authentication data.</li>
+        <li>
+          <strong><code>passage_shield_codes</code></strong> - the missing link.
+          No matching pass has been run and no analyst has accepted a
+          suggestion, though everything the match needs is present.
+        </li>
+        <li>
+          <strong><code>analysis</code></strong> - a convenience table for
+          free-form per-passage output, so a future pass has somewhere to write
+          without a schema change. Nothing writes it today.
+        </li>
+        <li>
+          <strong><code>legislation</code> and
+          <code>safety_issue_legislation</code></strong> - attaching legislation
+          to a safety issue is a designed but unbuilt feature.
+          <code>author_identifiers</code> is likewise unpopulated.
+        </li>
       </ul>
+      <p>
+        Also absent: pipeline observability data (LLM traces, extraction logs)
+        and any application authentication data.
+      </p>
 
       <h2>Row counts</h2>
-      <p class="dim">
-        As of 17 August 2026. Populated tables carry data; the analysis and
-        findings layer is empty in the database (see above). Seeded vocabularies
-        are loaded reference data.
-      </p>
+      <p class="dim">As of 28 August 2026. Seeded vocabularies are loaded reference data.</p>
       <table class="counts">
         <thead><tr><th>Table</th><th>Rows</th></tr></thead>
         <tbody>
@@ -545,18 +645,36 @@
           <tr><td>document_particulars</td><td>1,252</td></tr>
           <tr><td>document_vessels</td><td>1,252</td></tr>
           <tr><td>authors</td><td>22</td></tr>
+          <tr><td>author_identifiers</td><td>0 (empty)</td></tr>
           <tr><td>occurrences</td><td>9,063 (MAIB only)</td></tr>
           <tr><td>vessels</td><td>9,830 (MAIB only)</td></tr>
           <tr><td>affected_persons</td><td>3,040 (MAIB only)</td></tr>
           <tr><td>affected_persons_ppe</td><td>924 (MAIB only)</td></tr>
-          <tr><td>taxonomy_terms</td><td>410</td></tr>
-          <tr><td>ppe_items</td><td>9</td></tr>
+          <tr><td>taxonomy_terms</td><td>410 (seeded)</td></tr>
+          <tr><td>ppe_items</td><td>9 (seeded)</td></tr>
           <tr><td>sentences</td><td>341,057 (293,454 MAIB, 47,603 NTSB)</td></tr>
-          <tr><td>chunks · analysis · findings · entities</td><td>0 (empty)</td></tr>
+          <tr><td>passages</td><td>15,381 (13,892 MAIB, 1,489 NTSB)</td></tr>
+          <tr><td>passage_sentences</td><td>15,939 (14,382 MAIB, 1,557 NTSB)</td></tr>
+          <tr><td>analysis</td><td>0 (empty)</td></tr>
+          <tr><td>passage_shield_codes</td><td>0 (empty - no code matched yet)</td></tr>
+          <tr><td>safety_issues</td><td>11,254 (10,038 MAIB, 1,216 NTSB)</td></tr>
+          <tr><td>safety_issue_legislation</td><td>0 (empty)</td></tr>
+          <tr><td>legislation</td><td>0 (empty)</td></tr>
+          <tr><td>recommendations</td><td>4,127 (3,854 MAIB, 273 NTSB)</td></tr>
+          <tr><td>recommendation_organisations</td><td>3,658 (3,342 MAIB, 316 NTSB)</td></tr>
+          <tr><td>organisations</td><td>802 (710 companies, 92 classes)</td></tr>
+          <tr><td>organisation_identifiers</td><td>86</td></tr>
+          <tr><td>narrative_entities</td><td>545,649 (446,735 MAIB, 98,914 NTSB)</td></tr>
+          <tr><td>narrative_entity_mentions</td><td>1,267,349 (1,032,182 MAIB, 235,167 NTSB)</td></tr>
           <tr><td>shield_codes</td><td>113 (seeded)</td></tr>
           <tr><td>shield_code_categories</td><td>24 (seeded)</td></tr>
           <tr><td>shield_layers</td><td>4 (seeded)</td></tr>
-          <tr><td>narrative_entity_types</td><td>5 (seeded)</td></tr>
+          <tr><td>narrative_entity_types</td><td>14 (seeded)</td></tr>
+          <tr><td>embedding_models</td><td>1 (seeded)</td></tr>
+          <tr><td>embedding_strategies</td><td>4 (seeded)</td></tr>
+          <tr><td>passage_embeddings</td><td>15,381 (one per passage)</td></tr>
+          <tr><td>shield_code_embeddings</td><td>452 (113 codes x 4 strategies)</td></tr>
+          <tr><td>passage_embedding_queue</td><td>0 (drained)</td></tr>
         </tbody>
       </table>
 
