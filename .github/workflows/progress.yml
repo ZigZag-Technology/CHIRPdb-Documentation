@@ -1,0 +1,50 @@
+name: Refresh progress page
+
+# Pulls tracked time from Solidtime and commits the regenerated numbers into
+# progress/index.html. The API token is unscoped, so it never reaches the
+# published page - only the day figures the script writes do.
+
+on:
+  schedule:
+    # Hourly through the UK working day, weekdays only. GitHub cron is UTC
+    # and does not follow DST, so the window is widened by an hour at each
+    # end to cover 09:00-18:00 UK in both BST and GMT. Most runs find no
+    # change and commit nothing. GitHub may delay scheduled runs under load.
+    - cron: "0 8-18 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: progress-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate from Solidtime
+        env:
+          SOLIDTIME_TOKEN: ${{ secrets.SOLIDTIME_TOKEN }}
+          SOLIDTIME_URL: ${{ secrets.SOLIDTIME_URL }}
+          # Optional - only needed if the token ever spans several orgs.
+          SOLIDTIME_ORG: ${{ secrets.SOLIDTIME_ORG }}
+        # The script exits non-zero if a configured task is missing from
+        # Solidtime, so a rename fails the run rather than silently zeroing
+        # a phase on the published page.
+        run: python3 scripts/gen_progress.py
+
+      - name: Commit if the numbers moved
+        run: |
+          if git diff --quiet -- progress/index.html; then
+            echo "No change since the last run."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add progress/index.html
+          git commit -m "chore(progress): refresh tracked time from Solidtime"
+          git push
