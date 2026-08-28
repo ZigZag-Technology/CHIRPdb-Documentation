@@ -57,6 +57,24 @@ PHASES = [
         "alloc_days": 35,
         "tasks": ["CHIRPdb - Phase 1"],
     },
+    {
+        "key": "p2",
+        "label": "Phase 2",
+        "alloc_days": 23,
+        "tasks": ["CHIRPdb - Phase 2"],
+    },
+    {
+        "key": "p3",
+        "label": "Phase 3",
+        "alloc_days": 10,
+        "tasks": ["CHIRPdb - Phase 3"],
+    },
+    {
+        "key": "p5",
+        "label": "Phase 5",
+        "alloc_days": 15,
+        "tasks": ["CHIRPdb - Phase 5"],
+    },
 ]
 
 # Counted time: everyone's entries, billable and non-billable alike.
@@ -182,9 +200,6 @@ def build():
             "alloc_days": phase["alloc_days"],
             "elapsed_days": round(days, 2),
         })
-        if not wanted:
-            print("warning: %s has no tasks configured" % phase["label"],
-                  file=sys.stderr)
 
     unmatched = sum(s for tid, s in seconds_by_task.items()
                     if tid not in matched and s)
