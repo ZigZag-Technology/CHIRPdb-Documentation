@@ -22,6 +22,7 @@ Repo convention: plain hyphens, not em dashes. Standard library only.
 """
 import json
 import os
+import re
 import ssl
 import sys
 import urllib.error
@@ -46,33 +47,59 @@ HOURS_PER_DAY = 7.5
 # Set to None to count every project in the organisation.
 PROJECT_NAME = "CHIRPdb"
 
-# Which Solidtime tasks roll up into which phase on the progress page. Task
-# names are matched case-insensitively. Run --list to see the real names, then
-# fill these in. Only Phase 1 is wired up for now; the MVP's 19.5 days predate
-# the instance and stay hardcoded in the page.
+# The funded ceiling for the whole engagement. The project's own
+# estimated_time in Solidtime does not match the contract (it reads 162.5
+# days), so this one figure is set here and emitted with the rest.
+TOTAL_BUDGET_DAYS = 120
+
+# Which Solidtime tasks roll up into which row on the progress page. Task names
+# are matched case-insensitively - run --list to see the real names. Every
+# tracked day in the project belongs to exactly one row: the page presents a
+# single 120-day bucket, so time matching no row would go missing rather than
+# merely uncounted. The unmatched warning below guards that and should stay
+# silent.
+#
+# Allocations are not listed here. Solidtime carries them as each task's
+# estimated_time, which is what its own percentages are measured against, so
+# the page reads them from there and cannot drift out of step with the
+# instance. A task with no estimate renders as tracked-only.
+#
+# A row added here needs matching markup in progress/index.html, keyed
+# <KEY>_ELAPSED, <KEY>_ALLOC and <KEY>_DONE.
 PHASES = [
+    {
+        "key": "dsg",
+        "label": "DSG",
+        "tasks": ["CHIRPdb - DSG"],
+    },
+    {
+        "key": "mvp",
+        "label": "MVP",
+        "tasks": ["CHIRPdb - MVP"],
+    },
     {
         "key": "p1",
         "label": "Phase 1",
-        "alloc_days": 50,
         "tasks": ["CHIRPdb - Phase 1"],
+    },
+    {
+        "key": "p15",
+        "label": "Phase 1.5",
+        "tasks": ["CHIRPdb - Phase 1.5"],
     },
     {
         "key": "p2",
         "label": "Phase 2",
-        "alloc_days": 23,
         "tasks": ["CHIRPdb - Phase 2"],
     },
     {
         "key": "p3",
         "label": "Phase 3",
-        "alloc_days": 10,
         "tasks": ["CHIRPdb - Phase 3"],
     },
     {
         "key": "p5",
         "label": "Phase 5",
-        "alloc_days": 15,
         "tasks": ["CHIRPdb - Phase 5"],
     },
 ]
@@ -158,7 +185,7 @@ def list_mode():
                 for p in api("/v1/organizations/%s/projects" % org)}
     for pid, pname in projects.items():
         print("\nproject  %s  %s" % (pid, pname))
-    tasks = api("/v1/organizations/%s/tasks" % org)
+    tasks = api("/v1/organizations/%s/tasks" % org, {"done": "all"})
     print("\ntasks:")
     for t in tasks:
         print("  %-38s  %-40s  project=%s" % (
@@ -168,7 +195,9 @@ def list_mode():
 def build():
     org = organization_id()
     project = find_project(org, PROJECT_NAME)
-    tasks = api("/v1/organizations/%s/tasks" % org)
+    # done=all matters: Solidtime hides completed tasks by default, so a phase
+    # marked done in Solidtime would drop out of the lookup and fail the run.
+    tasks = api("/v1/organizations/%s/tasks" % org, {"done": "all"})
     by_id = {t["id"]: t for t in tasks}
 
     # A task renamed or deleted in Solidtime would otherwise leave its phase
@@ -203,19 +232,43 @@ def build():
             if task and task["name"].strip().lower() in wanted:
                 seconds += task_seconds
                 matched.add(task_id)
+        # Completion is Solidtime's to state, not the page's to infer: a phase
+        # can sit over its allocation and still be running, or land under it
+        # and be finished. Ticking the task done in Solidtime flips the page.
+        phase_tasks = [t for t in tasks
+                       if t["name"].strip().lower() in wanted
+                       and (not project or t.get("project_id") == project["id"])]
+        done = bool(phase_tasks) and all(t.get("is_done") for t in phase_tasks)
+        # Solidtime measures its own percentages against estimated_time, so
+        # reading the allocation from there keeps the page and the instance
+        # telling the same story. No estimate means no allocation to show.
+        estimates = [t["estimated_time"] for t in phase_tasks
+                     if t.get("estimated_time")]
+        alloc = (sum(estimates) / 3600.0 / HOURS_PER_DAY) if estimates else None
         days = seconds / 3600.0 / HOURS_PER_DAY
         phases.append({
             "key": phase["key"],
             "label": phase["label"],
-            "alloc_days": phase["alloc_days"],
+            "alloc_days": alloc,
             "elapsed_days": round(days, 2),
+            "done": done,
         })
 
-    unmatched = sum(s for tid, s in seconds_by_task.items()
-                    if tid not in matched and s)
+    # Name the tasks, not just the total - an unattributed figure invites a
+    # wrong guess about where the time went.
+    unmatched = sorted(((tid, sec) for tid, sec in seconds_by_task.items()
+                        if tid not in matched and sec),
+                       key=lambda pair: -pair[1])
     if unmatched:
-        print("warning: %.2f days tracked outside the configured phases"
-              % (unmatched / 3600.0 / HOURS_PER_DAY), file=sys.stderr)
+        total = sum(sec for _, sec in unmatched) / 3600.0 / HOURS_PER_DAY
+        print("warning: %.2f days tracked outside the configured phases:"
+              % total, file=sys.stderr)
+        for tid, sec in unmatched:
+            task = by_id.get(tid)
+            label = task["name"] if task else (
+                "(no task)" if tid is None else "unknown task %s" % tid)
+            print("  %-28s %6.2f days" % (label, sec / 3600.0 / HOURS_PER_DAY),
+                  file=sys.stderr)
 
     # Only these numbers are written out. Nothing from the API response is
     # passed through wholesale, so cost and rate fields cannot reach the page.
@@ -224,9 +277,16 @@ def build():
              "      // Generated from Solidtime by scripts/gen_progress.py.",
              "      // Do not edit by hand - re-run the script instead.",
              '      const LAST_UPDATED = "%s";' % now.strftime("%-d %b %Y")]
+    block.append("      const TOTAL_BUDGET = %s;" % fmt_days(TOTAL_BUDGET_DAYS))
     for phase in phases:
+        key = phase["key"].upper()
         block.append("      const %s_ELAPSED = %s;" % (
-            phase["key"].upper(), fmt_days(phase["elapsed_days"])))
+            key, fmt_days(phase["elapsed_days"])))
+        block.append("      const %s_ALLOC = %s;" % (
+            key, "null" if phase["alloc_days"] is None
+            else fmt_days(phase["alloc_days"])))
+        block.append("      const %s_DONE = %s;" % (
+            key, "true" if phase["done"] else "false"))
     block.append(END)
 
     html = open(OUT).read()
@@ -235,14 +295,34 @@ def build():
     if start == -1 or stop == -1:
         sys.exit("Sentinel comments not found in %s" % OUT)
     html = html[:start] + "\n".join(block) + html[stop + len(END):]
+
+    # The budget also appears as fallback text in the body copy, which the page
+    # overwrites on load. Rewrite it here too so view-source and the no-JS
+    # render cannot show a figure the script has already moved on from.
+    html = re.sub(r"(<span data-budget-days>)[^<]*(</span>)",
+                  r"\g<1>%s\g<2>" % fmt_days(TOTAL_BUDGET_DAYS), html)
     with open(OUT, "w") as f:
         f.write(html)
 
+    allocated = 0.0
     for phase in phases:
+        note = "  [done]" if phase["done"] else ""
+        if phase["alloc_days"] is None:
+            print("%s  %.2f days tracked, no estimate in Solidtime%s"
+                  % (phase["label"], phase["elapsed_days"], note))
+            continue
+        allocated += phase["alloc_days"]
         over = phase["elapsed_days"] - phase["alloc_days"]
-        note = "  (%.2f over)" % over if over > 0 else ""
+        if over > 0:
+            note = "  (%.2f over)" % over + note
         print("%s  %.2f / %s days%s" % (phase["label"], phase["elapsed_days"],
-                                        phase["alloc_days"], note))
+                                        fmt_days(phase["alloc_days"]), note))
+    tracked = sum(p["elapsed_days"] for p in phases)
+    print("tracked %s / %s days" % (fmt_days(tracked),
+                                    fmt_days(TOTAL_BUDGET_DAYS)))
+    if abs(allocated - TOTAL_BUDGET_DAYS) > 0.001:
+        print("note: Solidtime estimates total %s days against a %s day budget"
+              % (fmt_days(allocated), fmt_days(TOTAL_BUDGET_DAYS)))
     print("updated " + OUT)
 
 

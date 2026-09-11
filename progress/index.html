@@ -104,7 +104,7 @@
       /* summary tiles */
       .tiles {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 14px;
         margin-bottom: 40px;
       }
@@ -192,7 +192,12 @@
         color: var(--text-mute);
         margin-top: auto;
       }
-      @media (max-width: 720px) {
+      @media (max-width: 980px) {
+        .tiles {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 560px) {
         .tiles {
           grid-template-columns: 1fr;
         }
@@ -300,7 +305,7 @@
       .timeline__seg + .timeline__seg {
         border-left: 1px solid rgba(255, 255, 255, 0.35);
       }
-      .timeline__seg--mvp {
+      .timeline__seg--done {
         background: var(--navy);
       }
       .timeline__seg--live {
@@ -460,9 +465,9 @@
         border-radius: 999px;
         transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       }
-      .phase__bar-fill--done {
-        background: var(--navy);
-      }
+      /* Complete and in progress share the orange fill - the tag carries the
+         distinction, the bar just shows how much of the allocation went. */
+      .phase__bar-fill--done,
       .phase__bar-fill--live {
         background: linear-gradient(
           90deg,
@@ -541,6 +546,64 @@
         display: flex;
         justify-content: space-between;
       }
+
+      /* total budget */
+      .budget-bar {
+        display: flex;
+      }
+      .budget-bar__fill {
+        height: 100%;
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .budget-bar__fill--f1 {
+        background: var(--navy);
+      }
+      .budget-bar__fill--f2 {
+        background: linear-gradient(
+          90deg,
+          var(--orange) 0%,
+          var(--orange-deep) 100%
+        );
+      }
+      .budget-rows {
+        margin-top: 24px;
+        border-top: 1px solid var(--border-soft);
+      }
+      .budget-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 13px 2px;
+        border-bottom: 1px solid var(--border-soft);
+        font-size: 14px;
+      }
+      .budget-row__label {
+        font-weight: 700;
+        color: var(--navy-deep);
+      }
+      .budget-row__sub {
+        display: block;
+        font-size: 12.5px;
+        font-weight: 400;
+        color: var(--text-mute);
+      }
+      .budget-row__value {
+        color: var(--text-soft);
+        white-space: nowrap;
+      }
+      .budget-row__value strong {
+        color: var(--navy-deep);
+      }
+      .budget-row--total .budget-row__label,
+      .budget-row--total .budget-row__value {
+        color: var(--navy-deep);
+      }
+      .budget-note {
+        margin-top: 14px;
+        font-size: 12.5px;
+        color: var(--text-mute);
+      }
     </style>
   </head>
   <body>
@@ -561,10 +624,7 @@
     <section class="hero">
       <div class="hero__inner">
         <div class="hero__kicker">Delivery status</div>
-        <h1>
-          MVP delivered.
-          <span class="accent">Phase&nbsp;1 in progress.</span>
-        </h1>
+        <h1 id="heroHeadline"></h1>
         <p class="hero__lede">
           A day-by-day view of where the CHIRPdb build stands against its
           allocated budget. Phases map to the delivery packages on the
@@ -590,31 +650,202 @@
 
     <main class="wrap">
       <div class="tiles">
-        <div class="tile tile--done">
-          <span class="tile__status tile__status--done">Complete</span>
-          <div class="tile__label">MVP</div>
-          <div class="tile__value">19.5<span class="unit">days</span></div>
-          <div class="tile__sub">Foundation delivered</div>
+        <div class="tile" id="cardMvp">
+          <span class="tile__status" id="statusMvp"></span>
+          <div class="tile__label">MVP · Foundation</div>
+          <div class="tile__value" id="tileMvp"></div>
+          <div class="tile__sub" id="tileMvpSub"></div>
         </div>
-        <div class="tile tile--live">
-          <span class="tile__status tile__status--live">In progress</span>
+        <div class="tile" id="cardP1">
+          <span class="tile__status" id="statusP1"></span>
           <div class="tile__label">Phase 1 · Foundation</div>
           <div class="tile__value" id="tileP1"></div>
           <div class="tile__sub" id="tileP1Sub"></div>
         </div>
+        <div class="tile" id="cardP15">
+          <span class="tile__status" id="statusP15"></span>
+          <div class="tile__label">Phase 1.5 · Foundation extension</div>
+          <div class="tile__value" id="tileP15"></div>
+          <div class="tile__sub" id="tileP15Sub"></div>
+        </div>
         <div class="tile">
-          <span class="tile__status">Not started</span>
-          <div class="tile__label">Remaining · P2 + P3 + P5</div>
+          <span class="tile__status">Unspent</span>
+          <div class="tile__label">Remaining · whole budget</div>
           <div class="tile__value" id="tileRemaining"></div>
-          <div class="tile__sub">After Phase 1 wraps</div>
+          <div class="tile__sub">Phases 2, 3 and 5 still to run</div>
         </div>
       </div>
 
       <div class="card">
         <div class="card__head">
-          <div class="card__kicker">Post-MVP timeline</div>
+          <div class="card__kicker">Total budget</div>
           <h2 class="card__title">
-            Where we are in the <span data-total-days>83</span>-day plan
+            <span data-budget-days>120</span> days in total, MVP included
+          </h2>
+          <p class="card__sub">
+            One budget for the whole engagement. Funding 1 paid for the MVP and
+            Funding 2 covers Phase 1 onwards, but both draw down the same
+            <span data-budget-days>120</span> days. Every figure below is
+            tracked time from Solidtime.
+          </p>
+        </div>
+        <div class="headline">
+          <div>
+            <span class="headline__pct" id="budgetUsed">0</span
+            ><span class="headline__pct-unit">days used</span>
+          </div>
+          <div class="headline__note" id="budgetNote"></div>
+        </div>
+        <div class="overall-bar budget-bar">
+          <div
+            class="budget-bar__fill budget-bar__fill--f1"
+            id="budgetFillF1"
+            style="width: 0"
+          ></div>
+          <div
+            class="budget-bar__fill budget-bar__fill--f2"
+            id="budgetFillF2"
+            style="width: 0"
+          ></div>
+        </div>
+        <div class="overall-bar__note">
+          <span>Day 0</span>
+          <span>Day <span data-budget-days>120</span></span>
+        </div>
+
+        <div class="budget-rows">
+          <div class="budget-row">
+            <span class="budget-row__label">
+              Funding 1
+              <span class="budget-row__sub">MVP · delivered</span>
+            </span>
+            <span class="budget-row__value" id="budgetF1"></span>
+          </div>
+          <div class="budget-row">
+            <span class="budget-row__label">
+              Funding 2
+              <span class="budget-row__sub">Phase 1 onwards</span>
+            </span>
+            <span class="budget-row__value" id="budgetF2"></span>
+          </div>
+          <div class="budget-row budget-row--total">
+            <span class="budget-row__label">
+              Tracked to date
+              <span class="budget-row__sub">Every phase, MVP included</span>
+            </span>
+            <span class="budget-row__value" id="budgetTotal"></span>
+          </div>
+        </div>
+        <p class="budget-note" id="budgetHeadroom"></p>
+      </div>
+      <div class="card">
+        <div class="card__head">
+          <div class="card__kicker">Phase breakdown</div>
+        </div>
+
+        <div class="phase">
+          <div class="phase__label">
+            DSG
+            <span class="phase__name">Data sharing group · scoping</span>
+            <span class="phase__tag" id="dsgTag"></span>
+          </div>
+          <div class="phase__stats" id="dsgStats"></div>
+          <div class="phase__bar">
+            <div class="phase__bar-fill" id="dsgFill" style="width: 0"></div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase__label">
+            MVP
+            <span class="phase__name">Foundation MVP</span>
+            <span class="phase__tag" id="mvpTag"></span>
+          </div>
+          <div class="phase__stats" id="mvpStats"></div>
+          <div class="phase__bar">
+            <div class="phase__bar-fill" id="mvpFill" style="width: 0"></div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase__label">
+            Phase 1
+            <span class="phase__name">P1 · Foundation</span>
+            <span class="phase__tag" id="p1Tag"></span>
+          </div>
+          <div class="phase__stats" id="p1Stats"></div>
+          <div class="phase__bar">
+            <div
+              class="phase__bar-fill phase__bar-fill--live"
+              id="p1Fill"
+              style="width: 0"
+            ></div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase__label">
+            Phase 1.5
+            <span class="phase__name">P1.5 · Foundation extension</span>
+            <span class="phase__tag" id="p15Tag"></span>
+          </div>
+          <div class="phase__stats" id="p15Stats"></div>
+          <div class="phase__bar">
+            <div
+              class="phase__bar-fill phase__bar-fill--live"
+              id="p15Fill"
+              style="width: 0"
+            ></div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase__label">
+            Phase 2
+            <span class="phase__name">P2 · Verification &amp; provenance</span>
+            <span class="phase__tag" id="p2Tag"></span>
+          </div>
+          <div class="phase__stats" id="p2Stats"></div>
+          <div class="phase__bar">
+            <div class="phase__bar-fill" id="p2Fill" style="width: 0"></div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase__label">
+            Phase 3
+            <span class="phase__name">P3 · Semantic layer</span>
+            <span class="phase__tag" id="p3Tag"></span>
+          </div>
+          <div class="phase__stats" id="p3Stats"></div>
+          <div class="phase__bar">
+            <div class="phase__bar-fill" id="p3Fill" style="width: 0"></div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase__label">
+            Phase 5
+            <span class="phase__name">P5 · Production hardening</span>
+            <span class="phase__tag" id="p5Tag"></span>
+          </div>
+          <div class="phase__stats" id="p5Stats"></div>
+          <div class="phase__bar">
+            <div class="phase__bar-fill" id="p5Fill" style="width: 0"></div>
+          </div>
+        </div>
+      </div>
+
+      <!--
+        Engagement timeline - hidden for now. Restore it together with the
+        timeline block in the script below: the markup and that code are a
+        pair, and the script reads elements that only exist here.
+
+      <div class="card">
+        <div class="card__head">
+          <div class="card__kicker">Engagement timeline</div>
+          <h2 class="card__title">
+            Where we are in the <span data-budget-days>120</span>-day plan
           </h2>
           <p class="card__sub" id="timelineSub"></p>
         </div>
@@ -626,7 +857,7 @@
                 <span class="timeline__section-label">Funding 1</span>
               </div>
               <div class="timeline__bar">
-                <div class="timeline__seg timeline__seg--mvp" data-key="mvp">
+                <div class="timeline__seg timeline__seg--done" data-key="mvp">
                   <span class="timeline__seg-label">
                     <span class="seg-title">MVP</span>
                     <span class="seg-days">19.5d</span>
@@ -642,7 +873,7 @@
               <div class="timeline__section-head">
                 <span
                   class="timeline__section-label timeline__section-label--live"
-                  >Funding 2 · <span data-total-days>83</span> days</span
+                  >Funding 2 · Phase 1 onwards</span
                 >
                 <span class="timeline__section-note" id="funding2Note"></span>
               </div>
@@ -650,7 +881,13 @@
                 <div class="timeline__seg timeline__seg--live" data-key="p1">
                   <span class="timeline__seg-label">
                     <span class="seg-title">Phase 1</span>
-                    <span class="seg-days">35d</span>
+                    <span class="seg-days">50d</span>
+                  </span>
+                </div>
+                <div class="timeline__seg timeline__seg--live" data-key="p15">
+                  <span class="timeline__seg-label">
+                    <span class="seg-title">P1.5</span>
+                    <span class="seg-days">3d</span>
                   </span>
                 </div>
                 <div class="timeline__seg timeline__seg--pending" data-key="p2">
@@ -695,106 +932,8 @@
           </div>
         </div>
       </div>
+      -->
 
-      <div class="card">
-        <div class="card__head">
-          <div class="card__kicker">Phase breakdown</div>
-        </div>
-
-        <div class="phase">
-          <div class="phase__label">
-            MVP
-            <span class="phase__name">Foundation MVP</span>
-            <span class="phase__tag phase__tag--done">Complete</span>
-          </div>
-          <div class="phase__stats"><strong>19.5</strong> / 19.5 days</div>
-          <div class="phase__bar">
-            <div
-              class="phase__bar-fill phase__bar-fill--done"
-              style="width: 100%"
-            ></div>
-          </div>
-        </div>
-
-        <div class="phase">
-          <div class="phase__label">
-            Phase 1
-            <span class="phase__name">P1 · Foundation</span>
-            <span class="phase__tag" id="p1Tag"></span>
-          </div>
-          <div class="phase__stats" id="p1Stats"></div>
-          <div class="phase__bar">
-            <div
-              class="phase__bar-fill phase__bar-fill--live"
-              id="p1Fill"
-              style="width: 0"
-            ></div>
-          </div>
-        </div>
-
-        <div class="phase">
-          <div class="phase__label">
-            Phase 2
-            <span class="phase__name">P2 · Verification &amp; provenance</span>
-            <span class="phase__tag" id="p2Tag"></span>
-          </div>
-          <div class="phase__stats" id="p2Stats"></div>
-          <div class="phase__bar">
-            <div class="phase__bar-fill" id="p2Fill" style="width: 0"></div>
-          </div>
-        </div>
-
-        <div class="phase">
-          <div class="phase__label">
-            Phase 3
-            <span class="phase__name">P3 · Semantic layer</span>
-            <span class="phase__tag" id="p3Tag"></span>
-          </div>
-          <div class="phase__stats" id="p3Stats"></div>
-          <div class="phase__bar">
-            <div class="phase__bar-fill" id="p3Fill" style="width: 0"></div>
-          </div>
-        </div>
-
-        <div class="phase">
-          <div class="phase__label">
-            Phase 5
-            <span class="phase__name">P5 · Production hardening</span>
-            <span class="phase__tag" id="p5Tag"></span>
-          </div>
-          <div class="phase__stats" id="p5Stats"></div>
-          <div class="phase__bar">
-            <div class="phase__bar-fill" id="p5Fill" style="width: 0"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card__head">
-          <div class="card__kicker">Overall (post-MVP)</div>
-          <h2 class="card__title">
-            Progress across the <span data-total-days>83</span>-day budget
-          </h2>
-        </div>
-        <div class="headline">
-          <div>
-            <span class="headline__pct" id="overallPct">0</span
-            ><span class="headline__pct-unit">%</span>
-          </div>
-          <div class="headline__note" id="overallNote"></div>
-        </div>
-        <div class="overall-bar">
-          <div
-            class="overall-bar__fill"
-            id="overallFill"
-            style="width: 0"
-          ></div>
-        </div>
-        <div class="overall-bar__note">
-          <span>Day 0</span>
-          <span>Day <span data-total-days>83</span></span>
-        </div>
-      </div>
     </main>
 
     <footer class="footer">
@@ -807,21 +946,36 @@
     </footer>
 
     <script>
-      const MVP_DAYS = 19.5;
-      const PHASE1_ALLOC = 50;
+      // Every figure below is generated from Solidtime - tracked days, task
+      // estimates as allocations, done state, and the funded budget. Nothing
+      // on this page is typed by hand.
       // --- BEGIN gen_progress ---
       // Generated from Solidtime by scripts/gen_progress.py.
       // Do not edit by hand - re-run the script instead.
       const LAST_UPDATED = "11 Sep 2026";
+      const TOTAL_BUDGET = 120;
+      const DSG_ELAPSED = 1.95;
+      const DSG_ALLOC = null;
+      const DSG_DONE = false;
+      const MVP_ELAPSED = 19.34;
+      const MVP_ALLOC = 19.5;
+      const MVP_DONE = true;
       const P1_ELAPSED = 50.5;
-      const P2_ELAPSED = 0.47;
+      const P1_ALLOC = 50;
+      const P1_DONE = true;
+      const P15_ELAPSED = 2.97;
+      const P15_ALLOC = 3;
+      const P15_DONE = true;
+      const P2_ELAPSED = 0.71;
+      const P2_ALLOC = 23;
+      const P2_DONE = false;
       const P3_ELAPSED = 0;
+      const P3_ALLOC = 10;
+      const P3_DONE = false;
       const P5_ELAPSED = 0;
+      const P5_ALLOC = 15;
+      const P5_DONE = false;
       // --- END gen_progress ---
-      const P2_DAYS = 23;
-      const P3_DAYS = 10;
-      const P5_DAYS = 15;
-      const TOTAL_POST_MVP = PHASE1_ALLOC + P2_DAYS + P3_DAYS + P5_DAYS;
 
       const fmt = (n) => {
         const rounded = Math.round(n * 100) / 100;
@@ -830,119 +984,228 @@
           : rounded.toFixed(2).replace(/0$/, "").replace(/\.$/, "");
       };
 
-      // One row per post-MVP phase. Elapsed values come from the generated
-      // block above; allocations are contractual and stay hand-set.
+      // One row per phase, MVP included - the engagement is a single 120-day
+      // bucket rather than a delivered MVP plus a separate plan. A null alloc
+      // is a task Solidtime carries no estimate for: tracked, not budgeted.
+      // Funding says which package paid, which is the one fact Solidtime has
+      // no field for.
       const PHASES = [
-        { key: "p1", alloc: PHASE1_ALLOC, elapsed: P1_ELAPSED },
-        { key: "p2", alloc: P2_DAYS, elapsed: P2_ELAPSED },
-        { key: "p3", alloc: P3_DAYS, elapsed: P3_ELAPSED },
-        { key: "p5", alloc: P5_DAYS, elapsed: P5_ELAPSED },
+        { key: "dsg", label: "DSG", alloc: DSG_ALLOC, elapsed: DSG_ELAPSED,
+          done: DSG_DONE, funding: 2 },
+        {
+          key: "mvp",
+          label: "MVP",
+          alloc: MVP_ALLOC,
+          elapsed: MVP_ELAPSED,
+          done: MVP_DONE,
+          funding: 1,
+        },
+        { key: "p1", label: "Phase 1", alloc: P1_ALLOC, elapsed: P1_ELAPSED,
+          done: P1_DONE, funding: 2 },
+        { key: "p15", label: "Phase 1.5", alloc: P15_ALLOC,
+          elapsed: P15_ELAPSED, done: P15_DONE, funding: 2 },
+        { key: "p2", label: "Phase 2", alloc: P2_ALLOC, elapsed: P2_ELAPSED,
+          done: P2_DONE, funding: 2 },
+        { key: "p3", label: "Phase 3", alloc: P3_ALLOC, elapsed: P3_ELAPSED,
+          done: P3_DONE, funding: 2 },
+        { key: "p5", label: "Phase 5", alloc: P5_ALLOC, elapsed: P5_ELAPSED,
+          done: P5_DONE, funding: 2 },
       ];
-      const TOTAL_ELAPSED = PHASES.reduce((sum, p) => sum + p.elapsed, 0);
 
-      // Allocations appear in body copy and segment labels too - derive them
-      // so a budget change stays a one-line edit.
-      document.querySelectorAll("[data-total-days]").forEach((el) => {
-        el.textContent = TOTAL_POST_MVP;
+      const sum = (rows, pick) => rows.reduce((total, p) => total + pick(p), 0);
+      const funding = (n) => PHASES.filter((p) => p.funding === n);
+      const TOTAL_ELAPSED = sum(PHASES, (p) => p.elapsed);
+      const ALLOCATED = sum(PHASES, (p) => p.alloc || 0);
+      const F1_ELAPSED = sum(funding(1), (p) => p.elapsed);
+      const F1_ALLOC = sum(funding(1), (p) => p.alloc || 0);
+      const F2_ELAPSED = sum(funding(2), (p) => p.elapsed);
+      const F2_ALLOC = sum(funding(2), (p) => p.alloc || 0);
+      const usedPct = (TOTAL_ELAPSED / TOTAL_BUDGET) * 100;
+      const budgetLeft = TOTAL_BUDGET - TOTAL_ELAPSED;
+
+      // 120 is the only day-count in the body copy.
+      document.querySelectorAll("[data-budget-days]").forEach((el) => {
+        el.textContent = TOTAL_BUDGET;
       });
-      document.getElementById("tileRemaining").innerHTML =
-        P2_DAYS + P3_DAYS + P5_DAYS + '<span class="unit">days</span>';
 
-      const phase1Pct = (P1_ELAPSED / PHASE1_ALLOC) * 100;
-      // A phase can overrun its allocation - the number keeps climbing past
-      // 100% but the bar stops at the end of its track.
-      const phase1Over = P1_ELAPSED > PHASE1_ALLOC;
-      const overallPct = (TOTAL_ELAPSED / TOTAL_POST_MVP) * 100;
-      const phase1Remaining = PHASE1_ALLOC - P1_ELAPSED;
-
-      document.getElementById("tileP1").innerHTML =
-        fmt(P1_ELAPSED) +
-        '<span class="unit">of ' +
-        PHASE1_ALLOC +
-        " days</span>";
-      document.getElementById("tileP1Sub").textContent = phase1Over
-        ? fmt(phase1Pct) + "% of allocation · " + fmt(-phase1Remaining) +
-          " days over"
-        : fmt(phase1Pct) + "% elapsed · " + fmt(phase1Remaining) + " days to go";
-
-      document.getElementById("timelineSub").textContent =
-        "Day " +
-        fmt(TOTAL_ELAPSED) +
-        " of " +
-        TOTAL_POST_MVP +
-        " days under Funding 2. MVP was delivered under separate Funding 1.";
-
-      // Section proportions - MVP vs the Funding 2 budget
-      const totalWithMvp = MVP_DAYS + TOTAL_POST_MVP;
-      document.getElementById("sectionPre").style.flex = MVP_DAYS + " 0 0";
-      document.getElementById("sectionFunding2").style.flex =
-        TOTAL_POST_MVP + " 0 0";
-
-      // Segment widths within the Funding 2 bar
-      const funding2Segments = [
-        { key: "p1", days: PHASE1_ALLOC },
-        { key: "p2", days: P2_DAYS },
-        { key: "p3", days: P3_DAYS },
-        { key: "p5", days: P5_DAYS },
-      ];
-      funding2Segments.forEach((s) => {
-        const el = document.querySelector(
-          '.timeline__seg[data-key="' + s.key + '"]',
+      // The headline is a status claim like any other, so it reads the same
+      // done flags rather than being written by hand. Unbudgeted rows stay out
+      // of it - DSG is scoping alongside a phase, not a phase of its own.
+      const names = (rows) =>
+        rows.length < 2
+          ? rows.map((p) => p.label).join("")
+          : rows.slice(0, -1).map((p) => p.label).join(", ") +
+            " and " +
+            rows[rows.length - 1].label;
+      const headline = [];
+      const delivered = PHASES.filter((p) => p.alloc && p.done);
+      const running = PHASES.filter((p) => p.alloc && !p.done && p.elapsed > 0);
+      if (delivered.length) headline.push(names(delivered) + " delivered.");
+      if (running.length) {
+        headline.push(
+          '<span class="accent">' + names(running) + " in progress.</span>",
         );
-        el.style.flexBasis = (s.days / TOTAL_POST_MVP) * 100 + "%";
-      });
-      // MVP fills its own bar
-      document.querySelector('.timeline__seg[data-key="mvp"]').style.flexBasis =
-        "100%";
+      }
+      document.getElementById("heroHeadline").innerHTML =
+        headline.join(" ") || "Not started yet.";
 
-      // Funding 2 section note
-      document.getElementById("funding2Note").textContent =
-        "Day " + fmt(TOTAL_ELAPSED) + " / " + TOTAL_POST_MVP;
+      // Three states, used for tiles, phase tags and timeline segments alike.
+      const stateOf = (phase) =>
+        phase.done ? "done" : phase.elapsed > 0 ? "live" : "pending";
+      const STATE_TEXT = {
+        done: "Complete",
+        live: "In progress",
+        pending: "Not started",
+      };
+      // Not every component has a pending variant - for these the base class
+      // is the not-started look, and appending one would strip the styling.
+      const NO_PENDING = ["tile", "tile__status", "phase__bar-fill"];
+      const withState = (base, state) =>
+        state === "pending" && NO_PENDING.indexOf(base) !== -1
+          ? base
+          : base + " " + base + "--" + state;
+
+      // Headline tile for one phase. A phase can overrun its allocation - the
+      // number keeps climbing past 100% but the bar stops at the end of its
+      // track, and the sub-line switches to counting the overrun.
+      const fillTile = (id, phase) => {
+        const state = stateOf(phase);
+        const pct = (phase.elapsed / phase.alloc) * 100;
+        const remaining = phase.alloc - phase.elapsed;
+        document.getElementById("card" + id).className = withState(
+          "tile",
+          state,
+        );
+        const chip = document.getElementById("status" + id);
+        chip.textContent = STATE_TEXT[state];
+        chip.className = withState("tile__status", state);
+        document.getElementById("tile" + id).innerHTML =
+          fmt(phase.elapsed) +
+          '<span class="unit">of ' +
+          fmt(phase.alloc) +
+          " days</span>";
+        document.getElementById("tile" + id + "Sub").textContent =
+          state === "done"
+            ? "Delivered · " + fmt(pct) + "% of allocation"
+            : remaining < 0
+              ? fmt(pct) + "% of allocation · " + fmt(-remaining) +
+                " days over"
+              : fmt(pct) + "% elapsed · " + fmt(remaining) +
+                " days to go";
+      };
+      const byKey = (key) => PHASES.find((p) => p.key === key);
+      fillTile("Mvp", byKey("mvp"));
+      fillTile("P1", byKey("p1"));
+      fillTile("P15", byKey("p15"));
+      document.getElementById("tileRemaining").innerHTML =
+        fmt(budgetLeft) +
+        '<span class="unit">of ' +
+        TOTAL_BUDGET +
+        " days</span>";
+
+      // Timeline - commented out with its markup at the bottom of the page.
+      // Restore the two together; F1_ALLOC and F2_ALLOC above are kept for it.
+      //
+      // document.getElementById("timelineSub").textContent =
+      //   "Day " + fmt(TOTAL_ELAPSED) + " of " + TOTAL_BUDGET +
+      //   ". Funding 1 paid for the MVP, Funding 2 covers Phase 1 onwards, " +
+      //   "and both draw on the same budget.";
+      //
+      // Section proportions - each funding bar takes its share of the budget
+      // document.getElementById("sectionPre").style.flex = F1_ALLOC + " 0 0";
+      // document.getElementById("sectionFunding2").style.flex =
+      //   F2_ALLOC + " 0 0";
+      // Only budgeted phases take a slice of the bar - an unestimated row has
+      // no width to claim.
+      // funding(2).forEach((phase) => {
+      //   const seg = document.querySelector(
+      //     '.timeline__seg[data-key="' + phase.key + '"]',
+      //   );
+      //   if (seg) seg.style.flexBasis = (phase.alloc / F2_ALLOC) * 100 + "%";
+      // });
+      // The MVP is the whole of its own bar
+      // document.querySelector('.timeline__seg[data-key="mvp"]')
+      //   .style.flexBasis = "100%";
+      // document.getElementById("funding2Note").textContent =
+      //   fmt(F2_ELAPSED) + " days tracked";
 
       // Phase rows: stats, status tag and bar, derived from tracked time
       PHASES.forEach((phase) => {
         const pct = (phase.elapsed / phase.alloc) * 100;
-        const done = phase.elapsed >= phase.alloc;
-        const started = phase.elapsed > 0;
+        const state = stateOf(phase);
 
         document.getElementById(phase.key + "Stats").innerHTML =
-          "<strong>" +
-          fmt(phase.elapsed) +
-          "</strong> / " +
-          phase.alloc +
-          " days · " +
-          fmt(pct) +
-          "%";
+          phase.alloc
+            ? "<strong>" +
+              fmt(phase.elapsed) +
+              "</strong> / " +
+              fmt(phase.alloc) +
+              " days · " +
+              fmt(pct) +
+              "%"
+            : "<strong>" + fmt(phase.elapsed) + "</strong> days tracked";
 
         const tag = document.getElementById(phase.key + "Tag");
-        tag.textContent = started ? "In progress" : "Not started";
-        tag.className =
-          "phase__tag phase__tag--" + (started ? "live" : "pending");
+        tag.textContent = STATE_TEXT[state];
+        tag.className = withState("phase__tag", state);
 
+        // An unbudgeted row has nothing to measure a bar against, so it
+        // hides the track rather than showing an empty one.
         const fill = document.getElementById(phase.key + "Fill");
-        fill.className =
-          "phase__bar-fill" + (started ? " phase__bar-fill--live" : "");
-        fill.dataset.pct = Math.min(100, pct);
+        fill.parentElement.hidden = !phase.alloc;
+        fill.className = withState("phase__bar-fill", state);
+        fill.dataset.pct = phase.alloc ? Math.min(100, pct) : 0;
 
         // Timeline segment tracks the same state
         const seg = document.querySelector(
           '.timeline__seg[data-key="' + phase.key + '"]',
         );
         if (seg) {
-          seg.querySelector(".seg-days").textContent = phase.alloc + "d";
-          seg.className =
-            "timeline__seg timeline__seg--" + (started ? "live" : "pending");
+          seg.querySelector(".seg-days").textContent = fmt(phase.alloc) + "d";
+          seg.className = withState("timeline__seg", state);
           seg.style.setProperty("--live-fill", Math.min(100, pct) + "%");
         }
       });
 
-      // Overall note
-      document.getElementById("overallNote").innerHTML =
+      // Total budget - one bucket, both funding packages inside it
+      document.getElementById("budgetNote").innerHTML =
+        "<strong>" +
+        fmt(budgetLeft) +
+        "</strong> days remaining · " +
+        fmt(usedPct) +
+        "% of the budget used";
+      document.getElementById("budgetF1").innerHTML =
+        "<strong>" + fmt(F1_ELAPSED) + "</strong> days tracked";
+      document.getElementById("budgetF2").innerHTML =
+        "<strong>" + fmt(F2_ELAPSED) + "</strong> days tracked";
+      document.getElementById("budgetTotal").innerHTML =
         "<strong>" +
         fmt(TOTAL_ELAPSED) +
-        "</strong> days elapsed · <strong>" +
-        fmt(TOTAL_POST_MVP - TOTAL_ELAPSED) +
-        "</strong> days remaining";
+        "</strong> / " +
+        TOTAL_BUDGET +
+        " days";
+      // Allocations are set phase by phase, so their sum can drift away from
+      // the funded budget. Say which way it has drifted rather than hide it.
+      const headroom = TOTAL_BUDGET - ALLOCATED;
+      const unbudgeted = PHASES.filter((p) => !p.alloc && p.elapsed > 0);
+      const headroomNote =
+        headroom > 0
+          ? "Task estimates in Solidtime leave " +
+            fmt(headroom) +
+            " days of the budget unallocated."
+          : headroom < 0
+            ? "Task estimates in Solidtime add up to " +
+              fmt(ALLOCATED) +
+              " days, " +
+              fmt(-headroom) +
+              " beyond the funded budget."
+            : "Task estimates in Solidtime account for every funded day.";
+      document.getElementById("budgetHeadroom").textContent = unbudgeted.length
+        ? headroomNote +
+          " " +
+          unbudgeted.map((p) => p.key.toUpperCase()).join(", ") +
+          " carries no estimate, so its tracked days sit outside that."
+        : headroomNote;
 
       document.getElementById("lastUpdated").textContent = LAST_UPDATED;
 
@@ -952,19 +1215,26 @@
           const fill = document.getElementById(phase.key + "Fill");
           fill.style.width = fill.dataset.pct + "%";
         });
-        document.getElementById("overallFill").style.width = overallPct + "%";
+        document.getElementById("budgetFillF1").style.width =
+          (F1_ELAPSED / TOTAL_BUDGET) * 100 + "%";
+        document.getElementById("budgetFillF2").style.width =
+          Math.min(
+            100 - (F1_ELAPSED / TOTAL_BUDGET) * 100,
+            (F2_ELAPSED / TOTAL_BUDGET) * 100,
+          ) + "%";
       });
 
-      // Overall % counter animation
-      const pctEl = document.getElementById("overallPct");
-      const start = performance.now();
-      function animatePct(now) {
-        const t = Math.min(1, (now - start) / 900);
-        const eased = 1 - Math.pow(1 - t, 3);
-        pctEl.textContent = fmt(overallPct * eased);
-        if (t < 1) requestAnimationFrame(animatePct);
+      // Headline counter animation
+      function animateCount(el, target) {
+        const start = performance.now();
+        function step(now) {
+          const t = Math.min(1, (now - start) / 900);
+          el.textContent = fmt(target * (1 - Math.pow(1 - t, 3)));
+          if (t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
       }
-      requestAnimationFrame(animatePct);
+      animateCount(document.getElementById("budgetUsed"), TOTAL_ELAPSED);
 
       // Hide labels in segments too narrow to fit them
       function checkLabels() {

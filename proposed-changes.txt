@@ -1,0 +1,9 @@
+Pre-DSG order: sentence extraction, then ingestion, then post-DSG items.
+
+- New pre-DSG step: sentence extraction. Sentences, heading hierarchy, document reconstruction, and raw SHIELD codes stored in the database but not linked to anything. Split out of current Step 2.
+- Step 2: rephrase as recommendation and safety-issue extraction only, and move below the DSG milestone.
+- Step 1: note the usable MAIB corpus is 659 reports (796 total, 137 scans excluded).
+- Step 1: add that OCR of scanned reports is not in scope.
+- Step 3: keep as-is, now a DSG-target deliverable.
+- Step 6 (second jurisdiction): move into the pre-DSG ingestion group alongside Steps 1 and 3.
+- Step 4 (entity extraction): move below the DSG milestone.
