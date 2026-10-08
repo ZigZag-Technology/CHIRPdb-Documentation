@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHIRPdb - How the Chatbot Works</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/chirp.css" />
+    <style>
+      :root {
+        --navy-tint: #eef2f8;
+      }
+      body {
+        background: var(--bg-soft);
+        color: var(--text);
+        line-height: 1.65;
+      }
+      .intro {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+      }
+      .intro__inner {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 48px 24px 40px;
+      }
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--orange);
+        margin-bottom: 12px;
+      }
+      h1 {
+        font-size: clamp(28px, 4vw, 34px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        color: var(--navy-deep);
+        margin-bottom: 16px;
+      }
+      .lede {
+        font-size: 17px;
+        color: var(--text-soft);
+        max-width: 700px;
+      }
+      .takeaway {
+        margin-top: 28px;
+        padding: 20px 24px;
+        background: var(--orange-tint);
+        border-left: 4px solid var(--orange);
+        border-radius: 10px;
+      }
+      .takeaway__label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--orange-deep);
+        margin-bottom: 6px;
+      }
+      .takeaway p {
+        font-size: 16px;
+        color: var(--navy-deep);
+        font-weight: 500;
+      }
+
+      .figure {
+        max-width: 1320px;
+        margin: 40px auto 0;
+        padding: 0 24px;
+      }
+      .figure__frame {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 12px;
+        box-shadow: var(--shadow-md);
+        overflow-x: auto;
+      }
+      .figure__frame img {
+        display: block;
+        width: 100%;
+        min-width: 900px;
+        height: auto;
+      }
+      .figure__frame--simple {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .figure__frame--simple img {
+        min-width: 640px;
+      }
+      .figure__frame--simple + .figure__caption {
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .figure__caption {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        color: var(--text-mute);
+        margin-top: 10px;
+      }
+      .figure__caption a {
+        color: var(--orange-deep);
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px 96px;
+      }
+      h2 {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--navy-deep);
+        margin: 56px 0 14px;
+      }
+      .container > p {
+        font-size: 16px;
+        color: var(--text-soft);
+        margin-bottom: 14px;
+      }
+      .container strong {
+        color: var(--navy-deep);
+      }
+
+      .parts {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-top: 20px;
+      }
+      .part {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px 22px 24px;
+      }
+      .part--ours {
+        border: 1.5px dashed var(--navy);
+        background: var(--navy-tint);
+      }
+      .part--openai {
+        border: 1.5px solid var(--orange);
+        background: var(--orange-tint);
+      }
+      .part__tag {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--navy);
+        margin-bottom: 6px;
+      }
+      .part--openai .part__tag {
+        color: var(--orange-deep);
+      }
+      .part h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--navy-deep);
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+      }
+      .part p {
+        font-size: 14.5px;
+        color: var(--text-soft);
+      }
+
+      .steps {
+        list-style: none;
+        counter-reset: step;
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .steps li {
+        counter-increment: step;
+        position: relative;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 18px 16px 60px;
+        font-size: 15px;
+        color: var(--text-soft);
+      }
+      .steps li::before {
+        content: counter(step);
+        position: absolute;
+        left: 18px;
+        top: 15px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--navy);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .steps li.is-ai::before {
+        background: var(--orange);
+      }
+      .steps li strong {
+        display: block;
+        margin-bottom: 2px;
+      }
+      .steps__note {
+        font-size: 14px;
+        color: var(--text-mute);
+        margin-top: 12px;
+      }
+
+      .example {
+        margin-top: 18px;
+        padding: 18px 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--navy);
+        border-radius: 10px;
+        font-size: 15px;
+        color: var(--text-soft);
+      }
+      .example p + p {
+        margin-top: 10px;
+      }
+
+      .table-wrap {
+        margin-top: 20px;
+        overflow-x: auto;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        min-width: 560px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-soft);
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      th {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-mute);
+        background: var(--bg-soft);
+      }
+      td:first-child {
+        font-weight: 600;
+        color: var(--navy-deep);
+        width: 32%;
+      }
+      td:nth-child(2) {
+        white-space: nowrap;
+        width: 18%;
+      }
+      .no {
+        color: var(--orange-deep);
+        font-weight: 700;
+      }
+      .yes {
+        color: var(--navy);
+        font-weight: 700;
+      }
+      td:last-child {
+        color: var(--text-soft);
+      }
+
+      @media (max-width: 640px) {
+        .intro__inner {
+          padding: 36px 16px 32px;
+        }
+        .figure,
+        .container {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+        .parts {
+          grid-template-columns: 1fr;
+        }
+        .steps li {
+          padding-left: 54px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a href="../index.html" class="logo">
+          <img
+            src="https://chirp.co.uk/app/uploads/2024/07/chirp-logo-blue.svg"
+            alt="CHIRP"
+            class="logo__img"
+          />
+        </a>
+        <div class="header__spacer"></div>
+        <span class="header__tag">How the chatbot works</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <div class="intro__inner">
+        <div class="eyebrow">Insight Engine · end product</div>
+        <h1>What we build, and what OpenAI provides</h1>
+        <p class="lede">
+          The finished Insight Engine is a free public chatbot that answers
+          questions from CHIRP's verified incident reports. This page shows the
+          parts behind it: the AI model we rent from OpenAI, the harness we
+          build around it, the database it answers from, and how reports get
+          into that database.
+        </p>
+        <div class="takeaway">
+          <div class="takeaway__label">The one thing to take away</div>
+          <p>
+            The OpenAI API is text in, text out. We send it one request and get
+            one reply. It is <strong>stateless</strong>: it keeps nothing between requests, so it does not remember the conversation, search the web,
+            draw charts or read our database. Everything that makes ChatGPT or
+            Claude feel capable is a harness their makers built around the
+            model, and for the Insight Engine we have to build that harness
+            ourselves.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="figure">
+      <div class="figure__frame figure__frame--simple">
+        <img
+          src="simple.svg"
+          alt="Simple diagram: you ask the chatbot; our harness remembers, reads uploads, searches CHIRP's reports, draws charts and cites sources; it sends words to the OpenAI model and gets words back; answers come from CHIRP's checked report database"
+        />
+      </div>
+      <div class="figure__caption">
+        <span>Navy: built by us. Orange: OpenAI.</span>
+        <a href="simple.svg" target="_blank" rel="noopener">Open full size</a>
+      </div>
+    </div>
+
+    <main class="container">
+      <h2>The four parts</h2>
+      <div class="parts">
+        <div class="part part--openai">
+          <div class="part__tag">Rented from OpenAI</div>
+          <h3>The AI model</h3>
+          <p>
+            Reads text and writes text, and is stateless. Each request stands alone: anything it
+            needs to know, including what was said earlier in the
+            conversation, has to be sent again every time. Its reply is either
+            an answer or a request for us to fetch something.
+          </p>
+        </div>
+        <div class="part part--ours">
+          <div class="part__tag">Built by us</div>
+          <h3>The harness</h3>
+          <p>
+            Turns a stateless model into a chatbot. It handles memory, uploads,
+            database searches, charts and tables, legislation look-ups, usage
+            limits and cost caps. It also checks that every claim in an answer
+            cites a verified report.
+          </p>
+        </div>
+        <div class="part part--ours">
+          <div class="part__tag">Built by us</div>
+          <h3>CHIRPdb</h3>
+          <p>
+            The database the chatbot answers from. Every report is broken into
+            sentences, recommendations, safety issues, people, vessels and
+            places, indexed by meaning, with the original PDF kept. The public
+            only ever sees what CHIRP staff have verified.
+          </p>
+        </div>
+        <div class="part part--ours">
+          <div class="part__tag">Built by us</div>
+          <h3>Behind the scenes</h3>
+          <p>
+            The ingestion pipeline reads new reports. The review tool lets CHIRP
+            staff approve what was extracted. The feature sweep adds new detail
+            to every report when users' questions call for it. The first two
+            already exist; Tranche 2 points them at ~15 more jurisdictions.
+          </p>
+        </div>
+      </div>
+
+      <h2>One question, start to finish</h2>
+      <p>
+        Take a seafarer who types:
+        <em>"Help me write a risk assessment for entering a cargo tank."</em>
+      </p>
+      <ol class="steps">
+        <li>
+          <strong>They ask.</strong> The harness checks usage limits and screens
+          for misuse. Any attached photo or draft document is held for this
+          conversation only.
+        </li>
+        <li>
+          <strong>The harness picks out features.</strong> "Enclosed space",
+          "cargo tank", "tanker". Features the database already records can be
+          searched straight away.
+        </li>
+        <li class="is-ai">
+          <strong>One request goes to OpenAI.</strong> It contains instructions,
+          the conversation so far, the question, any attachment, the reports
+          found so far, and a list of things the AI may ask us to fetch.
+        </li>
+        <li class="is-ai">
+          <strong>One reply comes back.</strong> Usually the first reply is
+          something like "search for enclosed-space incidents on tankers",
+          not an answer.
+        </li>
+        <li>
+          <strong>The harness fetches it</strong> from CHIRPdb, adds the results
+          to a fresh request and sends that. Steps 3 to 5 repeat until the reply
+          is an answer.
+        </li>
+        <li>
+          <strong>The harness checks and dresses the answer.</strong> Every
+          claim must cite a verified report, or it isn't shown. Any chart or
+          table is drawn by the harness from database figures, not by the AI.
+        </li>
+        <li>
+          <strong>The seafarer gets a draft risk assessment</strong> built from
+          real incidents, with each hazard linked to the report it came from.
+        </li>
+      </ol>
+      <p class="steps__note">
+        One question can mean several OpenAI requests. Each one is billed, which
+        is why the harness enforces a spending cap.
+      </p>
+
+      <h2>Getting faster with every question</h2>
+      <p>
+        Users will ask about things nobody thought to record. When a question
+        depends on a feature the database doesn't hold yet, the harness starts a
+        <strong>feature sweep</strong>. The sweep sends each report's text to
+        the AI, one request per report, asks whether that feature applies, and
+        stores the answer against the report.
+      </p>
+      <div class="example">
+        <p>
+          <strong>Example.</strong> Someone asks how many groundings happened at
+          night. "Time of day" isn't a recorded field, so the first answer takes
+          a sweep across the corpus.
+        </p>
+        <p>
+          After the sweep, "at night" is a learned feature on every report.
+          The next person to ask anything involving night-time gets an
+          immediate answer from the database, with no sweep and far fewer AI
+          calls.
+        </p>
+      </div>
+      <p style="margin-top: 16px">
+        Learned features are marked as AI-found until a reviewer confirms them,
+        in keeping with the rule that AI proposes and humans verify. Answers
+        that rely on them say so.
+      </p>
+
+      <h2>What comes with the API, and what we build</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>What users expect</th>
+              <th>From OpenAI?</th>
+              <th>What we build</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Understanding a question, writing an answer</td>
+              <td class="yes">Yes</td>
+              <td>The instructions and the records it writes from</td>
+            </tr>
+            <tr>
+              <td>Remembering the conversation</td>
+              <td class="no">No</td>
+              <td>Storing every turn and resending it with each request</td>
+            </tr>
+            <tr>
+              <td>Answers drawn from CHIRP's reports</td>
+              <td class="no">No</td>
+              <td>The database, its search, and the fetch loop</td>
+            </tr>
+            <tr>
+              <td>Every claim cited to a source</td>
+              <td class="no">No</td>
+              <td>Citation checks against verified records, and links to the PDF</td>
+            </tr>
+            <tr>
+              <td>Charts, tables, heat maps, timelines</td>
+              <td class="no">No</td>
+              <td>Drawing them from database figures in the chat</td>
+            </tr>
+            <tr>
+              <td>Reading a photo or uploaded document</td>
+              <td class="yes">Partly</td>
+              <td>The model can read what we send it; we handle upload, storage and deletion</td>
+            </tr>
+            <tr>
+              <td>Looking things up on the web</td>
+              <td class="no">No</td>
+              <td>Legislation look-ups, flagged for the user to check</td>
+            </tr>
+            <tr>
+              <td>Getting faster and smarter with use</td>
+              <td class="no">No</td>
+              <td>Learned features and the feature sweep</td>
+            </tr>
+            <tr>
+              <td>Safe for the public, affordable to run</td>
+              <td class="no">No</td>
+              <td>Usage limits, spending cap, misuse checks, monitoring; room for paid tiers in Tranche 3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>

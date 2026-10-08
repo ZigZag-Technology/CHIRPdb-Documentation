@@ -1,0 +1,306 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1290 1100" width="1290" height="1100" role="img" aria-labelledby="t d">
+  <title id="t">The Insight Engine: the AI model and the harness around it</title>
+  <desc id="d">A user asks the chatbot a question. Our harness splits it into features, sends one request to the OpenAI API and gets one text reply back: an answer, or a request to fetch something. The harness fetches it from CHIRPdb and asks again until the AI answers, then checks citations, draws charts and shows the cited answer. Behind the scenes, the ingestion pipeline reads new reports with the AI, CHIRP staff verify the results in the review tool, and a feature sweep adds new features to the database when questions need them. Every use of OpenAI is one request and one reply.</desc>
+  <defs>
+    <style>
+      text { font-family: Inter, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: #1a2238; }
+      .h1 { font-size: 20px; font-weight: 800; fill: #0c2547; }
+      .sub { font-size: 12px; fill: #5a6478; }
+      .ttl { font-size: 13.5px; font-weight: 700; fill: #0c2547; }
+      .ttlS { font-size: 12.5px; font-weight: 700; fill: #0c2547; }
+      .ln { font-size: 11.5px; fill: #5a6478; }
+      .lnS { font-size: 11px; fill: #5a6478; }
+      .kick { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; fill: #15375e; }
+      .kickO { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; fill: #e26f0f; }
+      .lab { font-size: 10.5px; fill: #5a6478; }
+      .labB { font-size: 10.5px; font-weight: 700; fill: #0c2547; }
+      .labO { font-size: 11px; font-weight: 700; fill: #e26f0f; }
+      .big { font-size: 17px; font-weight: 800; fill: #0c2547; }
+      .wT { font-size: 15px; font-weight: 700; fill: #fff; }
+      .wL { font-size: 12px; fill: rgba(255, 255, 255, 0.86); }
+      .num { font-size: 10.5px; font-weight: 700; fill: #fff; }
+      .box { fill: #fff; stroke: #c9d3e0; stroke-width: 1.2; }
+      .boxN { fill: #fff; stroke: #15375e; stroke-width: 1.5; }
+      .cell { fill: #f7f8fa; stroke: #e5e7eb; }
+      .zone { fill: #eef2f8; stroke: #15375e; stroke-width: 1.4; stroke-dasharray: 7 5; }
+      .arr { stroke: #15375e; stroke-width: 1.6; fill: none; }
+      .arrO { stroke: #f58220; stroke-width: 1.8; fill: none; }
+    </style>
+    <marker id="aN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#15375e" />
+    </marker>
+    <marker id="aO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#f58220" />
+    </marker>
+  </defs>
+
+  <rect width="1290" height="1100" fill="#f7f8fa" />
+
+  <text x="40" y="40" class="h1">The Insight Engine: the AI model and the harness around it</text>
+  <text x="40" y="60" class="sub">Public chatbot, end product · what we build and what OpenAI provides</text>
+
+  <!-- legend, top right -->
+  <rect x="790" y="38" width="14" height="14" rx="3" fill="#eef2f8" stroke="#15375e" stroke-dasharray="3 2" />
+  <text x="810" y="49" class="ln">Built and run by us</text>
+  <rect x="940" y="38" width="14" height="14" rx="3" fill="#fff8f0" stroke="#f58220" />
+  <text x="960" y="49" class="ln">OpenAI, paid per request</text>
+  <line x1="1110" y1="45" x2="1128" y2="45" class="arr" marker-start="url(#aN)" marker-end="url(#aN)" />
+  <text x="1136" y="49" class="ln">Reads and writes</text>
+
+  <!-- ================= LEFT COLUMN ================= -->
+  <rect x="40" y="88" width="200" height="56" rx="10" class="box" />
+  <text x="140" y="111" text-anchor="middle" class="ttl">People asking</text>
+  <text x="140" y="130" text-anchor="middle" class="ln">seafarers, analysts, public</text>
+  <line x1="140" y1="144" x2="140" y2="158" class="arr" marker-end="url(#aN)" />
+
+  <rect x="40" y="160" width="200" height="180" rx="12" class="boxN" />
+  <text x="58" y="188" class="ttl">Chatbot</text>
+  <text x="58" y="211" class="ln">Ask a question</text>
+  <text x="58" y="229" class="ln">Paste text or attach a</text>
+  <text x="58" y="245" class="ln">photo or document</text>
+  <text x="58" y="263" class="ln">Get an answer with every</text>
+  <text x="58" y="279" class="ln">claim cited, plus charts</text>
+  <text x="58" y="295" class="ln">and tables</text>
+  <text x="58" y="313" class="ln">Open the source report</text>
+
+  <text x="40" y="384" class="kick">ONE QUESTION</text>
+  <circle cx="50" cy="406" r="9" fill="#15375e" /><text x="50" y="410" text-anchor="middle" class="num">1</text>
+  <text x="66" y="410" class="ln">Ask, with any attachments</text>
+  <circle cx="50" cy="430" r="9" fill="#15375e" /><text x="50" y="434" text-anchor="middle" class="num">2</text>
+  <text x="66" y="434" class="ln">Match features we know</text>
+  <circle cx="50" cy="454" r="9" fill="#f58220" /><text x="50" y="458" text-anchor="middle" class="num">3</text>
+  <text x="66" y="458" class="ln">Send one request to the AI</text>
+  <circle cx="50" cy="478" r="9" fill="#f58220" /><text x="50" y="482" text-anchor="middle" class="num">4</text>
+  <text x="66" y="482" class="ln">Get one text reply back</text>
+  <circle cx="50" cy="502" r="9" fill="#15375e" /><text x="50" y="506" text-anchor="middle" class="num">5</text>
+  <text x="66" y="506" class="ln">Fetch what it asked for</text>
+  <circle cx="50" cy="526" r="9" fill="#15375e" /><text x="50" y="530" text-anchor="middle" class="num">6</text>
+  <text x="66" y="530" class="ln">Check citations, draw charts</text>
+  <circle cx="50" cy="550" r="9" fill="#15375e" /><text x="50" y="554" text-anchor="middle" class="num">7</text>
+  <text x="66" y="554" class="ln">Show the cited answer</text>
+
+  <rect x="40" y="590" width="200" height="232" rx="12" fill="#fff" stroke="#f58220" stroke-width="1.2" stroke-dasharray="5 4" />
+  <text x="56" y="616" class="kickO">WHY NOT USE CHATGPT?</text>
+  <text x="56" y="642" class="ln">ChatGPT and Claude are</text>
+  <text x="56" y="658" class="ln">apps. Their makers wrapped</text>
+  <text x="56" y="674" class="ln">the model in a harness like</text>
+  <text x="56" y="690" class="ln">ours: memory, uploads, web</text>
+  <text x="56" y="706" class="ln">search, charts.</text>
+  <text x="56" y="732" class="ln">The API rents us the bare</text>
+  <text x="56" y="748" class="ln">model. Everything in the</text>
+  <text x="56" y="764" class="ln">dashed boxes is ours to</text>
+  <text x="56" y="780" class="ln">build, host and pay for.</text>
+
+  <rect x="40" y="880" width="200" height="140" rx="12" class="box" />
+  <text x="58" y="906" class="ttl">Report sources</text>
+  <text x="58" y="929" class="ln">Official reports from</text>
+  <text x="58" y="945" class="ln">~15 jurisdictions</text>
+  <text x="58" y="967" class="ln">Short free-text reports</text>
+  <text x="58" y="989" class="ln">Incident spreadsheets</text>
+
+  <!-- ================= BAND A: HARNESS ================= -->
+  <rect x="290" y="80" width="600" height="452" rx="16" class="zone" />
+  <text x="310" y="106" class="kick">THE HARNESS</text>
+  <text x="408" y="106" class="sub">What we build. Everything that makes it feel like ChatGPT lives here.</text>
+
+  <rect x="310" y="122" width="270" height="72" rx="10" class="box" />
+  <text x="326" y="145" class="ttl">Safety and access</text>
+  <text x="326" y="165" class="ln">Usage limits, a spending cap, misuse</text>
+  <text x="326" y="182" class="ln">checks. Free now; paid tiers can follow.</text>
+
+  <rect x="600" y="122" width="270" height="72" rx="10" class="box" />
+  <text x="616" y="145" class="ttl">Your uploads</text>
+  <text x="616" y="165" class="ln">Text, photos and documents, read for</text>
+  <text x="616" y="182" class="ln">this conversation only, then deleted</text>
+
+  <line x1="445" y1="194" x2="445" y2="214" class="arr" marker-end="url(#aN)" />
+  <line x1="735" y1="194" x2="735" y2="214" class="arr" marker-end="url(#aN)" />
+
+  <rect x="310" y="216" width="560" height="114" rx="12" fill="#15375e" />
+  <text x="330" y="243" class="wT">The coordinator</text>
+  <text x="330" y="267" class="wL">Packs everything the AI needs into one request: the conversation, records, uploads</text>
+  <text x="330" y="287" class="wL">Does whatever the AI asks for, such as searching the database, then asks again</text>
+  <text x="330" y="307" class="wL">Checks every claim is cited to a verified report before anything is shown</text>
+
+  <line x1="362" y1="332" x2="362" y2="356" class="arr" marker-start="url(#aN)" marker-end="url(#aN)" />
+  <line x1="476" y1="332" x2="476" y2="356" class="arr" marker-start="url(#aN)" marker-end="url(#aN)" />
+  <line x1="590" y1="332" x2="590" y2="356" class="arr" marker-start="url(#aN)" marker-end="url(#aN)" />
+  <line x1="704" y1="332" x2="704" y2="356" class="arr" marker-start="url(#aN)" marker-end="url(#aN)" />
+  <line x1="818" y1="332" x2="818" y2="356" class="arr" marker-start="url(#aN)" marker-end="url(#aN)" />
+
+  <rect x="310" y="358" width="104" height="156" rx="10" class="box" />
+  <text x="320" y="382" class="ttlS">Memory</text>
+  <text x="320" y="403" class="lnS">Sends the whole</text>
+  <text x="320" y="418" class="lnS">chat again each</text>
+  <text x="320" y="433" class="lnS">time. The AI</text>
+  <text x="320" y="448" class="lnS">forgets between</text>
+  <text x="320" y="463" class="lnS">messages.</text>
+
+  <rect x="424" y="358" width="104" height="156" rx="10" class="box" />
+  <text x="434" y="382" class="ttlS">Features</text>
+  <circle cx="514" cy="498" r="9" fill="#15375e" /><text x="514" y="502" text-anchor="middle" class="num">2</text>
+  <text x="434" y="403" class="lnS">Breaks questions</text>
+  <text x="434" y="418" class="lnS">into features,</text>
+  <text x="434" y="433" class="lnS">e.g. "at night".</text>
+  <text x="434" y="452" class="lnS">Known features</text>
+  <text x="434" y="467" class="lnS">answer at once;</text>
+  <text x="434" y="482" class="lnS">new ones start</text>
+  <text x="434" y="497" class="lnS">a sweep.</text>
+
+  <rect x="538" y="358" width="104" height="156" rx="10" class="box" />
+  <text x="548" y="382" class="ttlS">Find reports</text>
+  <circle cx="628" cy="498" r="9" fill="#15375e" /><text x="628" y="502" text-anchor="middle" class="num">5</text>
+  <text x="548" y="403" class="lnS">Finds verified</text>
+  <text x="548" y="418" class="lnS">reports by</text>
+  <text x="548" y="433" class="lnS">meaning and by</text>
+  <text x="548" y="448" class="lnS">feature, plus</text>
+  <text x="548" y="463" class="lnS">similar cases</text>
+  <text x="548" y="478" class="lnS">and source PDFs.</text>
+
+  <rect x="652" y="358" width="104" height="156" rx="10" class="box" />
+  <text x="662" y="382" class="ttlS">Charts, tables</text>
+  <circle cx="742" cy="498" r="9" fill="#15375e" /><text x="742" y="502" text-anchor="middle" class="num">6</text>
+  <text x="662" y="403" class="lnS">Drawn by us from</text>
+  <text x="662" y="418" class="lnS">database figures.</text>
+  <text x="662" y="437" class="lnS">The AI only</text>
+  <text x="662" y="452" class="lnS">writes text.</text>
+
+  <rect x="766" y="358" width="104" height="156" rx="10" class="box" />
+  <text x="776" y="382" class="ttlS">Web look-up</text>
+  <text x="776" y="403" class="lnS">Searches public</text>
+  <text x="776" y="418" class="lnS">legislation sites.</text>
+  <text x="776" y="437" class="lnS">Links are flagged</text>
+  <text x="776" y="452" class="lnS">for the user</text>
+  <text x="776" y="467" class="lnS">to check.</text>
+
+  <!-- chat in / out -->
+  <line x1="240" y1="176" x2="308" y2="176" class="arr" marker-end="url(#aN)" />
+  <circle cx="268" cy="176" r="9" fill="#15375e" /><text x="268" y="180" text-anchor="middle" class="num">1</text>
+  <line x1="310" y1="306" x2="242" y2="306" class="arr" marker-end="url(#aN)" />
+  <circle cx="280" cy="306" r="9" fill="#15375e" /><text x="280" y="310" text-anchor="middle" class="num">7</text>
+
+  <!-- ================= OPENAI COLUMN ================= -->
+  <rect x="1050" y="150" width="200" height="890" rx="14" fill="#fff8f0" stroke="#f58220" stroke-width="1.8" />
+  <text x="1068" y="178" class="kickO">OPENAI API</text>
+  <text x="1068" y="196" class="lab">the AI model, rented per request</text>
+  <line x1="1068" y1="208" x2="1232" y2="208" stroke="#f5c9a0" />
+  <text x="1068" y="236" class="big">Text in, text out.</text>
+  <text x="1068" y="258" class="ttl">One request, one reply.</text>
+  <text x="1068" y="284" class="ln"><tspan font-weight="700" fill="#e26f0f">Stateless:</tspan> remembers nothing.</text>
+  <text x="1068" y="302" class="ln">No charts. No internet.</text>
+  <text x="1068" y="320" class="ln">No access to our database.</text>
+  <text x="1068" y="344" class="ln">Its reply is either an answer</text>
+  <text x="1068" y="360" class="ln">or a request for us to fetch</text>
+  <text x="1068" y="376" class="ln">something.</text>
+  <text x="1068" y="410" class="lab">In a chat, steps 3 to 5 repeat</text>
+  <text x="1068" y="424" class="lab">until the reply is an answer.</text>
+
+  <line x1="1068" y1="840" x2="1232" y2="840" stroke="#f5c9a0" />
+  <text x="1068" y="866" class="kickO">ALSO USED BY</text>
+  <text x="1068" y="888" class="ln">the feature sweep, once</text>
+  <text x="1068" y="904" class="ln">per report it checks</text>
+  <text x="1068" y="928" class="ln">the ingestion pipeline,</text>
+  <text x="1068" y="944" class="ln">to read report pages</text>
+  <text x="1068" y="972" class="ln">Same rule every time: one</text>
+  <text x="1068" y="988" class="ln">request, one reply. It never</text>
+  <text x="1068" y="1004" class="ln">sees the database itself.</text>
+
+  <line x1="870" y1="248" x2="1048" y2="248" class="arrO" marker-end="url(#aO)" />
+  <circle cx="904" cy="248" r="9" fill="#f58220" /><text x="904" y="252" text-anchor="middle" class="num">3</text>
+  <text x="972" y="240" text-anchor="middle" class="labO">One request</text>
+  <text x="970" y="264" text-anchor="middle" class="lab">all the text it needs</text>
+
+  <line x1="1050" y1="306" x2="872" y2="306" class="arrO" marker-end="url(#aO)" />
+  <circle cx="904" cy="306" r="9" fill="#f58220" /><text x="904" y="310" text-anchor="middle" class="num">4</text>
+  <text x="972" y="298" text-anchor="middle" class="labO">One reply</text>
+  <text x="970" y="322" text-anchor="middle" class="lab">answer, or "fetch X"</text>
+
+  <!-- ================= BAND B: DATABASE ================= -->
+  <line x1="362" y1="514" x2="362" y2="616" class="arr" marker-start="url(#aN)" marker-end="url(#aN)" />
+  <line x1="476" y1="514" x2="476" y2="616" class="arr" marker-start="url(#aN)" marker-end="url(#aN)" />
+  <line x1="600" y1="616" x2="600" y2="516" class="arr" marker-end="url(#aN)" />
+  <text x="368" y="560" class="lab">load · add</text>
+  <text x="482" y="560" class="lab">look up</text>
+  <text x="606" y="560" class="lab">read only</text>
+
+  <rect x="290" y="572" width="600" height="250" rx="16" fill="#fff" stroke="#15375e" stroke-width="1.5" />
+  <text x="310" y="598" class="kick">CHIRPDB</text>
+  <text x="372" y="598" class="sub">our database, which holds everything the chatbot can say</text>
+
+  <rect x="310" y="618" width="104" height="186" rx="10" class="cell" />
+  <text x="320" y="642" class="ttlS">Conversations</text>
+  <text x="320" y="663" class="lnS">Messages and</text>
+  <text x="320" y="678" class="lnS">uploads, deleted</text>
+  <text x="320" y="693" class="lnS">when the</text>
+  <text x="320" y="708" class="lnS">conversation</text>
+  <text x="320" y="723" class="lnS">ends.</text>
+
+  <rect x="424" y="618" width="136" height="186" rx="10" class="cell" />
+  <text x="434" y="642" class="ttlS">Learned features</text>
+  <text x="434" y="663" class="lnS">Features that past</text>
+  <text x="434" y="678" class="lnS">questions needed,</text>
+  <text x="434" y="693" class="lnS">recorded against</text>
+  <text x="434" y="708" class="lnS">every report.</text>
+  <text x="434" y="729" class="lnS">Marked as AI-found</text>
+  <text x="434" y="744" class="lnS">until a reviewer</text>
+  <text x="434" y="759" class="lnS">confirms them.</text>
+  <text x="434" y="788" class="labB">Grows with use</text>
+
+  <rect x="570" y="618" width="196" height="186" rx="10" class="cell" />
+  <text x="582" y="642" class="ttlS">Reports</text>
+  <text x="582" y="663" class="lnS">Every report broken into</text>
+  <text x="582" y="678" class="lnS">sentences, recommendations,</text>
+  <text x="582" y="693" class="lnS">safety issues, people,</text>
+  <text x="582" y="708" class="lnS">vessels and places, each</text>
+  <text x="582" y="723" class="lnS">indexed by meaning.</text>
+  <text x="582" y="744" class="lnS">The public chatbot sees</text>
+  <text x="582" y="759" class="lnS">only what CHIRP staff have</text>
+  <text x="582" y="774" class="lnS">verified and de-identified.</text>
+
+  <rect x="776" y="618" width="94" height="186" rx="10" class="cell" />
+  <text x="786" y="642" class="ttlS">Source PDFs</text>
+  <text x="786" y="663" class="lnS">The original</text>
+  <text x="786" y="678" class="lnS">document</text>
+  <text x="786" y="693" class="lnS">behind every</text>
+  <text x="786" y="708" class="lnS">citation.</text>
+
+  <!-- ================= BAND C: BEHIND THE SCENES ================= -->
+  <rect x="290" y="862" width="600" height="178" rx="16" class="zone" />
+  <text x="310" y="888" class="kick">BEHIND THE SCENES</text>
+
+  <rect x="305" y="902" width="180" height="122" rx="10" class="box" />
+  <text x="319" y="925" class="ttlS">Ingestion pipeline</text>
+  <text x="319" y="945" class="lnS">Reads each new report page</text>
+  <text x="319" y="960" class="lnS">by page with the AI, and</text>
+  <text x="319" y="975" class="lnS">stores what it finds plus</text>
+  <text x="319" y="990" class="lnS">the PDF, awaiting review.</text>
+
+  <rect x="500" y="902" width="180" height="122" rx="10" class="box" />
+  <text x="514" y="925" class="ttlS">Review tool</text>
+  <text x="514" y="945" class="lnS">CHIRP staff check, correct</text>
+  <text x="514" y="960" class="lnS">and approve what the AI</text>
+  <text x="514" y="975" class="lnS">found. Nothing reaches the</text>
+  <text x="514" y="990" class="lnS">public until approved.</text>
+
+  <rect x="695" y="902" width="180" height="122" rx="10" class="box" />
+  <text x="709" y="925" class="ttlS">Feature sweep</text>
+  <text x="709" y="945" class="lnS">When a question needs a</text>
+  <text x="709" y="960" class="lnS">feature we don't record, it</text>
+  <text x="709" y="975" class="lnS">asks the AI about each</text>
+  <text x="709" y="990" class="lnS">report and saves the answer,</text>
+  <text x="709" y="1005" class="lnS">so the next ask is instant.</text>
+
+  <line x1="465" y1="902" x2="465" y2="824" class="arr" marker-end="url(#aN)" />
+  <text x="471" y="846" class="lab">new reports</text>
+  <line x1="640" y1="902" x2="640" y2="824" class="arr" marker-start="url(#aN)" marker-end="url(#aN)" />
+  <text x="646" y="846" class="lab">approve · correct</text>
+  <line x1="785" y1="902" x2="785" y2="824" class="arr" marker-start="url(#aN)" marker-end="url(#aN)" />
+  <text x="791" y="846" class="lab">read text · add</text>
+
+  <line x1="240" y1="950" x2="303" y2="950" class="arr" marker-end="url(#aN)" />
+
+  <line x1="875" y1="940" x2="1048" y2="940" class="arrO" marker-start="url(#aO)" marker-end="url(#aO)" />
+  <text x="962" y="932" text-anchor="middle" class="labO">one per report</text>
+  <path d="M395 1024 V1068 H1150 V1042" class="arrO" marker-start="url(#aO)" marker-end="url(#aO)" />
+  <text x="722" y="1062" text-anchor="middle" class="labO">one request, one reply per batch of pages</text>
+</svg>
