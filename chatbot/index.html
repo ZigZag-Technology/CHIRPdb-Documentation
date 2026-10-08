@@ -356,7 +356,7 @@
       <div class="figure__frame figure__frame--simple">
         <img
           src="simple.svg"
-          alt="Simple diagram: you ask the chatbot; our harness remembers, reads uploads, searches CHIRP's reports, draws charts and cites sources; it sends words to the OpenAI model and gets words back; answers come from CHIRP's checked report database"
+          alt="Simple diagram: you ask the chatbot; our harness remembers, reads uploads, searches CHIRP's reports and cites sources; it sends words to the OpenAI model and gets words back; answers come from CHIRP's checked report database"
         />
       </div>
       <div class="figure__caption">
@@ -383,8 +383,8 @@
           <h3>The harness</h3>
           <p>
             Turns a stateless model into a chatbot. It handles memory, uploads,
-            database searches, charts and tables, legislation look-ups, usage
-            limits and cost caps. It also checks that every claim in an answer
+            database searches, legislation look-ups, usage limits and cost caps,
+            and charts if they are brought into scope. It also checks that every claim in an answer
             cites a verified report.
           </p>
         </div>
@@ -442,9 +442,8 @@
           is an answer.
         </li>
         <li>
-          <strong>The harness checks and dresses the answer.</strong> Every
-          claim must cite a verified report, or it isn't shown. Any chart or
-          table is drawn by the harness from database figures, not by the AI.
+          <strong>The harness checks the answer.</strong> Every claim must
+          cite a verified report, or it isn't shown.
         </li>
         <li>
           <strong>The seafarer gets a reply in the chat:</strong> what has gone
@@ -518,7 +517,7 @@
             <tr>
               <td>Charts, tables, heat maps, timelines</td>
               <td class="no">No</td>
-              <td>Drawing them from database figures in the chat</td>
+              <td>Not yet in scope. If wanted, the harness would draw them from database figures</td>
             </tr>
             <tr>
               <td>Reading a photo or uploaded document</td>

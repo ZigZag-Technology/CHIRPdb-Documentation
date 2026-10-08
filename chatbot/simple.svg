@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 890" width="1000" height="890" role="img" aria-labelledby="t d">
   <title id="t">The Insight Engine</title>
-  <desc id="d">You ask a question. The harness we build remembers the conversation, reads uploads, searches CHIRP's reports, draws charts and cites sources. It sends words to the OpenAI LLM model and gets words back. The answers come from CHIRP's report database, which CHIRP staff check.</desc>
+  <desc id="d">You ask a question. The harness we build remembers the conversation, reads uploads, searches CHIRP's reports and cites sources. Charts and maps are not yet in scope. It sends words to the OpenAI LLM model and gets words back. The answers come from CHIRP's report database, which CHIRP staff check.</desc>
   <defs>
     <style>
       text { font-family: Inter, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: #1a2238; }
@@ -46,7 +46,7 @@
     <circle cx="304" cy="192" r="4" fill="#15375e" /><text x="318" y="197" class="ln">Remembers the conversation</text>
     <circle cx="304" cy="224" r="4" fill="#15375e" /><text x="318" y="229" class="ln">Reads your photos and documents</text>
     <circle cx="304" cy="256" r="4" fill="#15375e" /><text x="318" y="261" class="ln">Searches CHIRP's reports</text>
-    <circle cx="304" cy="288" r="4" fill="#15375e" /><text x="318" y="293" class="ln">Draws charts, tables and maps</text>
+    <circle cx="304" cy="288" r="4" fill="#15375e" /><text x="318" y="293" class="ln">Charts and maps, if in scope</text>
     <circle cx="304" cy="320" r="4" fill="#15375e" /><text x="318" y="325" class="ln">Cites a report for every claim</text>
     <circle cx="304" cy="352" r="4" fill="#15375e" /><text x="318" y="357" class="ln">Learns from past questions</text>
   </g>
@@ -119,9 +119,9 @@
   <text x="369" y="731" class="lnS">Ours wraps OpenAI's LLM. It</text>
   <text x="369" y="748" class="lnS">remembers the chat, reads uploads,</text>
   <text x="369" y="765" class="lnS">searches the database and the web,</text>
-  <text x="369" y="782" class="lnS">draws heat maps, charts, maps and</text>
-  <text x="369" y="799" class="lnS">tables, checks every citation, and</text>
-  <text x="369" y="816" class="lnS">keeps usage and costs in limits.</text>
+  <text x="369" y="782" class="lnS">checks every citation and keeps</text>
+  <text x="369" y="799" class="lnS">usage and costs in limits. Charts or</text>
+  <text x="369" y="816" class="lnS">heat maps, if wanted, live here too.</text>
 
   <rect x="667" y="640" width="293" height="228" rx="12" fill="#fff" stroke="#15375e" stroke-width="1.6" />
   <text x="683" y="666" class="ttl" style="font-size:15px">Everything else</text>
