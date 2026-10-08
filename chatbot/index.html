@@ -342,11 +342,12 @@
           <div class="takeaway__label">The one thing to take away</div>
           <p>
             The OpenAI API is text in, text out. We send it one request and get
-            one reply. It is <strong>stateless</strong>: it keeps nothing between requests, so it does not remember the conversation, search the web,
-            draw charts or read our database. Everything that makes ChatGPT or
-            Claude feel capable is a harness their makers built around the
-            model, and for the Insight Engine we have to build that harness
-            ourselves.
+            one reply. It is <strong>stateless</strong>: it keeps nothing
+            between requests, so it does not remember the conversation, search
+            the web, draw charts or read our database. Everything that makes
+            ChatGPT or Claude feel capable is a harness their makers built
+            around the model, and for the Insight Engine we have to build that
+            harness ourselves.
           </p>
         </div>
       </div>
@@ -372,10 +373,10 @@
           <div class="part__tag">Rented from OpenAI</div>
           <h3>The AI model</h3>
           <p>
-            Reads text and writes text, and is stateless. Each request stands alone: anything it
-            needs to know, including what was said earlier in the
-            conversation, has to be sent again every time. Its reply is either
-            an answer or a request for us to fetch something.
+            Reads text and writes text, and is stateless. Each request stands
+            alone: anything it needs to know, including what was said earlier in
+            the conversation, has to be sent again every time. Its reply is
+            either an answer or a request for us to fetch something.
           </p>
         </div>
         <div class="part part--ours">
@@ -384,8 +385,8 @@
           <p>
             Turns a stateless model into a chatbot. It handles memory, uploads,
             database searches, legislation look-ups, usage limits and cost caps,
-            and charts if they are brought into scope. It also checks that every claim in an answer
-            cites a verified report.
+            and charts if they are brought into scope. It also checks that every
+            claim in an answer cites a verified report.
           </p>
         </div>
         <div class="part part--ours">
@@ -413,7 +414,10 @@
       <h2>One question, start to finish</h2>
       <p>
         Take a seafarer who types:
-        <em>"I'm about to enter a cargo tank. What's gone wrong for others doing this?"</em>
+        <em
+          >"I'm about to enter a cargo tank. What's gone wrong for others doing
+          this?"</em
+        >
       </p>
       <ol class="steps">
         <li>
@@ -433,22 +437,22 @@
         </li>
         <li class="is-ai">
           <strong>One reply comes back.</strong> Usually the first reply is
-          something like "search for enclosed-space incidents on tankers",
-          not an answer.
+          something like "search for enclosed-space incidents on tankers", not
+          an answer.
         </li>
         <li>
-          <strong>The harness fetches it</strong> from CHIRPdb, adds the results
-          to a fresh request and sends that. Steps 3 to 5 repeat until the reply
-          is an answer.
+          <strong>The harness fetches it.</strong> from CHIRPdb, adds the
+          results to a fresh request and sends that. Steps 3 to 5 repeat until
+          the reply is an answer.
         </li>
         <li>
-          <strong>The harness checks the answer.</strong> Every claim must
-          cite a verified report, or it isn't shown.
+          <strong>The harness checks the answer.</strong> Every claim must cite
+          a verified report, or it isn't shown.
         </li>
         <li>
           <strong>The seafarer gets a reply in the chat:</strong> what has gone
-          wrong in similar entries, with each point linked to the report it
-          came from. They can ask a follow-up, and the conversation carries on.
+          wrong in similar entries, with each point linked to the report it came
+          from. They can ask a follow-up, and the conversation carries on.
         </li>
       </ol>
       <p class="steps__note">
@@ -471,10 +475,9 @@
           a sweep across the corpus.
         </p>
         <p>
-          After the sweep, "at night" is a learned feature on every report.
-          The next person to ask anything involving night-time gets an
-          immediate answer from the database, with no sweep and far fewer AI
-          calls.
+          After the sweep, "at night" is a learned feature on every report. The
+          next person to ask anything involving night-time gets an immediate
+          answer from the database, with no sweep and far fewer AI calls.
         </p>
       </div>
       <p style="margin-top: 16px">
@@ -512,17 +515,25 @@
             <tr>
               <td>Every claim cited to a source</td>
               <td class="no">No</td>
-              <td>Citation checks against verified records, and links to the PDF</td>
+              <td>
+                Citation checks against verified records, and links to the PDF
+              </td>
             </tr>
             <tr>
               <td>Charts, tables, heat maps, timelines</td>
               <td class="no">No</td>
-              <td>Not yet in scope. If wanted, the harness would draw them from database figures</td>
+              <td>
+                Not yet in scope. If wanted, the harness would draw them from
+                database figures
+              </td>
             </tr>
             <tr>
               <td>Reading a photo or uploaded document</td>
               <td class="yes">Partly</td>
-              <td>The model can read what we send it; we handle upload, storage and deletion</td>
+              <td>
+                The model can read what we send it; we handle upload, storage
+                and deletion
+              </td>
             </tr>
             <tr>
               <td>Looking things up on the web</td>
@@ -537,7 +548,10 @@
             <tr>
               <td>Safe for the public, affordable to run</td>
               <td class="no">No</td>
-              <td>Usage limits, spending cap, misuse checks, monitoring; room for paid tiers in Tranche 3</td>
+              <td>
+                Usage limits, spending cap, misuse checks, monitoring; room for
+                paid tiers in Tranche 3
+              </td>
             </tr>
           </tbody>
         </table>
