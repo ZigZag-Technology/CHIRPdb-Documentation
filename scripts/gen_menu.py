@@ -85,7 +85,7 @@ PLATFORM = [
 
 SOURCES = [
     ("src-chirp", "Must", "CHIRP Maritime published reports", 3),
-    ("src-digests", "Must", "MAIB Safety Digests and bulletins", 2),
+    ("src-digests", "Must", "MAIB Safety Digests", 2),
     ("src-link-official", "Must", "Accident linking, official reports: a report on an accident we already hold is kept and linked to that accident, never rejected (several countries’ reports on one accident, digests to the report they summarise; duplicate PDFs are already caught)", 2),
     ("src-freetext", "Should", "Generic free-text ingestion", 4),
     ("src-gisis", "Should", "IMO GISIS casualty module", 4),
@@ -159,7 +159,7 @@ BUNDLES = [
         ("Analyst tool: find what keeps recurring across all reports, with the supporting cases, and a first-draft outline of a write-up (<a href=\"#analyst\">section B</a>)", ["analyst-patterns"]),
         ("Analyst tool: proposed coding and similar cases for each report CHIRP receives (<a href=\"#analyst\">section B</a>)", ["analyst-coding"]),
         ("Ingest CHIRP Maritime’s own published reports, a new report format (<a href=\"#sources\">section D</a>)", ["src-chirp"]),
-        ("Ingest MAIB Safety Digests and bulletins, a new report format (<a href=\"#sources\">section D</a>)", ["src-digests"]),
+        ("Ingest MAIB Safety Digests, a new report format (<a href=\"#sources\">section D</a>)", ["src-digests"]),
         ("Link reports that describe the same accident, across countries and digests (<a href=\"#sources\">section D</a>)", ["src-link-official"]),
     ]),
     ("Silver", "Bronze plus every Should", [
