@@ -25,12 +25,12 @@ END = "      <!-- END gen_menu -->"
 
 DAY_RATE = 500
 CONTINGENCY = 0.20
-PM = 0.15  # on build days plus contingency
-BUILD_RATE = DAY_RATE * (1 + CONTINGENCY) * (1 + PM)  # 690
+PM = 0.25  # on build days plus contingency
+BUILD_RATE = DAY_RATE * (1 + CONTINGENCY) * (1 + PM)  # 750
 BODY_RATE = DAY_RATE  # no contingency or PM
 BODY_DAYS = 2.5
 
-BUILD_COST_HEAD = "Cost (£500/day + 20% contingency + 15% PM)"
+BUILD_COST_HEAD = "Cost (£500/day + 20% contingency + 25% PM)"
 BODY_TAG = "no PM or contingency"
 
 PRIORITY_ORDER = ["Must", "Should", "Could", "Won't"]
@@ -264,7 +264,7 @@ def basis():
     rows = [
         (None, [("Day rate", False), ("£500", False)]),
         (None, [("Contingency", False), ("20% on build days", False)]),
-        (None, [("Project management", False), ("15% on build days plus contingency", False)]),
+        (None, [("Project management", False), ("25% on build days plus contingency", False)]),
         (None, [("Investigation bodies", False), ("Billed at £500 a day, no contingency or project management", False)]),
         (None, [("Excluded", False), ("Running costs (hosting and AI usage), paid by CHIRP", False)]),
     ]
@@ -304,7 +304,7 @@ def bundles():
         '        <p class="note">Baseline is the official investigation bodies. Bronze adds every other Must, Silver adds every Should, Gold adds every Could. Each includes the one above it.</p>',
         '        <div class="callout">',
         '          <div class="callout__label">What the costs include</div>',
-        "          <p>£500 a day plus <strong>20% contingency</strong> and <strong>15% project management</strong>. The investigation bodies are the exception: £500 a day only, with no contingency or project management.</p>",
+        "          <p>£500 a day plus <strong>20% contingency</strong> and <strong>25% project management</strong>. The investigation bodies are the exception: £500 a day only, with no contingency or project management.</p>",
         "        </div>",
     ] + table("bundles", [("Bundle and contents", False), ("Build days", True), ("Cost", True), ("Running total", True)], rows)
     return section("bundles", "Bundles", body)
