@@ -141,7 +141,7 @@ CALIBRATION = [
     ("P1 Foundation", "35", "50.5", "+44%"),
     ("P1.5 Foundation extension", "3", "4.1", "+37%"),
     ("US (NTSB) jurisdiction, first non-UK, generalised the pipeline", "n/a", "~12 working days", "sets the per-country seam"),
-    ("NTSB corpus AI processing, 587 reports", "n/a", "~$9", "AI processing cost is negligible"),
+    ("NTSB corpus AI processing, 587 reports, including narrative-entity extraction", "n/a", "~$40-50", "AI processing cost is negligible"),
 ]
 
 DECISIONS = [
