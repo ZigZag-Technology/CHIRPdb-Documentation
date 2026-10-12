@@ -28,7 +28,8 @@ CONTINGENCY = 0.20
 PM = 0.25  # on build days plus contingency
 BUILD_RATE = DAY_RATE * (1 + CONTINGENCY) * (1 + PM)  # 750
 BODY_RATE = DAY_RATE * (1 + CONTINGENCY)  # 600, contingency but no PM
-BODY_DAYS = 2.5
+BODY_DAYS_FULL = 5
+BODY_DAYS_FAST = 2.5
 
 BUILD_COST_HEAD = "Cost (£500/day + 20% contingency + 25% PM)"
 BODY_TAG = "contingency, no PM"
@@ -104,8 +105,8 @@ SOURCES = [
     (None, "Won't", "Non-English reports via translation", None),
 ]
 
-# (country, body, status, billable). Billable bodies are priced; the rest
-# show their status only.
+# (country, body, status, billable). Billable bodies are priced at the full
+# and fast rates; the rest show their status only.
 BODIES = [
     ("United Kingdom", "MAIB", "Done (Tranche 1)", False),
     ("United States", "NTSB", "Done (Tranche 1)", False),
@@ -144,7 +145,7 @@ CALIBRATION = [
 ]
 
 DECISIONS = [
-    ("Survey each investigation body's site to replace the 2.5-day average with a per-body estimate", "Jack, Max"),
+    ("Survey each investigation body's site to replace the 5-day average with a per-body estimate", "Jack, Max"),
     ("Build or buy for chat features (open-source chat front end, OpenAI's hosted conversation state and tools)", "Max"),
     ("Confirm the MoSCoW priorities for chat features", "Adam"),
 ]
@@ -273,7 +274,7 @@ def basis():
 
 def bundles():
     n = len(billable_bodies())
-    base_days = n * BODY_DAYS
+    base_days = n * BODY_DAYS_FULL
     base_cost = base_days * BODY_RATE
     running = base_cost
 
@@ -289,7 +290,7 @@ def bundles():
         return ("bundle-item", [(label, False), (fmt_days(days), True), (money(cost), True), ("", True)])
 
     rows = [head("Baseline", "Official investigation bodies", base_days, base_cost, running),
-            item(f'Ingest reports from {n} more national investigation bodies, {fmt_days(BODY_DAYS)} days each (<a href="#bodies">section E</a>) <span class="tag">{BODY_TAG}</span>',
+            item(f'Ingest reports from {n} more national investigation bodies, full ingestion at {fmt_days(BODY_DAYS_FULL)} days each (<a href="#bodies">section E</a>) <span class="tag">{BODY_TAG}</span>',
                  base_days, base_cost)]
     for tier, sub, contents in BUNDLES:
         lines = [(label, sum(days_for(r) for r in refs)) for label, refs in contents]
@@ -301,7 +302,7 @@ def bundles():
         rows += [item(label, d, d * BUILD_RATE) for label, d in lines]
 
     body = [
-        '        <p class="note">Baseline is the official investigation bodies. Bronze adds every other Must, Silver adds every Should, Gold adds every Could. Each includes the one above it.</p>',
+        '        <p class="note">Baseline is the official investigation bodies at full ingestion. Bronze adds every other Must, Silver adds every Should, Gold adds every Could. Each includes the one above it.</p>',
         '        <div class="callout">',
         '          <div class="callout__label">What the costs include</div>',
         "          <p>£500 a day plus <strong>20% contingency</strong> and <strong>25% project management</strong>. The investigation bodies are the exception: £500 a day plus 20% contingency, with no project management.</p>",
@@ -313,8 +314,8 @@ def bundles():
 def sources():
     body_row = (None, [(pill("Must"), False),
                        (f'Official investigation bodies (<a href="#bodies">section E</a>) <span class="tag">{BODY_TAG}</span>', False),
-                       (f"{fmt_days(BODY_DAYS)} each", True),
-                       (f"{money(BODY_DAYS * BODY_RATE)} each", True)])
+                       (f"{fmt_days(BODY_DAYS_FULL)} each, {fmt_days(BODY_DAYS_FAST)} fast", True),
+                       (f"{money(BODY_DAYS_FULL * BODY_RATE)} each, {money(BODY_DAYS_FAST * BODY_RATE)} fast", True)])
     return section("sources", "D. Sources", items_table(SOURCES, "Source", tier_totals=False, extra_rows=[body_row]))
 
 
@@ -323,20 +324,22 @@ def bodies():
     for country, body, status, billable in BODIES:
         if billable:
             rows.append((None, [(country, False), (body, False), (status, False),
-                                (fmt_days(BODY_DAYS), True),
-                                (money(BODY_DAYS * BODY_RATE), True)]))
+                                (money(BODY_DAYS_FULL * BODY_RATE), True),
+                                (money(BODY_DAYS_FAST * BODY_RATE), True)]))
         elif status.startswith("Done"):
-            rows.append(("done", [(country, False), (body, False), (status, False), ("0", True), ("", True)]))
+            rows.append(("done", [(country, False), (body, False), (status, False), ("", True), ("", True)]))
         else:
             rows.append(("muted", [(country, False), (body, False), (status, False), ("n/a", True), ("n/a", True)]))
     n = len(billable_bodies())
-    days = n * BODY_DAYS
+    full, fast = n * BODY_DAYS_FULL, n * BODY_DAYS_FAST
     rows.append(("total", [(f"<strong>Total, {n} bodies</strong>", False), ("", False), ("", False),
-                           (f"<strong>{fmt_days(days)}</strong>", True),
-                           (f"<strong>{money(days * BODY_RATE)}</strong>", True)]))
-    note = "Billed at £500 a day plus 20% contingency, with no project management."
+                           (f"<strong>{money(full * BODY_RATE)}</strong><span class=\"sub\">{fmt_days(full)} days</span>", True),
+                           (f"<strong>{money(fast * BODY_RATE)}</strong><span class=\"sub\">{fmt_days(fast)} days</span>", True)]))
+    note = (f"Billed at £500 a day plus 20% contingency, with no project management. "
+            f"<strong>Full ingestion</strong> ({fmt_days(BODY_DAYS_FULL)} days) encodes each jurisdiction’s rules. "
+            f"<strong>Fast</strong> ({fmt_days(BODY_DAYS_FAST)} days) is quicker with less reliable data: halfway between full ingestion and ingesting the reports with no jurisdiction rules encoded. The Baseline bundle uses full ingestion.")
     heads = [("Country", False), ("Body", False), ("Status", False),
-             ("Build days", True), ("Cost (£500/day + 20% contingency, no PM)", True)]
+             (f"Full, {fmt_days(BODY_DAYS_FULL)} days", True), (f"Fast, {fmt_days(BODY_DAYS_FAST)} days", True)]
     return section("bodies", "E. Official investigation bodies", table("bodies", heads, rows), note=note)
 
 
