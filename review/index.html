@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHIRPdb - How Review Works</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/chirp.css" />
+    <style>
+      :root {
+        --navy-tint: #eaf0f7;
+        --navy-soft-tint: #eef2f8;
+        --green: #2f7d4f;
+        --green-soft: #e6f3ea;
+        --amber: #b26a00;
+        --amber-soft: #fff4e0;
+        --red: #b3261e;
+        --red-soft: #fbe9e7;
+        --grey-soft: #eef0f3;
+      }
+      body {
+        background: var(--bg-soft);
+        color: var(--text);
+        line-height: 1.65;
+      }
+      .container {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+      }
+      .intro-wide {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+      }
+      .intro-wide__inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 48px 24px 40px;
+      }
+      .eyebrow {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--orange);
+        margin-bottom: 12px;
+      }
+      h1 {
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        margin-bottom: 16px;
+        color: var(--navy-deep);
+      }
+      .lede {
+        font-size: 17px;
+        color: var(--text-soft);
+        max-width: 720px;
+        margin-bottom: 8px;
+      }
+      h2 {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        color: var(--navy-deep);
+        margin: 56px 0 12px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+      }
+      h3 {
+        font-size: 17px;
+        margin: 26px 0 8px;
+      }
+      p {
+        margin-bottom: 14px;
+      }
+      p.dim {
+        color: var(--text-soft);
+        font-size: 15px;
+      }
+      strong {
+        color: var(--navy);
+      }
+      a {
+        color: var(--orange-deep);
+      }
+      code {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 0.88em;
+        background: var(--bg-soft);
+        border-radius: 4px;
+        padding: 1px 5px;
+        color: var(--navy);
+      }
+      ul.plain {
+        margin: 0 0 16px 22px;
+      }
+      ul.plain li {
+        margin: 6px 0;
+      }
+
+      /* workflow flow */
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 28px 0;
+      }
+      .flow__step {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-top: 4px solid var(--navy);
+        border-radius: 10px;
+        padding: 18px 20px;
+      }
+      .flow__step:nth-child(2) {
+        border-top-color: var(--orange);
+      }
+      .flow__step:nth-child(3) {
+        border-top-color: var(--navy-soft);
+      }
+      .flow__step:nth-child(4) {
+        border-top-color: var(--amber);
+      }
+      .flow__step:nth-child(5) {
+        border-top-color: var(--green);
+      }
+      .flow__step:nth-child(6) {
+        border-top-color: var(--text-soft);
+      }
+      .flow__num {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-soft);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .flow__title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .flow__step p {
+        font-size: 14px;
+        color: var(--text-soft);
+        margin: 0;
+      }
+
+      /* tables */
+      .tbl {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+        font-size: 14px;
+        background: var(--bg-card);
+      }
+      .tbl th,
+      .tbl td {
+        text-align: left;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      .tbl th {
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--text-soft);
+        background: var(--bg-soft);
+      }
+      .tbl td:first-child {
+        font-weight: 600;
+        color: var(--navy);
+        white-space: nowrap;
+      }
+      .tbl td:last-child {
+        color: var(--text-soft);
+      }
+
+      /* state chips */
+      .chip {
+        display: inline-block;
+        font-size: 12.5px;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 3px 11px;
+        white-space: nowrap;
+      }
+      .chip--unreviewed {
+        background: var(--grey-soft);
+        color: var(--text-soft);
+      }
+      .chip--accepted {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+      .chip--corrected {
+        background: var(--navy-tint);
+        color: var(--navy);
+      }
+      .chip--rejected {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+      .chip--flagged {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+
+      /* lifecycle */
+      .lifecycle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 20px 0;
+      }
+      .lifecycle__state {
+        background: var(--bg-card);
+        border: 1.5px solid var(--navy);
+        color: var(--navy);
+        border-radius: 24px;
+        padding: 6px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .lifecycle__state--final {
+        background: var(--navy);
+        color: #fff;
+      }
+      .lifecycle__arrow {
+        color: var(--text-soft);
+        font-size: 18px;
+      }
+
+      .callout {
+        background: var(--navy-soft-tint);
+        border-left: 4px solid var(--navy-soft);
+        border-radius: 0 8px 8px 0;
+        padding: 16px 20px;
+        font-size: 15px;
+        margin: 24px 0;
+      }
+      .callout--orange {
+        background: var(--orange-soft);
+        border-left-color: var(--orange);
+      }
+
+      /* an audit entry, drawn */
+      .entry {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin: 18px 0;
+        font-size: 14px;
+      }
+      .entry__head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        border-bottom: 1px dashed var(--border);
+        color: var(--text-soft);
+      }
+      .entry__head strong {
+        color: var(--navy-deep);
+      }
+      .entry__diff {
+        display: grid;
+        grid-template-columns: 150px 1fr 1fr;
+        gap: 6px 14px;
+        font-size: 13.5px;
+      }
+      .entry__diff .k {
+        color: var(--text-soft);
+      }
+      .entry__diff .before {
+        color: var(--red);
+        text-decoration: line-through;
+        text-decoration-color: rgba(179, 38, 30, 0.5);
+      }
+      .entry__diff .after {
+        color: var(--green);
+      }
+      .entry__diff .same {
+        color: var(--text-soft);
+      }
+      .entry__diff .h {
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--text-mute);
+      }
+
+      /* principles */
+      .principle {
+        margin: 20px 0;
+        padding-left: 18px;
+        border-left: 3px solid var(--orange);
+      }
+      .principle h3 {
+        margin: 0 0 4px;
+        font-size: 16px;
+      }
+      .principle p {
+        font-size: 15px;
+        color: var(--text-soft);
+        margin: 0;
+      }
+
+      /* schema viewer */
+      .schema-wide {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        padding: 0 24px;
+      }
+      .schema-wide__inner {
+        max-width: 1320px;
+        margin: 0 auto;
+      }
+      .schema-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 20px 0 14px;
+      }
+      .schema-toolbar__zoom {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--navy-deep);
+        min-width: 46px;
+        text-align: center;
+      }
+      .schema-toolbar__hint {
+        font-size: 13px;
+        color: var(--text-soft);
+      }
+      .schema-viewer {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--bg-card);
+        overflow: auto;
+        max-height: min(80vh, 900px);
+        margin: 0 0 8px;
+      }
+      .schema-viewer.is-fullscreen {
+        max-height: none;
+        height: 100vh;
+        border-radius: 0;
+      }
+      .schema-viewer img {
+        display: block;
+      }
+
+      .page-footer {
+        margin-top: 64px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        font-size: 13px;
+        color: var(--text-soft);
+      }
+      @media (max-width: 760px) {
+        .flow {
+          grid-template-columns: 1fr;
+        }
+        .entry__diff {
+          grid-template-columns: 1fr;
+        }
+        .entry__diff .h {
+          display: none;
+        }
+      }
+      @media (max-width: 640px) {
+        .container {
+          padding: 0 16px 60px;
+        }
+        .intro-wide__inner {
+          padding: 28px 16px 24px;
+        }
+        .schema-wide {
+          padding: 0 16px;
+        }
+        h1 {
+          font-size: 27px;
+        }
+        .tbl td:first-child {
+          white-space: normal;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a href="../index.html" class="logo">
+          <img
+            src="https://chirp.co.uk/app/uploads/2024/07/chirp-logo-blue.svg"
+            alt="CHIRP"
+            class="logo__img"
+          />
+        </a>
+        <div class="header__spacer"></div>
+        <span class="header__tag">CHIRPdb Review and Audit</span>
+      </div>
+    </header>
+
+    <div class="intro-wide">
+      <div class="intro-wide__inner">
+        <p class="eyebrow">CHIRP Maritime · CHIRPdb</p>
+        <h1>How review works, and what is recorded</h1>
+        <p class="lede">
+          The pipeline reads each accident investigation report and proposes
+          what it found. CHIRP's reviewers confirm, correct or reject each
+          proposal and sign the report off. This page explains that workflow
+          and the record it leaves behind: who may do what, what counts as a
+          decision, when a report becomes verified, what the pipeline may and
+          may not do to a reviewed report and what the audit trail holds. The
+          step-by-step guide to the tool's screens is the reviewer guide that
+          accompanies it.
+        </p>
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>Who does what</h2>
+      <p>
+        Every account holds one of four roles. A role is read afresh on every
+        request, so a change to someone's role or a deactivated account takes
+        effect at once, for their password sign-in and for any automated key
+        they hold.
+      </p>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Can</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Reader</td>
+            <td>
+              Read the documents their account allows. No decisions, no edits,
+              no sign-off, no history. A reader's account can be limited to
+              particular jurisdictions, or to verified documents only; a
+              document outside that scope does not exist for them, in searches
+              or by direct address.
+            </td>
+          </tr>
+          <tr>
+            <td>Reviewer</td>
+            <td>
+              Everything a reader can, plus deciding, correcting and flagging
+              every item, reading each item's history and signing a document
+              off.
+            </td>
+          </tr>
+          <tr>
+            <td>Analyst</td>
+            <td>
+              Everything a reviewer can, plus ingesting reports and running or
+              re-running the pipeline, through the system's interface rather
+              than the review tool.
+            </td>
+          </tr>
+          <tr>
+            <td>Administrator</td>
+            <td>
+              Everything, plus returning a verified document to extracted and
+              forcing a re-run or deletion over a reviewed document. Accounts
+              and invitations are managed by Tandem for now.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>What gets reviewed</h2>
+      <p>
+        Review covers the pipeline's <em>inferences</em>, never the text of the
+        report itself. The sentences are the evidence everything else is read
+        from, and they are not items. Seven kinds of item are:
+      </p>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>What it is</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Document fields</td>
+            <td>
+              Five: title, publication date, publication number, document type
+              and jurisdiction (the body that published the report).
+            </td>
+          </tr>
+          <tr>
+            <td>Accident particulars</td>
+            <td>
+              Eleven facts the report states about the accident: date,
+              location, severity, accident type, loss of life, injury count,
+              whether the vessel sank, total loss, pollution, property damage
+              and severe environmental damage.
+            </td>
+          </tr>
+          <tr>
+            <td>Incident link</td>
+            <td>
+              The match between the report and the investigators' own record of
+              the accident (for the UK, the MAIB Data Portal), made by
+              publication number.
+            </td>
+          </tr>
+          <tr>
+            <td>Safety issues</td>
+            <td>
+              Each hazard the report identifies, kept as the sentences it spans.
+            </td>
+          </tr>
+          <tr>
+            <td>Recommendations</td>
+            <td>
+              Each action the report calls for, kept as the sentences it spans,
+              with its reference number and addressee as worded.
+            </td>
+          </tr>
+          <tr>
+            <td>Entities</td>
+            <td>
+              Each vessel, person, organisation, place or thing the narrative
+              names, with every place it is mentioned.
+            </td>
+          </tr>
+          <tr>
+            <td>Addressee lists</td>
+            <td>
+              For each recommendation, the organisations it is directed at,
+              reviewed as one item separate from the recommendation itself.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>The workflow</h2>
+      <div class="flow">
+        <div class="flow__step">
+          <span class="flow__num">1</span>
+          <div class="flow__title">Pick from the queue</div>
+          <p>
+            The queue lists every report the pipeline has finished with, how
+            many of its items stand in each state and who is working on it.
+            Filter to what is flagged, what is still unreviewed or what is
+            yours.
+          </p>
+        </div>
+        <div class="flow__step">
+          <span class="flow__num">2</span>
+          <div class="flow__title">Open it, and claim it</div>
+          <p>
+            Opening an unclaimed report puts your name on it. A claim is a
+            note, never a lock: it tells colleagues who is working where, and
+            lapses after 24 hours without a change.
+          </p>
+        </div>
+        <div class="flow__step">
+          <span class="flow__num">3</span>
+          <div class="flow__title">Decide, or correct</div>
+          <p>
+            Each item is accepted as it stands, corrected or rejected. A
+            correction keeps the machine's original one step back in the
+            history. An optional reason can go with any of the three.
+          </p>
+        </div>
+        <div class="flow__step">
+          <span class="flow__num">4</span>
+          <div class="flow__title">Flag what you are unsure of</div>
+          <p>
+            A flag with a note asks for a second pair of eyes. A flagged item
+            stops the report being signed off until someone resolves it.
+          </p>
+        </div>
+        <div class="flow__step">
+          <span class="flow__num">5</span>
+          <div class="flow__title">Sign off</div>
+          <p>
+            A named reviewer attests that the report is fit to serve to
+            readers. The sign-off records who, when and how many items stood
+            in each state.
+          </p>
+        </div>
+        <div class="flow__step">
+          <span class="flow__num">If needed</span>
+          <div class="flow__title">Return</div>
+          <p>
+            An administrator can return a verified report to extracted, with a
+            note. It leaves every verified-only reader's view at once; the item
+            decisions are untouched.
+          </p>
+        </div>
+      </div>
+
+      <h3>The five states</h3>
+      <p>
+        Every item is in exactly one state at any time. An item can be decided
+        any number of times; the latest decision is its state and every earlier
+        one is in its history.
+      </p>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>State</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chip chip--unreviewed">unreviewed</span></td>
+            <td>
+              Nobody has looked at it. The pipeline's value stands, unconfirmed.
+              Every item starts here.
+            </td>
+          </tr>
+          <tr>
+            <td><span class="chip chip--accepted">accepted</span></td>
+            <td>A reviewer confirmed the pipeline's value as it is.</td>
+          </tr>
+          <tr>
+            <td><span class="chip chip--corrected">corrected</span></td>
+            <td>
+              A reviewer changed it. The value shown is the reviewer's; the
+              pipeline's original is in the history. A field a reviewer has
+              edited is marked as a reviewer edit, which outranks every source
+              the pipeline reads from, so a later pipeline run keeps it.
+            </td>
+          </tr>
+          <tr>
+            <td><span class="chip chip--rejected">rejected</span></td>
+            <td>
+              A reviewer said this item should not exist: a recommendation that
+              is not one, an entity that is noise. It drops out of what readers
+              of CHIRPdb see, but it is not deleted; a reviewer can still find
+              it and reverse the decision.
+            </td>
+          </tr>
+          <tr>
+            <td><span class="chip chip--flagged">flagged</span></td>
+            <td>
+              A reviewer is unsure and wrote a note saying why. The note shows
+              on the item until it is decided again, and the report cannot be
+              signed off while any item is flagged.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>What a correction can be</h3>
+      <ul class="plain">
+        <li>
+          <strong>A field or particular:</strong> a new value, chosen from the
+          allowed list where one applies (document type, jurisdiction,
+          severity, accident type) or typed where it does not. Title and
+          jurisdiction can be changed but never emptied.
+        </li>
+        <li>
+          <strong>A safety issue or recommendation:</strong> its own fields
+          (name, kind, contributory, addressed; reference number, addressee,
+          action), or the sentences it spans. A record must span at least one
+          sentence.
+        </li>
+        <li>
+          <strong>An entity:</strong> its name or type; merging another entity
+          into it; moving a mention to another entity or removing one. An
+          entity left with no mention is removed, and the tool says so before
+          you confirm.
+        </li>
+        <li>
+          <strong>The incident link:</strong> confirmed, or cleared. A cleared
+          link is remembered as a person's decision, so a later linking run
+          does not put it back.
+        </li>
+        <li>
+          <strong>An addressee list:</strong> an organisation attached from the
+          shared register, or detached. Other recommendations directed at the
+          same organisation are untouched.
+        </li>
+      </ul>
+      <p class="dim">
+        Two bulk actions exist for the long tail of entities: accept every
+        unreviewed entity on the page, or on the whole report. Each entity
+        accepted is its own decision with its own history entry, and an entity
+        someone else changed in the meantime is skipped and named.
+      </p>
+
+      <h3>Two people on one item</h3>
+      <p>
+        Every change carries the moment the reviewer last read the item. If
+        the item has changed since, the change is refused, and the page redraws
+        the item showing what is stored now, including the other person's
+        decision. Nothing of the refused change is saved. This is enforced by
+        the database on every item write, so it holds whether the change comes
+        from the tool or from an automated client, and a claim is never needed
+        to make it safe.
+      </p>
+
+      <h2>Sign-off</h2>
+      <div class="lifecycle">
+        <span class="lifecycle__state">Extracted</span>
+        <span class="lifecycle__arrow">→</span>
+        <span class="lifecycle__state lifecycle__state--final">Verified</span>
+        <span class="lifecycle__arrow">→</span>
+        <span class="lifecycle__state">Extracted (returned)</span>
+      </div>
+      <p>
+        Verified is an <strong>attestation</strong>: a named reviewer says the
+        report is fit to serve to readers. It is not a sum of item states, for
+        two reasons. The most entity-dense report in the corpus holds over
+        three and a half thousand entities, so a rule that every item must be
+        decided would make verified unreachable for exactly the reports
+        readers most want; and a rule that signing off silently accepts every
+        remaining item would put a reviewer's name on thousands of decisions
+        they never made.
+      </p>
+      <p>Sign-off is refused, naming what stands in the way, while either holds:</p>
+      <ul class="plain">
+        <li>any item on the report is flagged;</li>
+        <li>
+          any of the seventeen document-level items is undecided: the five
+          fields, the eleven accident particulars or the incident link. These
+          are few, high value and what a reader searches on.
+        </li>
+      </ul>
+      <p>
+        Safety issues, recommendations, entities and addressee lists may stay
+        unreviewed. The sign-off records how many did: for each kind of item,
+        a count in each state as it stood at that moment, readable afterwards
+        and unchanged by later review. Signing off again after further
+        corrections replaces the earlier sign-off's name, time and counts.
+      </p>
+      <p>
+        <strong>Returning</strong> a verified report to extracted is an
+        administrator's act and needs a note. It takes the report out of every
+        verified-only reader's view at once, which is why it is kept apart from
+        a reviewer's decisions. The note and the administrator's name stay on
+        the report until it is signed off again.
+      </p>
+
+      <h2>The pipeline and your decisions</h2>
+      <p>
+        Every pipeline stage replaces its whole output when it runs, and
+        deleting a report removes everything under it. Either would discard a
+        reviewer's work, so the system refuses both for any report holding a
+        decision (a flag counts) until an administrator forces it with a
+        reason, which is recorded.
+      </p>
+      <ul class="plain">
+        <li>
+          <strong>A forced re-run keeps every decided item</strong> and
+          replaces only the unreviewed ones. A decided safety issue or
+          recommendation stays, matched by the sentences it spans; a decided
+          entity stays under its human name and state; an edited field keeps
+          its value; a confirmed or cleared incident link is left alone.
+        </li>
+        <li>
+          <strong>Extraction is never re-run over a decision</strong>, forced
+          or not. Its output is the sentences every decision is anchored to,
+          so nothing could carry a decision across.
+        </li>
+        <li>
+          <strong>A verified report is never re-run or deleted</strong>, forced
+          or not. The sign-off attests to what is stored. An administrator
+          returns it to extracted first.
+        </li>
+        <li>
+          <strong>The review tool cannot trigger a re-run or a deletion.</strong>
+          It shows each stage's status read-only; the pipeline is run through
+          the system's own interface by an analyst or administrator.
+        </li>
+      </ul>
+
+      <h2 id="audit-trail">The audit trail</h2>
+      <p>
+        The audit trail is a separate part of the database whose only job is to
+        be true about the past. Where every other table describes what is
+        currently the case and is free to be corrected, the trail only ever
+        gains entries. It answers three questions about any item: what did the
+        machine originally produce, who changed it and when, and what did they
+        change it to.
+      </p>
+
+      <h3>One entry per change to one item</h3>
+      <p>Every entry carries:</p>
+      <ul class="plain">
+        <li>
+          <strong>who:</strong> the account that made the change, and, where an
+          automated key was used, the key's label;
+        </li>
+        <li><strong>when:</strong> stamped by the database, never by the caller;</li>
+        <li>
+          <strong>what:</strong> the action (accept, reject, flag, correct,
+          merge, move a mention, confirm or clear the incident link, sign off,
+          return, forced re-run, forced delete, create, delete) and the report
+          the item belongs to;
+        </li>
+        <li><strong>why:</strong> the reason the reviewer gave, if any;</li>
+        <li>
+          <strong>before and after:</strong> the item's whole value on each
+          side, in the live column's own type. A pair that reads the same was
+          not changed by that write; a created item has no before and a
+          deleted one no after.
+        </li>
+      </ul>
+
+      <div class="entry" aria-label="An example audit entry">
+        <div class="entry__head">
+          <span><strong>Recommendation</strong> 2024/118 in report 9/2024</span>
+          <span>correct · by <strong>R. Hartley</strong> · Wed 14 Oct 2026, 14:32</span>
+          <span>reason: <em>"The report numbers this 2024/118, not 2024/113."</em></span>
+        </div>
+        <div class="entry__diff">
+          <span class="h">field</span><span class="h">before</span
+          ><span class="h">after</span>
+          <span class="k">reference_number</span><span class="before">2024/113</span
+          ><span class="after">2024/118</span>
+          <span class="k">addressee</span><span class="same">The Maritime and Coastguard Agency</span
+          ><span class="same">The Maritime and Coastguard Agency</span>
+          <span class="k">review_state</span><span class="before">unreviewed</span
+          ><span class="after">corrected</span>
+        </div>
+      </div>
+
+      <p>
+        The pipeline's own writes are not entries: the trail records people.
+        The first entry on any item therefore carries the machine's original
+        value on its before side, which is how the tool can show
+        <em>Machine original</em> at the bottom of every item's history
+        without storing it anywhere else. A change that touches several items
+        writes one entry each: a merge of two entities records the entity that
+        went, the one that survived and every mention that moved.
+      </p>
+
+      <h3>What else is recorded</h3>
+      <ul class="plain">
+        <li>
+          <strong>Sign-ins, and refused sign-ins.</strong> A refused sign-in
+          keeps the address as it was typed, whether or not an account holds
+          it.
+        </li>
+        <li>
+          <strong>Automated keys issued and revoked</strong>, and
+          <strong>role changes</strong>, with the administrator who made them.
+        </li>
+        <li>
+          <strong>Account deletions</strong>, keeping the name the account
+          held, so the trail can still say who made an older change once the
+          account is gone.
+        </li>
+        <li>
+          <strong>Forced re-runs and deletions</strong>, with the
+          administrator's reason, written before the rows go.
+        </li>
+      </ul>
+
+      <h3>What is not recorded</h3>
+      <p class="dim">
+        Bookkeeping that asserts nothing about the corpus stays outside the
+        trail: who is looking at a report (claims), which pipeline stage ran
+        when and what it cost and the search fingerprints. A few less central
+        edits are also unrecorded today: marking a recommendation implemented,
+        SHIELD code taggings, analysis notes, legislation links and edits to
+        the shared organisation, legislation and author registers.
+      </p>
+
+      <h3>Properties of the trail</h3>
+      <div class="principle">
+        <h3>Never edited, never deleted</h3>
+        <p>
+          No account the application can use holds the right to change or
+          remove an entry, and the database checks that on every rebuild. The
+          only way an entry comes to exist is inside the same transaction as
+          the change it describes, so a change and its record commit together
+          or not at all. There is no unrecorded path.
+        </p>
+      </div>
+      <div class="principle">
+        <h3>It outlives what it describes</h3>
+        <p>
+          Entries are not tied to the live rows by database constraints. A
+          deleted report's entries are still readable under its identifier; a
+          deleted account's entries still name it, from the name kept at
+          deletion.
+        </p>
+      </div>
+      <div class="principle">
+        <h3>Readable by reviewers, in context</h3>
+        <p>
+          In the tool, a grey line beneath each item names who last changed it
+          and when, and <em>History</em> unfolds the item's whole trail, newest
+          first, read fresh each time so it includes what a colleague did a
+          moment ago. Readers see none of this; the history needs the reviewer
+          role or above. The same reads are available to automated clients
+          with that role.
+        </p>
+      </div>
+
+      <h3>The audit schema</h3>
+      <p class="dim">
+        One table holds what every entry has in common; one table per kind of
+        item holds that kind's before-and-after values, keyed by the entry.
+        Scroll to pan, or hold Ctrl/Cmd and scroll to zoom.
+      </p>
+      <div class="schema-wide">
+        <div class="schema-wide__inner">
+          <div class="schema-toolbar">
+            <button
+              type="button"
+              class="btn"
+              id="zoomOut"
+              aria-label="Zoom out"
+            >
+              &minus;
+            </button>
+            <span class="schema-toolbar__zoom" id="zoomLabel">100%</span>
+            <button type="button" class="btn" id="zoomIn" aria-label="Zoom in">
+              &plus;
+            </button>
+            <button type="button" class="btn" id="zoomFit">Fit width</button>
+            <button type="button" class="btn" id="zoomReset">
+              Actual size
+            </button>
+            <button type="button" class="btn" id="zoomFullscreen">
+              Full screen
+            </button>
+          </div>
+          <div class="schema-viewer" id="schemaViewer">
+            <img
+              src="schema-audit.svg"
+              alt="Entity-relationship diagram of the CHIRPdb audit schema: the entries table and one change table per kind of item"
+              id="schemaImg"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout--orange">
+        <strong>In one sentence.</strong> The machine proposes, a named person
+        decides, a named person attests and every one of those acts is written
+        down with what it changed, in a record that cannot be rewritten.
+      </div>
+
+      <p class="page-footer">
+        Tandem Creative Dev · prepared for Zig Zag AI / CHIRP · October
+        2026<br />
+        Companion pages: <a href="../data/index.html">How your incident data is
+        stored</a>. Technical companions in the project repository:
+        <em>docs/reference/API.md</em>, <em>docs/reference/DATABASE.md</em> and
+        the decision records ADR-011 (sign-off), ADR-013 and ADR-016 (the
+        audit trail) and ADR-015 (re-runs over decisions).
+      </p>
+    </div>
+    <script>
+      (function () {
+        var viewer = document.getElementById("schemaViewer");
+        var img = document.getElementById("schemaImg");
+        var label = document.getElementById("zoomLabel");
+        var zoomInBtn = document.getElementById("zoomIn");
+        var zoomOutBtn = document.getElementById("zoomOut");
+        var fitBtn = document.getElementById("zoomFit");
+        var resetBtn = document.getElementById("zoomReset");
+        var fsBtn = document.getElementById("zoomFullscreen");
+
+        var MIN_PCT = 5;
+        var MAX_PCT = 400;
+        var STEP = 20;
+        var pct = 100;
+        var userZoomed = false;
+
+        function naturalWidth() {
+          return img.naturalWidth || 1704;
+        }
+
+        function apply(nextPct) {
+          pct = Math.max(MIN_PCT, Math.min(MAX_PCT, Math.round(nextPct)));
+          img.style.width = (naturalWidth() * pct) / 100 + "px";
+          label.textContent = pct + "%";
+        }
+
+        function fitToContainer() {
+          var available = viewer.clientWidth - 4;
+          apply((available / naturalWidth()) * 100);
+        }
+
+        zoomInBtn.addEventListener("click", function () {
+          userZoomed = true;
+          apply(pct + STEP);
+        });
+        zoomOutBtn.addEventListener("click", function () {
+          userZoomed = true;
+          apply(pct - STEP);
+        });
+        resetBtn.addEventListener("click", function () {
+          userZoomed = true;
+          apply(100);
+        });
+        fitBtn.addEventListener("click", function () {
+          userZoomed = false;
+          fitToContainer();
+        });
+
+        viewer.addEventListener(
+          "wheel",
+          function (e) {
+            if (!(e.ctrlKey || e.metaKey)) return;
+            e.preventDefault();
+            userZoomed = true;
+            apply(pct - e.deltaY * 0.4);
+          },
+          { passive: false },
+        );
+
+        var hasFullscreen =
+          document.fullscreenEnabled ||
+          viewer.requestFullscreen ||
+          viewer.webkitRequestFullscreen;
+
+        function isFullscreen() {
+          return (
+            (document.fullscreenElement || document.webkitFullscreenElement) ===
+            viewer
+          );
+        }
+
+        if (!hasFullscreen) {
+          fsBtn.style.display = "none";
+        } else {
+          fsBtn.addEventListener("click", function () {
+            if (isFullscreen()) {
+              (document.exitFullscreen || document.webkitExitFullscreen).call(
+                document,
+              );
+            } else {
+              (viewer.requestFullscreen || viewer.webkitRequestFullscreen).call(
+                viewer,
+              );
+            }
+          });
+
+          ["fullscreenchange", "webkitfullscreenchange"].forEach(
+            function (evt) {
+              document.addEventListener(evt, function () {
+                var active = isFullscreen();
+                viewer.classList.toggle("is-fullscreen", active);
+                fsBtn.textContent = active ? "Exit full screen" : "Full screen";
+                userZoomed = false;
+                fitToContainer();
+              });
+            },
+          );
+        }
+
+        var resizeTimer;
+        window.addEventListener("resize", function () {
+          if (userZoomed) return;
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(fitToContainer, 100);
+        });
+
+        if (img.complete && img.naturalWidth) {
+          fitToContainer();
+        } else {
+          img.addEventListener("load", fitToContainer);
+        }
+      })();
+    </script>
+  </body>
+</html>
