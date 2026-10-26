@@ -1256,16 +1256,21 @@
       PHASES.forEach((phase) => {
         const pct = (phase.elapsed / phase.alloc) * 100;
         const state = stateOf(phase);
+        // Days used elsewhere are no longer the phase's to spend, so the stats
+        // measure against what is left of its allocation and name the original.
+        const lost = lostFrom(phase);
+        const usable = phase.alloc - lost;
 
         document.getElementById(phase.key + "Stats").innerHTML =
           phase.alloc
             ? "<strong>" +
               fmt(phase.elapsed) +
               "</strong> / " +
-              fmt(phase.alloc) +
+              fmt(usable) +
               " days · " +
-              fmt(pct) +
-              "%"
+              fmt((phase.elapsed / usable) * 100) +
+              "%" +
+              (lost > 0 ? " · " + fmt(phase.alloc) + " allocated" : "")
             : "<strong>" + fmt(phase.elapsed) + "</strong> days tracked";
 
         const tag = document.getElementById(phase.key + "Tag");
@@ -1281,7 +1286,6 @@
 
         // Allocation used elsewhere, drawn straight after the tracked fill
         // with a key naming where each slice went.
-        const lost = lostFrom(phase);
         if (lost > 0) {
           const strip = document.createElement("div");
           strip.className = "phase__bar-lost";
