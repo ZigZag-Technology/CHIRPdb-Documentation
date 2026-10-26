@@ -475,6 +475,43 @@
           var(--orange-deep) 100%
         );
       }
+      /* Allocation an open phase holds but the budget no longer covers, one
+         slice per place the days went. Hairlines keep small slices apart. */
+      .phase__bar-lost {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+      }
+      .phase__bar-lost span {
+        min-width: 2px;
+        box-shadow: inset 1px 0 0 var(--bg);
+      }
+      .phase__key {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        font-size: 12px;
+        color: var(--text-soft);
+      }
+      .phase__key-title {
+        flex-basis: 100%;
+        font-weight: 600;
+        color: var(--navy-deep);
+      }
+      .phase__key-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .phase__key-swatch {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
       @media (max-width: 540px) {
         .phase {
           grid-template-columns: 1fr;
@@ -757,6 +794,18 @@
 
         <div class="phase">
           <div class="phase__label">
+            Admin
+            <span class="phase__name">Project administration</span>
+            <span class="phase__tag" id="adminTag"></span>
+          </div>
+          <div class="phase__stats" id="adminStats"></div>
+          <div class="phase__bar">
+            <div class="phase__bar-fill" id="adminFill" style="width: 0"></div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase__label">
             MVP
             <span class="phase__name">Foundation MVP</span>
             <span class="phase__tag" id="mvpTag"></span>
@@ -996,6 +1045,8 @@
       const PHASES = [
         { key: "dsg", label: "DSG", alloc: DSG_ALLOC, elapsed: DSG_ELAPSED,
           done: DSG_DONE, funding: 2 },
+        { key: "admin", label: "Admin", alloc: ADMIN_ALLOC,
+          elapsed: ADMIN_ELAPSED, done: ADMIN_DONE, funding: 2 },
         {
           key: "mvp",
           label: "MVP",
@@ -1018,7 +1069,8 @@
 
       const sum = (rows, pick) => rows.reduce((total, p) => total + pick(p), 0);
       const funding = (n) => PHASES.filter((p) => p.funding === n);
-      const TOTAL_ELAPSED = sum(PHASES, (p) => p.elapsed);
+      const TOTAL_ELAPSED =
+        sum(PHASES, (p) => p.elapsed) + UNASSIGNED_ELAPSED;
       const ALLOCATED = sum(PHASES, (p) => p.alloc || 0);
       const F1_ELAPSED = sum(funding(1), (p) => p.elapsed);
       const F1_ALLOC = sum(funding(1), (p) => p.alloc || 0);
@@ -1026,6 +1078,50 @@
       const F2_ALLOC = sum(funding(2), (p) => p.alloc || 0);
       const usedPct = (TOTAL_ELAPSED / TOTAL_BUDGET) * 100;
       const budgetLeft = TOTAL_BUDGET - TOTAL_ELAPSED;
+
+      // Open phases still hold allocation the budget may no longer cover. The
+      // gap is what they are owed beyond what is left, and it went wherever
+      // time was spent without an allocation to spend it from: overruns,
+      // unbudgeted rows, untasked time, and estimates beyond the budget.
+      // Phases finishing under allocation hand days back, so the sources are
+      // scaled down to the gap rather than adding up past it.
+      const unspent = (p) => Math.max(0, p.alloc - p.elapsed);
+      const OWED = sum(
+        PHASES.filter((p) => p.alloc && !p.done),
+        unspent,
+      );
+      const GAP = Math.min(OWED, Math.max(0, OWED - budgetLeft));
+      const LOST_COLOURS = [
+        "#0c2547",
+        "#3d6190",
+        "#8aa3c4",
+        "#9a3412",
+        "#d97757",
+        "#f0b79a",
+        "#a8acb6",
+      ];
+      const LOST_SOURCES = [
+        ...PHASES.filter((p) => !p.alloc).map((p) => ({
+          label: p.label,
+          days: p.elapsed,
+        })),
+        { label: "No task", days: UNASSIGNED_ELAPSED },
+        ...PHASES.filter((p) => p.alloc && p.elapsed > p.alloc).map((p) => ({
+          label: p.label + " overrun",
+          days: p.elapsed - p.alloc,
+        })),
+        {
+          label: "Estimates over budget",
+          days: Math.max(0, ALLOCATED - TOTAL_BUDGET),
+        },
+      ]
+        .filter((s) => s.days > 0)
+        .map((s, i) => ({ ...s, colour: LOST_COLOURS[i % LOST_COLOURS.length] }));
+      const LOST_SCALE = GAP / (sum(LOST_SOURCES, (s) => s.days) || 1);
+      // Each open phase gives up its share of the gap in proportion to what it
+      // still holds, and every source is split across them the same way.
+      const lostFrom = (phase) =>
+        phase.alloc && !phase.done && OWED ? (GAP * unspent(phase)) / OWED : 0;
 
       // 120 is the only day-count in the body copy.
       document.querySelectorAll("[data-budget-days]").forEach((el) => {
@@ -1160,6 +1256,45 @@
         fill.className = withState("phase__bar-fill", state);
         fill.dataset.pct = phase.alloc ? Math.min(100, pct) : 0;
 
+        // Allocation used elsewhere, drawn in from the right end of the track
+        // with a key naming where each slice went.
+        const lost = lostFrom(phase);
+        if (lost > 0) {
+          const share = (lost / GAP) * LOST_SCALE;
+          const strip = document.createElement("div");
+          strip.className = "phase__bar-lost";
+          strip.style.width = (lost / phase.alloc) * 100 + "%";
+          const key = document.createElement("div");
+          key.className = "phase__key";
+          key.innerHTML =
+            '<span class="phase__key-title">' +
+            fmt(phase.alloc - phase.elapsed - lost) +
+            " days available · " +
+            fmt(lost) +
+            " used elsewhere:</span>";
+          LOST_SOURCES.forEach((source) => {
+            const days = source.days * share;
+            const slice = document.createElement("span");
+            slice.style.flexGrow = days;
+            slice.style.background = source.colour;
+            slice.title = source.label + " · " + fmt(days) + " days";
+            strip.appendChild(slice);
+            key.insertAdjacentHTML(
+              "beforeend",
+              '<span class="phase__key-item"><span class="phase__key-swatch"' +
+                ' style="background:' +
+                source.colour +
+                '"></span>' +
+                source.label +
+                " " +
+                fmt(days) +
+                "d</span>",
+            );
+          });
+          fill.parentElement.appendChild(strip);
+          fill.parentElement.after(key);
+        }
+
         // Timeline segment tracks the same state
         const seg = document.querySelector(
           '.timeline__seg[data-key="' + phase.key + '"]',
@@ -1207,8 +1342,10 @@
       document.getElementById("budgetHeadroom").textContent = unbudgeted.length
         ? headroomNote +
           " " +
-          unbudgeted.map((p) => p.key.toUpperCase()).join(", ") +
-          " carries no estimate, so its tracked days sit outside that."
+          names(unbudgeted) +
+          (unbudgeted.length > 1
+            ? " carry no estimate, so their tracked days sit outside that."
+            : " carries no estimate, so its tracked days sit outside that.")
         : headroomNote;
 
       document.getElementById("lastUpdated").textContent = LAST_UPDATED;
