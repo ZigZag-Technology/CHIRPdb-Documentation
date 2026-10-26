@@ -1256,21 +1256,20 @@
       PHASES.forEach((phase) => {
         const pct = (phase.elapsed / phase.alloc) * 100;
         const state = stateOf(phase);
-        // Days used elsewhere are no longer the phase's to spend, so the stats
-        // measure against what is left of its allocation and name the original.
+        // Days used elsewhere are gone from the phase's allocation as surely as
+        // its own tracked time, so the stats count both against it.
         const lost = lostFrom(phase);
-        const usable = phase.alloc - lost;
+        const used = phase.elapsed + lost;
 
         document.getElementById(phase.key + "Stats").innerHTML =
           phase.alloc
             ? "<strong>" +
-              fmt(phase.elapsed) +
+              fmt(used) +
               "</strong> / " +
-              fmt(usable) +
+              fmt(phase.alloc) +
               " days · " +
-              fmt((phase.elapsed / usable) * 100) +
-              "%" +
-              (lost > 0 ? " · " + fmt(phase.alloc) + " allocated" : "")
+              fmt((used / phase.alloc) * 100) +
+              "%"
             : "<strong>" + fmt(phase.elapsed) + "</strong> days tracked";
 
         const tag = document.getElementById(phase.key + "Tag");
