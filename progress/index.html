@@ -485,6 +485,10 @@
         bottom: 0;
         display: flex;
       }
+      /* The fill butts up against the slices, so its leading edge is square */
+      .phase__bar-fill--flush {
+        border-radius: 999px 0 0 999px;
+      }
       .phase__bar-lost span {
         min-width: 2px;
         box-shadow: inset 1px 0 0 var(--bg);
@@ -1283,6 +1287,7 @@
         if (lost > 0) {
           const strip = document.createElement("div");
           strip.className = "phase__bar-lost";
+          fill.classList.add("phase__bar-fill--flush");
           strip.style.left = Math.min(100, pct) + "%";
           strip.style.width = (lost / phase.alloc) * 100 + "%";
           const key = document.createElement("div");
