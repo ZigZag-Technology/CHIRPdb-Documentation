@@ -1304,7 +1304,7 @@
             phase.label +
             " " +
             fmt(phase.elapsed) +
-            "d</span>";
+            " days</span>";
           LOST.get(phase).forEach((source) => {
             const days = source.days;
             const slice = document.createElement("span");
@@ -1321,7 +1321,7 @@
                 source.label +
                 " " +
                 fmt(days) +
-                "d</span>",
+                " days</span>",
             );
           });
           fill.parentElement.appendChild(strip);
