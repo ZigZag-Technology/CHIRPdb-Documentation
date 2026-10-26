@@ -65,12 +65,18 @@ TOTAL_BUDGET_DAYS = 120
 # instance. A task with no estimate renders as tracked-only.
 #
 # A row added here needs matching markup in progress/index.html, keyed
-# <KEY>_ELAPSED, <KEY>_ALLOC and <KEY>_DONE.
+# <KEY>_ELAPSED, <KEY>_ALLOC and <KEY>_DONE. Time logged with no task is
+# emitted as UNASSIGNED_ELAPSED.
 PHASES = [
     {
         "key": "dsg",
         "label": "DSG",
         "tasks": ["CHIRPdb - DSG"],
+    },
+    {
+        "key": "admin",
+        "label": "Admin",
+        "tasks": ["CHIRPdb - Admin"],
     },
     {
         "key": "mvp",
@@ -254,6 +260,11 @@ def build():
             "done": done,
         })
 
+    # Time logged with no task belongs to no row, but it still came out of the
+    # budget, so it is emitted on its own rather than dropped.
+    unassigned = seconds_by_task.get(None, 0) / 3600.0 / HOURS_PER_DAY
+    matched.add(None)
+
     # Name the tasks, not just the total - an unattributed figure invites a
     # wrong guess about where the time went.
     unmatched = sorted(((tid, sec) for tid, sec in seconds_by_task.items()
@@ -287,6 +298,8 @@ def build():
             else fmt_days(phase["alloc_days"])))
         block.append("      const %s_DONE = %s;" % (
             key, "true" if phase["done"] else "false"))
+    block.append("      const UNASSIGNED_ELAPSED = %s;"
+                 % fmt_days(round(unassigned, 2)))
     block.append(END)
 
     html = open(OUT).read()
@@ -317,7 +330,9 @@ def build():
             note = "  (%.2f over)" % over + note
         print("%s  %.2f / %s days%s" % (phase["label"], phase["elapsed_days"],
                                         fmt_days(phase["alloc_days"]), note))
-    tracked = sum(p["elapsed_days"] for p in phases)
+    if unassigned:
+        print("No task  %.2f days tracked" % unassigned)
+    tracked = sum(p["elapsed_days"] for p in phases) + round(unassigned, 2)
     print("tracked %s / %s days" % (fmt_days(tracked),
                                     fmt_days(TOTAL_BUDGET_DAYS)))
     if abs(allocated - TOTAL_BUDGET_DAYS) > 0.001:
