@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHIRPdb Reviewer Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/chirp.css" />
+    <style>
+      :root {
+        --navy-tint: #eaf0f7;
+        --navy-soft-tint: #eef2f8;
+        --green: #1f7a3d;
+        --green-tint: #e4f3e7;
+        --red: #b3261e;
+        --red-tint: #fbe6e6;
+        --amber: #8a5a00;
+        --amber-tint: #fff4d6;
+        --amber-border: #f1d58a;
+      }
+      body { background: var(--bg-soft); color: var(--text); line-height: 1.65; }
+
+      .intro-wide { background: var(--bg-card); border-bottom: 1px solid var(--border); }
+      .intro-wide__inner { max-width: 1100px; margin: 0 auto; padding: 48px 24px 40px; }
+      .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--orange); margin-bottom: 12px; }
+      h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 16px; color: var(--navy-deep); }
+      .lede { font-size: 17px; color: var(--text-soft); max-width: 720px; margin-bottom: 8px; }
+
+      /* contents sidebar beside the guide */
+      .layout { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+      .toc { position: sticky; top: 96px; align-self: start; max-height: calc(100vh - 120px); overflow-y: auto; padding-top: 40px; }
+      .toc__title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-mute); margin-bottom: 10px; }
+      .toc ol { list-style: none; margin: 0; counter-reset: toc; }
+      .toc li { margin: 0; counter-increment: toc; }
+      .toc a { display: block; padding: 5px 10px; border-left: 2px solid var(--border); font-size: 13.5px; color: var(--text-soft); text-decoration: none; line-height: 1.4; }
+      .toc a::before { content: counter(toc) ". "; color: var(--text-mute); }
+      .toc a:hover { color: var(--navy-deep); }
+      .toc a.is-active { color: var(--orange-deep); border-left-color: var(--orange); font-weight: 600; }
+      .content { min-width: 0; max-width: 780px; }
+
+      h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.015em; color: var(--navy-deep); margin: 56px 0 12px; padding-top: 24px; border-top: 1px solid var(--border); scroll-margin-top: 88px; }
+      h2 .num { color: var(--orange); margin-right: 8px; }
+      h3 { font-size: 17px; color: var(--navy-deep); margin: 28px 0 8px; scroll-margin-top: 88px; }
+      p { margin-bottom: 14px; }
+      p.dim { color: var(--text-soft); font-size: 15px; }
+      strong { color: var(--navy); }
+      a { color: var(--orange-deep); }
+      ul, ol { margin: 0 0 16px 22px; }
+      li { margin: 6px 0; }
+      code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--navy); }
+
+      /* a button, link or control as the tool labels it */
+      .ui { display: inline-block; font-size: 0.86em; font-weight: 600; line-height: 1.35; color: var(--navy-deep); background: var(--bg-card); border: 1px solid #cfd5df; border-bottom-width: 2px; border-radius: 6px; padding: 0 7px; white-space: nowrap; }
+      /* other words exactly as they appear on screen */
+      .screen { font-weight: 600; color: var(--navy-deep); }
+
+      /* the five review states and the two document statuses */
+      .state { display: inline-block; font-size: 12px; font-weight: 700; border-radius: 999px; padding: 1px 9px; line-height: 1.6; white-space: nowrap; }
+      .state--unreviewed { background: #eceef2; color: var(--text-soft); }
+      .state--accepted { background: var(--green-tint); color: var(--green); }
+      .state--corrected { background: var(--navy-tint); color: var(--navy); }
+      .state--rejected { background: var(--red-tint); color: var(--red); }
+      .state--flagged { background: var(--orange-soft); color: var(--orange-deep); }
+      .state--extracted { background: #eceef2; color: var(--text-soft); }
+      .state--verified { background: var(--green-tint); color: var(--green); }
+
+      /* reference tables */
+      .ref { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 16px 0 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+      .ref th, .ref td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+      .ref tr:last-child td { border-bottom: none; }
+      .ref th { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-soft); background: var(--bg-soft); }
+      .ref td:first-child { font-weight: 600; color: var(--navy-deep); white-space: nowrap; }
+
+      /* messages as the tool shows them */
+      .msg { border-radius: 8px; padding: 12px 16px; font-size: 14.5px; margin: 12px 0 16px; border: 1px solid; }
+      .msg__label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; opacity: 0.8; }
+      .msg--red { background: var(--red-tint); border-color: #f2c2bf; color: var(--red); }
+      .msg--yellow { background: var(--amber-tint); border-color: var(--amber-border); color: var(--amber); }
+      .msg--plain { background: var(--bg-card); border-color: var(--border); color: var(--text); }
+
+      .callout { background: var(--navy-soft-tint); border-left: 4px solid var(--navy-soft); border-radius: 0 8px 8px 0; padding: 16px 20px; font-size: 15px; margin: 24px 0; }
+      .callout p:last-child { margin-bottom: 0; }
+      .callout--warn { background: var(--orange-soft); border-left-color: var(--orange); }
+
+      /* the claim band's three colours */
+      .bands { display: grid; gap: 8px; margin: 16px 0 20px; }
+      .band { border-radius: 8px; padding: 10px 14px; font-size: 14px; border: 1px solid var(--border); background: var(--bg-card); }
+      .band--mine { background: var(--orange-soft); border-color: #f8cfa6; }
+      .band--theirs { background: var(--navy-tint); border-color: #c9d6e7; }
+      .band strong { margin-right: 6px; }
+
+      /* numbered steps */
+      .steps { list-style: none; margin: 16px 0 20px; counter-reset: step; }
+      .steps > li { counter-increment: step; position: relative; padding: 2px 0 10px 44px; margin: 0; }
+      .steps > li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--navy-deep); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+      .steps--day > li { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px 14px 58px; margin-bottom: 10px; }
+      .steps--day > li::before { left: 16px; top: 14px; background: var(--orange); }
+
+      /* the two sign-off conditions */
+      .conditions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 20px; }
+      .condition { background: var(--bg-card); border: 1px solid var(--border); border-top: 4px solid var(--navy); border-radius: 10px; padding: 16px 18px; font-size: 14.5px; }
+      .condition:nth-child(2) { border-top-color: var(--orange); }
+      .condition__num { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-soft); margin-bottom: 4px; }
+
+      .page-footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-soft); }
+
+      @media (max-width: 900px) {
+        .layout { grid-template-columns: 1fr; gap: 0; }
+        .toc { position: static; max-height: none; padding-top: 28px; }
+        .toc ol { columns: 2; column-gap: 16px; }
+      }
+      @media (max-width: 640px) {
+        .layout { padding: 0 16px 60px; }
+        .intro-wide__inner { padding: 28px 16px 24px; }
+        h1 { font-size: 27px; }
+        .toc ol { columns: 1; }
+        .conditions { grid-template-columns: 1fr; }
+        .ref { display: block; overflow-x: auto; }
+        .ref td:first-child { white-space: normal; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a href="../index.html" class="logo">
+          <img
+            src="https://chirp.co.uk/app/uploads/2024/07/chirp-logo-blue.svg"
+            alt="CHIRP"
+            class="logo__img"
+          />
+        </a>
+        <div class="header__spacer"></div>
+        <span class="header__tag">CHIRPdb Reviewer Guide</span>
+      </div>
+    </header>
+
+    <div class="intro-wide">
+      <div class="intro-wide__inner">
+        <p class="eyebrow">CHIRPdb review tool · User guide</p>
+        <h1>The reviewer guide</h1>
+        <p class="lede">
+          The CHIRPdb review tool is a website where CHIRP staff check what the
+          pipeline (the automated system that reads each accident investigation
+          report) extracted from a report, correct anything it got wrong and
+          sign the document off as verified. Your invite gives you the tool's
+          web address and sets up the password you sign in with. Every button
+          this guide names is named as it appears on screen, and the guide calls
+          the website "the tool" throughout.
+        </p>
+      </div>
+    </div>
+
+    <div class="layout">
+      <nav class="toc" aria-label="Contents">
+        <div class="toc__title">Contents</div>
+        <ol>
+          <li><a href="#getting-in">Getting in</a></li>
+          <li><a href="#roles">What your role lets you do</a></li>
+          <li><a href="#queue">The queue</a></li>
+          <li><a href="#claims">Claims</a></li>
+          <li><a href="#document-page">The document page</a></li>
+          <li><a href="#states">States and decisions</a></li>
+          <li><a href="#correcting">Correcting each kind of item</a></li>
+          <li><a href="#refused">When a change is refused</a></li>
+          <li><a href="#sign-off">Sign-off</a></li>
+          <li><a href="#pdf">Reading the PDF</a></li>
+          <li><a href="#working-day">A working day</a></li>
+        </ol>
+      </nav>
+
+      <main class="content">
+        <h2 id="getting-in"><span class="num">1</span>Getting in</h2>
+
+        <h3>Your invite</h3>
+        <p>Accounts start as an invite link from Tandem.</p>
+        <ul>
+          <li>
+            The link is shown once to the administrator who issues it and is
+            passed to you directly. The system sends no email.
+          </li>
+          <li>It is valid for seven days.</li>
+          <li>A new invite for the same address cancels the old link.</li>
+        </ul>
+        <p>To use it:</p>
+        <ol class="steps">
+          <li>Follow the link. The page is headed <span class="screen">Set Your Password</span>.</li>
+          <li>Choose a password of at least six characters and type it in both boxes.</li>
+          <li>
+            Press <span class="ui">Set Password and Sign In</span>. That signs
+            you straight in; there is no separate confirmation step.
+          </li>
+        </ol>
+        <p>
+          A link that answers with an error has been used already, has run out
+          or has been replaced by a newer invite. Ask Tandem for a fresh one.
+        </p>
+
+        <h3>Signing in later</h3>
+        <p>
+          Go to the tool's address. The sign-in page asks for the email address
+          your invite was issued to and your password. A refused sign-in says
+          why in a red box: a wrong password, a deactivated account or an
+          account that no longer exists.
+        </p>
+        <p>You may see one of two messages here before typing anything:</p>
+        <div class="msg msg--plain">
+          <span class="msg__label">On the sign-in page</span>
+          <strong>Your session expired. Sign in again.</strong> The tool renews
+          your session quietly while you use it, but one left idle for long
+          enough cannot be renewed. Nothing you saved is lost.
+        </div>
+        <div class="msg msg--plain">
+          <span class="msg__label">On the sign-in page</span>
+          <strong>Signed out.</strong> You pressed
+          <span class="ui">Sign Out</span>, in the bar across the top of every
+          page. A deactivated account gets its own message instead.
+        </div>
+        <p>
+          Press <span class="ui">Sign Out</span> when you leave a shared
+          computer: it ends your session on the server as well as in the
+          browser, so the back button will not bring a page back.
+        </p>
+
+        <h3>Forgotten password</h3>
+        <p>
+          There is no reset form. An administrator issues you a new invite for
+          the same email address; redeeming it sets a new password and leaves
+          everything else about your account as it was, unless the
+          administrator changed your name, role or access when issuing it.
+        </p>
+
+        <h2 id="roles"><span class="num">2</span>What your role lets you do</h2>
+        <p>Your role is shown beside your name in the bar across the top of every page.</p>
+        <table class="ref">
+          <thead><tr><th>Role</th><th>Can</th></tr></thead>
+          <tbody>
+            <tr><td>reader</td><td>Read the documents their account allows. No decisions, no edits, no sign-off, no history.</td></tr>
+            <tr><td>reviewer</td><td>Everything a reader can, plus deciding, correcting and flagging every item and signing a document off.</td></tr>
+            <tr><td>analyst</td><td>Everything a reviewer can, plus run or re-run the pipeline (outside this tool).</td></tr>
+            <tr><td>admin</td><td>Everything, plus returning a verified document to extracted. Accounts and invites are managed by Tandem for now; the tool has no screen for them.</td></tr>
+          </tbody>
+        </table>
+        <p>
+          A reader's page shows no decision buttons at all. The rest of this
+          guide assumes the reviewer role or above.
+        </p>
+
+        <h2 id="queue"><span class="num">3</span>The queue</h2>
+        <p>
+          The queue is the tool's front page, reached from the
+          <span class="ui">Queue</span> link in the bar across the top of every
+          page. It lists the documents you may see, whether still waiting for
+          review (<span class="state state--extracted">extracted</span>) or
+          already signed off (<span class="state state--verified">verified</span>),
+          twenty to a page. Use <span class="ui">Prev</span> and
+          <span class="ui">Next</span> (above and below the table) to move
+          through them.
+        </p>
+
+        <h3>Columns</h3>
+        <table class="ref">
+          <thead><tr><th>Column</th><th>What it shows</th></tr></thead>
+          <tbody>
+            <tr><td>Title</td><td>The report's title; click it to open the document.</td></tr>
+            <tr><td>Status</td><td><span class="state state--extracted">extracted</span> the pipeline's output, nobody has signed it off. <span class="state state--verified">verified</span> a reviewer signed it off, with their name and the date beneath.</td></tr>
+            <tr><td>Jurisdiction</td><td>The investigating body's country code (UK, US and so on).</td></tr>
+            <tr><td>Extraction</td><td><span class="screen">Degraded</span> when reading at least one page fell back to a slower path; the text of that document deserves a closer look. A dash otherwise.</td></tr>
+            <tr><td>Published</td><td>The report's publication date.</td></tr>
+            <tr><td>Item States</td><td>One chip per review state the document's items are in, with a count: how much of it is still unreviewed, how much is flagged.</td></tr>
+            <tr><td>Claim</td><td>Who holds the document: whoever opened it while it was unclaimed or whoever last saved a change to it. <span class="screen">You</span> when it is yours.</td></tr>
+          </tbody>
+        </table>
+        <p>Hover the small <span class="ui">?</span> beside a column heading for the same explanation in the page.</p>
+
+        <h3>Sorting</h3>
+        <p>
+          The <span class="ui">Sort</span> control sits top right: pick a column
+          (Created, Publication Date, Status, Jurisdiction, Degraded Extraction,
+          any of the five state counts or Claim Holder), pick Ascending or
+          Descending, then press <span class="ui">Sort</span>. Changing a
+          dropdown on its own does nothing until you press the button.
+        </p>
+
+        <h3>Filters</h3>
+        <p>
+          <span class="ui">Filters</span> opens a drawer on the right. It offers
+          status, jurisdiction, extraction (degraded or not), "has an item that
+          is" in a given state, claim (mine, someone else's or unclaimed) and a
+          publication date range. Press <span class="ui">Apply</span>. The
+          filters in force then appear as chips under the heading, each with an
+          <span class="ui">×</span> to remove just that one, and a
+          <span class="ui">Clear all</span> link. The Filters button shows a
+          count of how many are in force.
+        </p>
+        <div class="callout">
+          <p>
+            Two useful filters: Claim set to <span class="ui">Mine</span> to
+            find what you were in the middle of, and "has an item that is"
+            <span class="ui">Flagged</span> to find what needs a second opinion.
+          </p>
+        </div>
+
+        <h2 id="claims"><span class="num">4</span>Claims</h2>
+        <p>
+          A claim is a note saying who is working on a document and since when.
+          Opening an unclaimed document claims it. If someone else holds it,
+          opening leaves their name in place; your first save moves the claim to
+          you. The queue's Claim column and a band across the top of the
+          document page show the holder's name and the time they opened it.
+        </p>
+        <p>
+          A claim does not lock the document and gives its holder no priority.
+          Someone else can open the same document and edit it; the claim then
+          shows their name instead. If two people change the same item, the
+          second change is refused and the page shows what the first person did
+          (<a href="#refused">section 8</a> covers this). A claim ends in one of
+          three ways:
+        </p>
+        <ul>
+          <li>you press <span class="ui">Release</span> in the band</li>
+          <li>the document is signed off</li>
+          <li>24 hours pass without a change to the document</li>
+        </ul>
+        <p>The band's colour says whose it is:</p>
+        <div class="bands">
+          <div class="band band--mine"><strong>Orange</strong>yours</div>
+          <div class="band band--theirs"><strong>Blue</strong>someone else's</div>
+          <div class="band"><strong>Plain</strong>nobody holds it</div>
+        </div>
+
+        <h2 id="document-page"><span class="num">5</span>The document page</h2>
+
+        <h3>The top</h3>
+        <p>
+          The report's title, with two buttons beside it:
+          <span class="ui">Source</span>, which opens the publishing body's own
+          web page for the report in a new tab, and <span class="ui">PDF</span>,
+          which opens the stored copy of the report in a new tab. If there is no
+          stored copy the PDF button is greyed and reads
+          <span class="ui">No PDF stored</span>; if the copy could not be
+          reached just now, <span class="ui">PDF unavailable</span>.
+        </p>
+        <p>
+          Beneath the title, a strip of facts: status, jurisdiction, publication
+          date, page count, report number and whether extraction was degraded.
+          None is editable here; the jurisdiction, the publication date and the
+          report number (as Publication Number) are corrected in the Metadata
+          section below.
+        </p>
+        <p>
+          Beneath that, the review band: the claim on the left
+          (<a href="#claims">section 4</a>) and sign-off on the right
+          (<a href="#sign-off">section 9</a>).
+        </p>
+
+        <h3>The left rail</h3>
+        <p>
+          The rail is the column down the left of the document page, holding
+          three panels: Sections, Pipeline and View. On a wide window it stays
+          on screen as you scroll; on a narrow one (under about 1100 pixels) it
+          moves above the document and scrolls with the page.
+        </p>
+        <p>
+          <strong>Sections</strong> lists the seven sections with each one's
+          item count and a thin bar coloured by the states its items are in.
+          The heading counts how many sections are open and how many have
+          unreviewed items. Clicking a section name scrolls to it and unfolds it
+          if it was folded.
+        </p>
+        <p>
+          <strong>Pipeline</strong> shows the six stages the document went
+          through, each with a dot and the date it finished. A red dot is a
+          failed stage, with the reason beneath; a hollow one is a stage that
+          did not run. A document whose records stage failed will have an empty
+          Records section, and this panel is where that is explained.
+        </p>
+        <p>
+          <strong>View</strong> has one link: <span class="ui">Hide</span> or
+          <span class="ui">Show</span> rejected items. Rejected items are shown
+          by default to anyone who can review, greyed, so you can see what was
+          thrown out and reverse it if need be. Hiding them takes them off the
+          page; the two fact panels then say how many fields are hidden, and the
+          other sections leave them out.
+        </p>
+
+        <h3>The seven sections</h3>
+        <p>
+          Each section is a panel with a title band. Three of the bands fold
+          the panel away: Records opens unfolded, Entities and Addressees start
+          folded. Inside Records, the Safety Issues and Recommendations
+          sub-lists start closed; click either band to open it.
+        </p>
+        <table class="ref">
+          <thead><tr><th>Section</th><th>Holds</th><th>Reviewable?</th></tr></thead>
+          <tbody>
+            <tr><td>Metadata</td><td>Five document fields: title, publication date, publication number, document type, jurisdiction.</td><td>Yes, each field</td></tr>
+            <tr><td>Accident particulars</td><td>Eleven facts about the accident: date, location, severity, accident type, loss of life, injury count, whether the vessel sank, total loss, pollution, property damage, severe environmental damage. Plus the vessels involved, read-only.</td><td>Yes, each field</td></tr>
+            <tr><td>Structure</td><td>The report's own headings in order, each with a PDF link to its page. For finding your way around the report.</td><td>No</td></tr>
+            <tr><td>Incident link</td><td>The accident in the investigators' own data that this report was matched to, by its publication number.</td><td>Yes, one item</td></tr>
+            <tr><td>Records</td><td>The report's safety issues and its recommendations, each in its own sub-list.</td><td>Yes, each record</td></tr>
+            <tr><td>Entities</td><td>The vessels, people, places and organisations the narrative names, with every place each one is mentioned.</td><td>Yes, each entity</td></tr>
+            <tr><td>Addressees</td><td>For each recommendation, the organisations it is directed at.</td><td>Yes, each recommendation's list</td></tr>
+          </tbody>
+        </table>
+        <p>
+          If one section cannot be loaded (the request was refused or timed
+          out), that section says so and the others still render. Reload the
+          page; if it persists, tell Tandem.
+        </p>
+
+        <h2 id="states"><span class="num">6</span>States and decisions</h2>
+
+        <h3>The five states</h3>
+        <p>
+          Every reviewable item is in one state, shown as a coloured chip on the
+          item and as a coloured stripe down its left edge.
+        </p>
+        <table class="ref">
+          <thead><tr><th>State</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><span class="state state--unreviewed">unreviewed</span></td><td>Nobody has looked at it. The pipeline's value stands, unconfirmed.</td></tr>
+            <tr><td><span class="state state--accepted">accepted</span></td><td>A reviewer confirmed the pipeline's value as it is.</td></tr>
+            <tr><td><span class="state state--corrected">corrected</span></td><td>A reviewer changed it. The value shown is the reviewer's; the pipeline's original is in the history.</td></tr>
+            <tr><td><span class="state state--rejected">rejected</span></td><td>A reviewer said this item should not exist (a recommendation that is not one, an entity that is noise). It drops out of what readers of CHIRPdb see.</td></tr>
+            <tr><td><span class="state state--flagged">flagged</span></td><td>A reviewer is unsure and wrote a note saying why. A flagged item stops the document being signed off until someone resolves it.</td></tr>
+          </tbody>
+        </table>
+        <p>
+          An item can be decided any number of times. The latest decision is
+          its state; every earlier one is in its history.
+        </p>
+
+        <h3>The toolbar</h3>
+        <p>
+          Each item has the same toolbar on its right (beneath it on a narrow
+          window). On the fields in Metadata and Accident particulars and on
+          entity cards, where room is short, Accept and Reject are a
+          <span class="ui">✓</span> and an <span class="ui">✕</span>; hover for
+          the word.
+        </p>
+        <ul>
+          <li>
+            <span class="ui">Accept</span> (or <span class="ui">✓</span>): the
+            value is right. One click; the state changes to accepted and the
+            chip updates without a page reload.
+          </li>
+          <li>
+            <span class="ui">Reject</span> (or <span class="ui">✕</span>): the
+            item should not be there. One click.
+          </li>
+          <li>
+            <span class="ui">+ Reason</span>: opens a box beneath the toolbar
+            for an optional reason that is recorded with whichever of Accept or
+            Reject you press next. Use it when a later reader would wonder why.
+            Up to two thousand characters. The box empties itself once the
+            change is saved.
+          </li>
+          <li>
+            <span class="ui">Flag</span>: opens a box asking what is wrong. The
+            note is required. Press the <span class="ui">Flag …</span> button
+            beneath it (Flag Record, Flag Field, Flag Entity and so on) to save.
+            The note then shows on the item in red, prefixed "Flagged:", until
+            the item is decided again.
+          </li>
+          <li>
+            <span class="ui">Edit</span> and the other correction buttons differ
+            by section: <a href="#correcting">section 7</a>.
+          </li>
+        </ul>
+        <p>A reader's view has none of these.</p>
+
+        <h3>Last change and History</h3>
+        <p>
+          Beneath an item's chip, a grey line names who last changed it and when
+          ("Jaz accepted, 14:30"; a change from another day carries its
+          weekday). Beneath the item's text, <span class="ui">▸ History</span>
+          unfolds the item's whole trail, newest first: each decision or edit,
+          who made it and when, its reason if one was given; an edit also lists
+          each field's value before and after. At the bottom,
+          <span class="screen">Machine original</span>: the values the pipeline
+          produced before anyone touched them. An item a person created from
+          nothing says so instead.
+        </p>
+        <p>
+          History is read fresh each time it is opened, so it includes what
+          someone else did a moment ago.
+        </p>
+
+        <h2 id="correcting"><span class="num">7</span>Correcting each kind of item</h2>
+
+        <h3 id="fields">Metadata fields and accident particulars</h3>
+        <p>
+          Each field shows its value and, in a small chip, where that value came
+          from: <span class="screen">landing page</span>,
+          <span class="screen">PDF properties</span>,
+          <span class="screen">cover page</span>,
+          <span class="screen">report text</span>,
+          <span class="screen">model reading</span>,
+          <span class="screen">derived from other fields</span> or, once a
+          reviewer has changed it, <span class="screen">reviewer edit</span>. A
+          field with no chip had no recorded source.
+        </p>
+        <p><span class="ui">Edit</span> opens the field in place. What it offers depends on the field:</p>
+        <table class="ref">
+          <thead><tr><th>Field</th><th>Editor</th></tr></thead>
+          <tbody>
+            <tr><td>Title, publication number, accident location, pollution</td><td>A text box.</td></tr>
+            <tr><td>Publication date, accident date</td><td>A date picker.</td></tr>
+            <tr><td>Loss of life, injury count</td><td>A whole number, zero or more.</td></tr>
+            <tr><td>Property damage</td><td>An amount, zero or more. The label names the currency the jurisdiction reports in.</td></tr>
+            <tr><td>Vessel sank, total loss, severe environmental damage</td><td>Yes, No or Unknown.</td></tr>
+            <tr><td>Document type, jurisdiction, severity, accident type</td><td>A list of allowed values. The list is read when the editor opens and depends on the document's jurisdiction; a short "Loading the list…" is normal.</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Title and jurisdiction cannot be emptied. Every other field can, by
+          clearing the box; "(none)" at the top of a list does the same.
+        </p>
+        <p>
+          <span class="ui">Save</span> is disabled until the value differs from
+          what is stored. A saved edit moves the field to corrected and records
+          it as a reviewer edit. Editing the title, the publication date or the
+          jurisdiction reloads the whole page; a changed jurisdiction also
+          changes what the other lists offer.
+        </p>
+        <div class="callout">
+          <p>
+            Two notes you may see on a field.
+            <span class="screen">"Read as US, not this document's current
+            jurisdiction"</span> means the pipeline read this value under a
+            different body's conventions than the document now carries, usually
+            because someone corrected the jurisdiction since; a re-run of the
+            pipeline would read it afresh. The jurisdiction editor itself
+            carries the matching warning. Neither note needs action from you
+            beyond checking the value.
+          </p>
+        </div>
+
+        <h3 id="records">Records: safety issues and recommendations</h3>
+        <p>
+          A record is one safety issue or one recommendation the report makes,
+          kept as the sentences it spans. The Records section has two folding
+          sub-lists, <strong>Safety Issues</strong> and
+          <strong>Recommendations</strong>, each with its count and state chips
+          in the band. Above a list of more than one,
+          <span class="ui">Show</span> narrows to one state and
+          <span class="ui">Sort</span> orders by report order, review state
+          (undecided first) or wording; the arrow button reverses the order.
+        </p>
+        <p>
+          A record's words are the sentences of the report it spans, shown as
+          its text, with a <span class="ui">PDF</span> pill that opens the report
+          at that passage's page. A safety issue shows whether it was
+          contributory and whether it was addressed; a recommendation shows its
+          reference number and the addressee named in the report.
+        </p>
+        <p>
+          <span class="ui">Edit Fields</span> opens the record's own fields. For
+          a safety issue: Name, Kind of record (Safety issue or Safety lesson),
+          Contributory and Addressed (Yes, No or Unknown). For a recommendation:
+          Reference number, Addressee and Action. Only the fields you changed
+          are sent; <span class="ui">Save Changes</span> stays disabled until
+          something differs.
+        </p>
+        <p>
+          <span class="ui">Edit Span</span> changes which sentences the record
+          covers. It lists the sentences of the record's own section, with the
+          ones it spans ticked. Tick and untick as needed;
+          <span class="ui">Show the previous section</span> and
+          <span class="ui">Show the next section</span> extend the list when a
+          record runs across a heading. A record must span at least one
+          sentence. <span class="ui">Save Span</span> saves the new span and
+          moves the record to corrected.
+        </p>
+        <ul>
+          <li>
+            <span class="ui">Split</span> moves the sentences you tick to a new
+            record of the same kind; the original keeps the rest and becomes
+            corrected, and the new one starts unreviewed with no reference
+            number or addressee.
+          </li>
+          <li>
+            <span class="ui">Merge</span> folds another record of the same kind
+            into this one, which then spans both; the other is rejected, not
+            deleted.
+          </li>
+          <li>
+            <span class="ui">Add Safety Issue</span> and
+            <span class="ui">Add Recommendation</span>, at the top of each
+            sub-list, create a record the pipeline missed: choose a section,
+            tick its sentences and press Add. You land on the new record,
+            corrected and tagged <span class="screen">Added by reviewer</span>;
+            fill it in with <span class="ui">Edit Fields</span>, or reject it to
+            undo.
+          </li>
+        </ul>
+
+        <h3 id="entities">Entities</h3>
+        <p>
+          An entity is a vessel, person, place or organisation the report's
+          narrative names, with every place it is mentioned. The section is
+          paged, fifty cards at a time. The controls above the cards filter by
+          state and by type, sort (by doubt, name, mentions or review state) and
+          need <span class="ui">Apply</span> pressed;
+          <span class="ui">Show all</span> drops the filter. The default order
+          puts the most doubtful first. An entity the pipeline was unsure of
+          carries a small amber note naming the doubt:
+        </p>
+        <table class="ref">
+          <thead><tr><th>Note</th><th>Doubt</th></tr></thead>
+          <tbody>
+            <tr><td><code>other</code></td><td>It fitted no known type.</td></tr>
+            <tr><td><code>low_confidence</code></td><td>At least one mention scored low or was not scored.</td></tr>
+            <tr><td><code>name_mismatch</code></td><td>A mention's wording disagrees with the name.</td></tr>
+          </tbody>
+        </table>
+        <p>
+          The note hides once you have changed the entity but returns when the
+          list reloads: it describes what the pipeline produced, whatever you
+          decided.
+        </p>
+        <p>
+          Each card shows the entity's name, its type, how many times it is
+          mentioned and its state. Besides the standard toolbar:
+        </p>
+        <ul>
+          <li>
+            <span class="ui">Edit</span> changes the name and the type. Choosing
+            the type <span class="screen">other</span> asks what kind of thing
+            it is.
+          </li>
+          <li>
+            <span class="ui">Merge</span> folds another entity into this one. A
+            search box finds the other by name; confirm, and its mentions move
+            here and it is removed. The page reloads its entity list afterwards
+            and a notice above the cards says what happened.
+          </li>
+          <li>
+            <span class="ui">Mentions</span> unfolds every sentence the entity is
+            named in, the name highlighted, each with a PDF pill. On each
+            mention: <span class="ui">Move</span> sends it to another entity
+            (searched by name, as with Merge); <span class="ui">Remove</span>
+            detaches it. Moving or removing an entity's last mention removes the
+            entity itself; the confirmation says so before you press it. Moving
+            a mention onto an entity that already holds that very mention
+            removes the duplicate instead, and the notice says so.
+          </li>
+        </ul>
+        <p>
+          Two buttons above the cards accept in bulk.
+          <span class="ui">Accept All on This Page</span> accepts every
+          unreviewed entity on screen.
+          <span class="ui">Accept All on the Document</span> accepts every
+          unreviewed entity on every page, whatever the filter shows; when that
+          is more than the page in front of you it asks first and tells you how
+          many. Both take an optional reason. An entity someone else changed
+          while you looked is skipped and named in the notice, so nothing of
+          theirs is overwritten.
+        </p>
+
+        <h3 id="incident-link">Incident link</h3>
+        <p>
+          The investigators' own data (for the UK, the MAIB data portal) lists
+          every accident; the pipeline matches a report to its accident by the
+          publication number. This section shows the match, or
+          <span class="screen">No linked incident.</span>
+        </p>
+        <p>The buttons read differently here:</p>
+        <ul>
+          <li><span class="ui">Confirm Link</span> accepts the match.</li>
+          <li>
+            <span class="ui">Clear Link</span> rejects it and removes the link
+            from the document. A later linking run does not put it back, so
+            clear only when the match is wrong.
+          </li>
+          <li>
+            <span class="ui">Confirm: No Incident</span> appears when there is no
+            linked incident; it records that there is nothing to link.
+          </li>
+          <li><span class="ui">Flag</span> works as everywhere.</li>
+          <li>
+            <span class="ui">Link an Occurrence</span> (or
+            <span class="ui">Link a Different Occurrence</span> when one is
+            linked) opens a window searching the investigators' accidents,
+            nearest the report's own accident date first. Filter by words from
+            the description, publication number, accident date, ship type or
+            port of origin; the data records no vessel names, so a vessel's name
+            is worth trying in the description. Accidents with no date, or no
+            port on any vessel, stay in the list after the rest. Each result
+            shows its vessels and any report already linked to it (an interim
+            and a final report share one accident). <span class="ui">Link</span>
+            on a result links it and marks the item corrected; a later linking
+            run leaves it alone. Only a UK report can be linked.
+          </li>
+        </ul>
+
+        <h3 id="addressees">Addressees</h3>
+        <p>
+          An addressee list is the set of organisations a recommendation is
+          directed at. The section has one row per recommendation: its reference
+          and the addressee as the report worded it, then the organisations as
+          chips. <span class="ui">+ Organisation</span> opens a search box over
+          the organisations the database knows; pick one to attach it. The
+          <span class="ui">×</span> on a chip detaches that organisation.
+          Creating a new organisation is not possible here; if the right one
+          does not exist, flag the row with its name in the note.
+        </p>
+        <p>
+          Each row's <span class="ui">Accept List</span> and
+          <span class="ui">Reject List</span> decide the list as a whole.
+          Attaching or detaching moves it to corrected on its own.
+        </p>
+
+        <h2 id="refused"><span class="num">8</span>When a change is refused</h2>
+        <p>
+          Your change is refused when someone else changed the same item after
+          you opened it. The tool sends, with every change, the moment you last
+          read the item; if that no longer matches, a yellow message appears on
+          the item and the item redraws showing what is stored now, including
+          their decision. Read it, then decide again if you still need to.
+          Nothing of yours was saved by the refused change, so there is nothing
+          to undo.
+        </p>
+        <div class="msg msg--red">
+          <span class="msg__label">A different message</span>
+          Something went wrong saving that. Reload the page and try again.
+        </div>
+        <p>
+          That one means the tool lost its connection. Reloading usually clears
+          it. If it does not, tell Tandem.
+        </p>
+
+        <h2 id="sign-off"><span class="num">9</span>Sign-off</h2>
+        <p>
+          A document starts as
+          <span class="state state--extracted">extracted</span>. Signing it off
+          makes it <span class="state state--verified">verified</span>, which is
+          the attestation CHIRP's readers rely on: a reader whose account is
+          limited to verified documents sees it from that moment.
+        </p>
+        <p>
+          The band at the top of the page reads
+          <span class="screen">Not yet signed off</span>, with a
+          <span class="ui">Sign Off</span> button for anyone who can review. The
+          confirmation says what will be recorded: your name and the count of
+          items in each state, section by section (the time is recorded too).
+        </p>
+        <p>Two conditions, both checked at the moment you press the button:</p>
+        <div class="conditions">
+          <div class="condition">
+            <div class="condition__num">Condition 1</div>
+            Nothing on the document is flagged.
+          </div>
+          <div class="condition">
+            <div class="condition__num">Condition 2</div>
+            Every document-level item is decided: the five metadata fields, the
+            eleven accident particulars and the incident link.
+          </div>
+        </div>
+        <p>
+          Records, entities and addressee lists may stay unreviewed; the
+          sign-off records how many were. A refused sign-off shows a yellow box
+          listing each item in the way, with its state, each one a link that
+          scrolls to the item and unfolds its section. Resolve them and press
+          <span class="ui">Sign Off</span> again.
+        </p>
+        <p>
+          Once signed off, the band reads <span class="screen">Signed off
+          by</span> with the name and date, and
+          <span class="ui">What it covered</span> unfolds the recorded counts.
+          The button becomes <span class="ui">Sign Off Again</span>, for when
+          further corrections have been made since: the new sign-off replaces
+          the old one's name, time and counts.
+        </p>
+
+        <h3>Returning a document</h3>
+        <p>
+          Only an administrator sees <span class="ui">Return to Extracted</span>.
+          It takes the document out of view for every reader limited to verified
+          documents at once and needs a note saying why; the note shows in the
+          band, with the administrator's name, until the document is signed off
+          again. The item decisions are untouched by a return.
+        </p>
+
+        <h2 id="pdf"><span class="num">10</span>Reading the PDF</h2>
+        <p>
+          The report's own PDF is stored with the document. Every item that
+          comes from a sentence carries a small orange
+          <span class="ui">PDF</span> pill: each heading in Structure, each
+          record, each entity mention. Clicking one opens the PDF in a new tab
+          at that sentence's page. The <span class="ui">PDF</span> button beside
+          the title opens it at page one. Fields in Metadata and Accident
+          particulars carry no pill; their source chip
+          (<a href="#fields">section 7</a>) says where the value came from.
+        </p>
+        <p>
+          The link to the PDF is created when you click and lasts an hour; a tab
+          left open longer than that shows an expired-link error when reloaded.
+          Click the pill again.
+        </p>
+
+        <h2 id="working-day"><span class="num">11</span>A working day</h2>
+        <ol class="steps steps--day">
+          <li>
+            Open the queue, filter by Claim: <span class="ui">Mine</span> for
+            anything you left mid-way; otherwise sort by Unreviewed Count
+            descending and open the top document.
+          </li>
+          <li>
+            Read the Pipeline panel for a failed stage, and the strip beneath
+            the title for Degraded extraction. Either is a reason to read that
+            document's text more carefully against the PDF.
+          </li>
+          <li>
+            Work the two fact panels first (Metadata, Accident particulars):
+            every field needs a decision before sign-off.
+          </li>
+          <li>
+            Confirm or clear the incident link, or search for the right accident
+            and link it.
+          </li>
+          <li>
+            Work Records: <span class="ui">Edit Span</span> where the pipeline
+            cut a recommendation short, <span class="ui">Edit Fields</span>
+            where it misread a reference number, Add a record it missed
+            altogether, <span class="ui">Flag</span> where you cannot tell. Sort
+            by review state to keep the undecided at the top.
+          </li>
+          <li>
+            Entities: sort by doubt, decide the doubtful ones by hand, then
+            <span class="ui">Accept All on the Document</span> for the rest if a
+            scan of the names finds nothing wrong.
+          </li>
+          <li>
+            Addressees: attach the organisations each recommendation names, then
+            <span class="ui">Accept List</span>.
+          </li>
+          <li>
+            <span class="ui">Sign Off</span>. If it is refused, follow the links
+            in the yellow box.
+          </li>
+        </ol>
+        <div class="callout callout--warn">
+          <p>
+            Half a document is fine to leave. Your claim and every decision are
+            saved as you go; there is no draft to lose.
+          </p>
+        </div>
+
+        <p class="page-footer">
+          Tandem Creative Dev · prepared for Zig Zag AI / CHIRP · 2026
+        </p>
+      </main>
+    </div>
+
+    <script>
+      // Highlight the contents entry for the section in view
+      (function () {
+        var links = Array.prototype.slice.call(
+          document.querySelectorAll(".toc a"),
+        );
+        var sections = links.map(function (a) {
+          return document.querySelector(a.getAttribute("href"));
+        });
+        function update() {
+          var current = 0;
+          sections.forEach(function (section, i) {
+            if (section.getBoundingClientRect().top < 140) current = i;
+          });
+          links.forEach(function (a, i) {
+            a.classList.toggle("is-active", i === current);
+          });
+        }
+        window.addEventListener("scroll", update, { passive: true });
+        update();
+      })();
+    </script>
+  </body>
+</html>
