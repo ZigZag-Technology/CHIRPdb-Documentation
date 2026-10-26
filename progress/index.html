@@ -476,11 +476,12 @@
         );
       }
       /* Allocation an open phase holds but the budget no longer covers, one
-         slice per place the days went. Hairlines keep small slices apart. */
+         slice per place the days went, sitting straight after the tracked
+         fill so what is still available is the track left at the end.
+         Hairlines keep small slices apart. */
       .phase__bar-lost {
         position: absolute;
         top: 0;
-        right: 0;
         bottom: 0;
         display: flex;
       }
@@ -1082,46 +1083,66 @@
       // Open phases still hold allocation the budget may no longer cover. The
       // gap is what they are owed beyond what is left, and it went wherever
       // time was spent without an allocation to spend it from: overruns,
-      // unbudgeted rows, untasked time, and estimates beyond the budget.
-      // Phases finishing under allocation hand days back, so the sources are
-      // scaled down to the gap rather than adding up past it.
+      // unbudgeted rows and estimates beyond the budget. Phases finishing under
+      // allocation hand days back and untasked time is left unnamed, so the
+      // sources are scaled to the gap rather than adding up past or short of it.
       const unspent = (p) => Math.max(0, p.alloc - p.elapsed);
       const OWED = sum(
         PHASES.filter((p) => p.alloc && !p.done),
         unspent,
       );
       const GAP = Math.min(OWED, Math.max(0, OWED - budgetLeft));
-      const LOST_COLOURS = [
-        "#0c2547",
-        "#3d6190",
-        "#8aa3c4",
-        "#9a3412",
-        "#d97757",
-        "#f0b79a",
-        "#a8acb6",
-      ];
+      // Unbudgeted work in navy, overruns in rust, estimates in grey - each
+      // group draws from its own ramp so a source never borrows another's hue.
+      const UNBUDGETED_COLOURS = ["#0c2547", "#3d6190", "#8aa3c4"];
+      const OVERRUN_COLOURS = ["#9a3412", "#d97757", "#f0b79a"];
+      const ramp = (colours) => (row, i) => ({
+        ...row,
+        colour: colours[i % colours.length],
+      });
       const LOST_SOURCES = [
-        ...PHASES.filter((p) => !p.alloc).map((p) => ({
-          label: p.label,
-          days: p.elapsed,
-        })),
-        { label: "No task", days: UNASSIGNED_ELAPSED },
-        ...PHASES.filter((p) => p.alloc && p.elapsed > p.alloc).map((p) => ({
-          label: p.label + " overrun",
-          days: p.elapsed - p.alloc,
-        })),
+        ...PHASES.filter((p) => !p.alloc && p.elapsed > 0)
+          .map((p) => ({ label: p.label, days: p.elapsed }))
+          .map(ramp(UNBUDGETED_COLOURS)),
+        ...PHASES.filter((p) => p.alloc && p.elapsed > p.alloc)
+          .map((p) => ({ label: p.label + " overrun", days: p.elapsed - p.alloc }))
+          .map(ramp(OVERRUN_COLOURS)),
         {
           label: "Estimates over budget",
           days: Math.max(0, ALLOCATED - TOTAL_BUDGET),
+          colour: "#a8acb6",
         },
-      ]
-        .filter((s) => s.days > 0)
-        .map((s, i) => ({ ...s, colour: LOST_COLOURS[i % LOST_COLOURS.length] }));
+      ].filter((s) => s.days > 0);
       const LOST_SCALE = GAP / (sum(LOST_SOURCES, (s) => s.days) || 1);
-      // Each open phase gives up its share of the gap in proportion to what it
-      // still holds, and every source is split across them the same way.
-      const lostFrom = (phase) =>
-        phase.alloc && !phase.done && OWED ? (GAP * unspent(phase)) / OWED : 0;
+      // Each source lands whole on one open phase, so DSG reads as one slice
+      // rather than pieces across bars. Largest first, onto whichever phase is
+      // furthest short of its share of the gap - shares are in proportion to
+      // what each still holds. A source bigger than the room left on that
+      // phase spills its remainder onto the next.
+      const OPEN = PHASES.filter((p) => p.alloc && !p.done && unspent(p) > 0);
+      const LOST = new Map(OPEN.map((p) => [p, []]));
+      const lostFrom = (phase) => sum(LOST.get(phase) || [], (s) => s.days);
+      const shortOf = (phase) =>
+        (GAP * unspent(phase)) / OWED - lostFrom(phase);
+      LOST_SOURCES.map((source, order) => ({ ...source, order }))
+        .sort((a, b) => b.days - a.days)
+        .forEach((source) => {
+          let days = source.days * LOST_SCALE;
+          while (days > 0.005) {
+            const room = OPEN.filter(
+              (p) => unspent(p) - lostFrom(p) > 0.005,
+            );
+            if (!room.length) break;
+            const phase = room.reduce((a, b) =>
+              shortOf(b) > shortOf(a) ? b : a,
+            );
+            const slice = Math.min(days, unspent(phase) - lostFrom(phase));
+            LOST.get(phase).push({ ...source, days: slice });
+            days -= slice;
+          }
+        });
+      // Within a bar, slices keep the key's order rather than size order.
+      LOST.forEach((slices) => slices.sort((a, b) => a.order - b.order));
 
       // 120 is the only day-count in the body copy.
       document.querySelectorAll("[data-budget-days]").forEach((el) => {
@@ -1256,13 +1277,13 @@
         fill.className = withState("phase__bar-fill", state);
         fill.dataset.pct = phase.alloc ? Math.min(100, pct) : 0;
 
-        // Allocation used elsewhere, drawn in from the right end of the track
+        // Allocation used elsewhere, drawn straight after the tracked fill
         // with a key naming where each slice went.
         const lost = lostFrom(phase);
         if (lost > 0) {
-          const share = (lost / GAP) * LOST_SCALE;
           const strip = document.createElement("div");
           strip.className = "phase__bar-lost";
+          strip.style.left = Math.min(100, pct) + "%";
           strip.style.width = (lost / phase.alloc) * 100 + "%";
           const key = document.createElement("div");
           key.className = "phase__key";
@@ -1272,8 +1293,8 @@
             " days available · " +
             fmt(lost) +
             " used elsewhere:</span>";
-          LOST_SOURCES.forEach((source) => {
-            const days = source.days * share;
+          LOST.get(phase).forEach((source) => {
+            const days = source.days;
             const slice = document.createElement("span");
             slice.style.flexGrow = days;
             slice.style.background = source.colour;
