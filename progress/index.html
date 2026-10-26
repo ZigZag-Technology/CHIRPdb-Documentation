@@ -1086,20 +1086,20 @@
 
       // Open phases still hold allocation the budget may no longer cover. The
       // gap is what they are owed beyond what is left, and it went wherever
-      // time was spent without an allocation to spend it from: overruns,
-      // unbudgeted rows and estimates beyond the budget. Phases finishing under
-      // allocation hand days back and untasked time is left unnamed, so the
-      // sources are scaled to the gap rather than adding up past or short of it.
+      // time was spent without an allocation to spend it from: overruns and
+      // unbudgeted rows. Phases finishing under allocation hand days back, so
+      // the sources are scaled down when they add up past the gap - never up,
+      // so each slice matches its own row. Untasked time is left unnamed.
       const unspent = (p) => Math.max(0, p.alloc - p.elapsed);
       const OWED = sum(
         PHASES.filter((p) => p.alloc && !p.done),
         unspent,
       );
       const GAP = Math.min(OWED, Math.max(0, OWED - budgetLeft));
-      // Unbudgeted work in navy, overruns in rust, estimates in grey - each
+      // Unbudgeted work in navy, overruns in rust - each
       // group draws from its own ramp so a source never borrows another's hue.
       const UNBUDGETED_COLOURS = ["#0c2547", "#3d6190", "#8aa3c4"];
-      const OVERRUN_COLOURS = ["#9a3412", "#d97757", "#f0b79a"];
+      const OVERRUN_COLOURS = ["#7c2d12", "#b8461b", "#e07b4f", "#f3b391"];
       const ramp = (colours) => (row, i) => ({
         ...row,
         colour: colours[i % colours.length],
@@ -1111,13 +1111,11 @@
         ...PHASES.filter((p) => p.alloc && p.elapsed > p.alloc)
           .map((p) => ({ label: p.label + " overrun", days: p.elapsed - p.alloc }))
           .map(ramp(OVERRUN_COLOURS)),
-        {
-          label: "Estimates over budget",
-          days: Math.max(0, ALLOCATED - TOTAL_BUDGET),
-          colour: "#a8acb6",
-        },
       ].filter((s) => s.days > 0);
-      const LOST_SCALE = GAP / (sum(LOST_SOURCES, (s) => s.days) || 1);
+      const LOST_SCALE = Math.min(
+        1,
+        GAP / (sum(LOST_SOURCES, (s) => s.days) || 1),
+      );
       // Each source lands whole on one open phase, so DSG reads as one slice
       // rather than pieces across bars. Largest first, onto whichever phase is
       // furthest short of its share of the gap - shares are in proportion to
