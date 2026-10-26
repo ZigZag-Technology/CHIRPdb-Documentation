@@ -1295,10 +1295,16 @@
           key.className = "phase__key";
           key.innerHTML =
             '<span class="phase__key-title">' +
-            fmt(phase.alloc - phase.elapsed - lost) +
+            fmt(phase.alloc - used) +
             " days available · " +
-            fmt(lost) +
-            " used elsewhere:</span>";
+            fmt(used) +
+            ' used:</span><span class="phase__key-item">' +
+            '<span class="phase__key-swatch" style="background:var(--orange)">' +
+            "</span>" +
+            phase.label +
+            " " +
+            fmt(phase.elapsed) +
+            "d</span>";
           LOST.get(phase).forEach((source) => {
             const days = source.days;
             const slice = document.createElement("span");
