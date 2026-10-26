@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CHIRPdb Delivery Tiers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/chirp.css" />
+    <style>
+      :root {
+        --green: #1f7a3d;
+        --green-tint: #e4f3e7;
+        --red: #b3261e;
+        --red-tint: #fbe6e6;
+      }
+      body {
+        color: var(--text);
+        background: var(--bg-soft);
+        line-height: 1.6;
+      }
+
+      .hero {
+        background: var(--navy-deep);
+        color: #fff;
+        padding: 48px 24px;
+      }
+      .hero__inner {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .hero__kicker {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--orange);
+        margin-bottom: 10px;
+      }
+      .hero h1 {
+        font-size: clamp(24px, 3.2vw, 32px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+        margin-bottom: 10px;
+      }
+      .hero h1 .accent {
+        color: var(--orange);
+      }
+      .hero__lede {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 15px;
+        max-width: 680px;
+        line-height: 1.65;
+      }
+      .hero__lede a {
+        color: var(--orange);
+      }
+
+      .meta {
+        background: var(--bg-card);
+        border-bottom: 1px solid var(--border);
+      }
+      .meta__inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 12px 24px;
+        font-size: 12px;
+        color: var(--text-soft);
+      }
+      .meta__label {
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--orange);
+        margin-right: 8px;
+      }
+
+      main {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 32px 24px 80px;
+      }
+
+      /* one tile per tier: core on its own, the stretch tiers grouped apart */
+      .tiles {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 20px;
+        margin-bottom: 28px;
+        align-items: stretch;
+      }
+      .stretch-group {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        border: 2px dashed var(--border);
+        border-radius: 16px;
+        padding: 22px 12px 12px;
+      }
+      .stretch-label {
+        position: absolute;
+        top: -11px;
+        left: 16px;
+        background: var(--bg-soft);
+        padding: 0 8px;
+      }
+      /* the stretch marker, on the group, its tiles and its cards */
+      .stretch-tag {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--text-soft);
+        border: 1px dashed var(--text-mute);
+        border-radius: 999px;
+        padding: 1px 9px;
+        background: var(--bg-card);
+        vertical-align: middle;
+      }
+      .tile {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-top: 4px solid var(--navy);
+        border-radius: 12px;
+        padding: 20px 22px;
+        text-decoration: none;
+        color: inherit;
+        transition: box-shadow 0.18s ease;
+      }
+      .tile:hover {
+        box-shadow: var(--shadow-md);
+      }
+      .tile--core {
+        border: 2px solid var(--navy-deep);
+        border-top-width: 6px;
+        box-shadow: var(--shadow-md);
+      }
+      .tile--core .tile__figure {
+        font-size: 40px;
+      }
+      /* Stretch tiles are lighter and dashed: extra, not owed */
+      .tile--stretch {
+        background: transparent;
+        border: 1px dashed var(--border);
+        border-top: 1px dashed var(--border);
+      }
+      .tile--stretch .tile__figure {
+        font-size: 24px;
+        color: var(--navy-soft);
+      }
+      .tile__tier {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-soft);
+        margin-bottom: 6px;
+      }
+      .tile__figure {
+        font-size: 30px;
+        font-weight: 800;
+        color: var(--navy-deep);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+      .tile__figure .unit {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-soft);
+        margin-left: 6px;
+        letter-spacing: 0;
+      }
+      .tile__sub {
+        font-size: 13px;
+        color: var(--text-soft);
+        margin-top: 10px;
+      }
+
+      /* progress bars, shared by tiles and milestones */
+      .bar {
+        height: 8px;
+        border-radius: 999px;
+        background: var(--bg-soft);
+        border: 1px solid var(--border-soft);
+        overflow: hidden;
+        margin-top: 12px;
+      }
+      .bar__fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--orange) 0%, var(--orange-deep) 100%);
+      }
+      .bar__fill--complete {
+        background: var(--green);
+      }
+      /* A stretch bar shows extra work done, so it never reads as a shortfall */
+      .bar--stretch {
+        background: transparent;
+        border-style: dashed;
+        border-color: var(--border);
+      }
+      .bar--stretch .bar__fill {
+        background: var(--navy-soft);
+      }
+
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 28px 30px;
+        margin-bottom: 24px;
+        scroll-margin-top: 88px;
+      }
+      .card--core {
+        border: 2px solid var(--navy-deep);
+        box-shadow: var(--shadow-md);
+      }
+      .card--stretch {
+        background: transparent;
+        border: 2px dashed var(--border);
+      }
+      .card--stretch .card__kicker {
+        color: var(--text-soft);
+      }
+      .card--stretch h2 {
+        color: var(--navy-soft);
+      }
+      /* Stretch work not reached yet is neutral, not an outstanding to-do */
+      .card--stretch .chip--todo {
+        background: #eceef2;
+        color: var(--text-soft);
+      }
+      .card__kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--orange);
+        margin-bottom: 4px;
+      }
+      .card__head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .card h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--navy-deep);
+        letter-spacing: -0.01em;
+      }
+      .card__count {
+        font-size: 14px;
+        color: var(--text-soft);
+        white-space: nowrap;
+      }
+      .card__count strong {
+        color: var(--navy-deep);
+      }
+      .card__desc {
+        font-size: 14.5px;
+        color: var(--text-soft);
+        margin: 8px 0 4px;
+        max-width: 720px;
+      }
+
+      /* one expandable row per milestone */
+      .milestone {
+        border-top: 1px solid var(--border-soft);
+        padding: 14px 0;
+      }
+      .milestone:first-of-type {
+        margin-top: 16px;
+      }
+      .milestone summary {
+        list-style: none;
+        cursor: pointer;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 4px 16px;
+        align-items: baseline;
+      }
+      .milestone summary::-webkit-details-marker {
+        display: none;
+      }
+      .milestone__name {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--navy-deep);
+      }
+      .milestone__name::before {
+        content: "▸";
+        display: inline-block;
+        width: 16px;
+        color: var(--text-mute);
+        transition: transform 0.15s ease;
+      }
+      .milestone[open] .milestone__name::before {
+        transform: rotate(90deg);
+      }
+      .milestone__count {
+        font-size: 13px;
+        color: var(--text-soft);
+        white-space: nowrap;
+      }
+      .milestone__count strong {
+        color: var(--navy-deep);
+      }
+      .milestone summary .bar {
+        grid-column: 1 / -1;
+        margin-top: 6px;
+      }
+      .milestone__goal {
+        font-size: 14px;
+        color: var(--text-soft);
+        margin: 12px 0 8px 16px;
+      }
+      .tasks {
+        list-style: none;
+        margin: 0 0 0 16px;
+      }
+      .task {
+        display: grid;
+        grid-template-columns: 64px 1fr auto;
+        gap: 12px;
+        align-items: baseline;
+        padding: 9px 0;
+        border-bottom: 1px dashed var(--border-soft);
+        font-size: 14px;
+      }
+      .task:last-child {
+        border-bottom: none;
+      }
+      .task__id {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 12px;
+        color: var(--text-mute);
+      }
+      .task__desc code {
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 0.88em;
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 0 4px;
+        color: var(--navy);
+      }
+      .task--out_of_scope .task__desc {
+        color: var(--text-mute);
+        text-decoration: line-through;
+      }
+
+      .chip {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 1px 9px;
+        white-space: nowrap;
+      }
+      .chip--done {
+        background: var(--green-tint);
+        color: var(--green);
+      }
+      .chip--todo {
+        background: var(--orange-soft);
+        color: var(--orange-deep);
+      }
+      .chip--blocked {
+        background: #eceef2;
+        color: var(--text-soft);
+      }
+      .chip--out_of_scope {
+        background: transparent;
+        border: 1px dashed var(--border);
+        color: var(--text-mute);
+      }
+
+      .note {
+        font-size: 13px;
+        color: var(--text-soft);
+        margin-top: 8px;
+      }
+
+      @media (max-width: 760px) {
+        .tiles,
+        .stretch-group {
+          grid-template-columns: 1fr;
+        }
+        .card {
+          padding: 22px 18px;
+        }
+        .task {
+          grid-template-columns: 1fr auto;
+        }
+        .task__id {
+          grid-column: 1 / -1;
+        }
+      }
+      @media (max-width: 720px) {
+        .hero {
+          padding: 36px 20px;
+        }
+        main {
+          padding: 24px 16px 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a href="../index.html" class="logo">
+          <img
+            src="https://chirp.co.uk/app/uploads/2024/07/chirp-logo-blue.svg"
+            alt="CHIRP"
+            class="logo__img"
+          />
+        </a>
+        <div class="header__spacer"></div>
+        <span class="header__tag">CHIRPdb Delivery Tiers</span>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero__inner">
+        <div class="hero__kicker" id="heroKicker">Delivery by tier</div>
+        <h1 id="heroHeadline"></h1>
+        <p class="hero__lede">
+          The current tranche delivers Phase 2 of the
+          <a href="../roadmap/index.html">roadmap</a> (Verification &amp;
+          provenance) with Step 15 brought forward from Phase 5 (Production
+          hardening). <strong>Core</strong> is the committed scope: what the
+          tool needs to work. <strong>Secondary</strong> and
+          <strong>tertiary</strong> are stretch goals, taken on only while time
+          remains.
+        </p>
+      </div>
+    </section>
+
+    <div class="meta">
+      <div class="meta__inner">
+        <span class="meta__label">Last updated</span><span id="lastUpdated"></span>
+      </div>
+    </div>
+
+    <main>
+      <div class="tiles" id="tiles"></div>
+      <div id="tiers"></div>
+      <p class="note">
+        Struck-through items were taken out of scope and are left out of every
+        count. Blocked items wait on an earlier tier or on another task.
+      </p>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__inner">
+        <span class="footer__logo"
+          ><span class="logo__mark">CH<span class="bang">!</span>RP</span></span
+        >
+        <span>CHIRPdb Delivery Tiers</span>
+      </div>
+    </footer>
+
+    <script>
+      // The roadmap as CHIRPdb records it: milestones, their tier, and each
+      // task's id, description and status. Task notes never reach this page.
+      // --- BEGIN gen_tiers ---
+      // Generated from CHIRPdb .claude/roadmaps.json by scripts/gen_tiers.py.
+      // Do not edit by hand - re-run the script instead.
+      const ROADMAP = {"tranche": "Tranche 1C: Post-DSG", "commit": "68c4b947", "updated": "26 Oct 2026", "milestones": [{"id": "M1", "name": "Identity & Access", "tier": "core", "goal": "Every request resolves to a named principal with a role, a scope and a request ceiling, and the database is closed to everything but the API.", "tasks": [{"id": "1ID.1", "description": "Users, API keys and invites tables: role and scope on the user row, a key's label, hash, owner, expiry, revocation and rate ceiling on its own (scope A2).", "status": "done"}, {"id": "1ID.2", "description": "Principal resolution on every request: a Supabase session verified locally against the project JWKS, or an API key resolving to its owner, with role and scope read from the users row per request rather than from JWT claims (scope A2).", "status": "done"}, {"id": "1ID.3", "description": "The four roles enforced per route group: admin, analyst, reviewer, reader, with the read/review/pipeline/manage capability matrix of scope A3.", "status": "done"}, {"id": "1ID.4", "description": "Invite issue and redemption plus the poe auth-invite and poe auth-api-key tasks: a one-time signup link for a new account or a password reset, single-use and expiring, and a printed-once API key (scope A1 API side, A2).", "status": "done"}, {"id": "1ID.5", "description": "Reader scope applied to every read route: a set of jurisdictions and a minimum document state, with an out-of-scope document returning 404 rather than 403, and search totals counting only what is inside scope (scope A4).", "status": "done"}, {"id": "1ID.6", "description": "Row-level security closed: no table readable or writable through the anonymous key or a signed-in user's own session, leaving the API's service role as the sole database principal (scope A5).", "status": "done"}, {"id": "1ID.7", "description": "Per-principal rate limiting: an in-memory counter, a per-role requests-per-minute and writes-per-minute ceiling from configuration, a key's own ceiling from its row, and 429 with Retry-After over the line (scope A6).", "status": "done"}, {"id": "1ID.8", "description": "Authentication events in the audit trail: login, failed login, API key creation and revocation, and role change, each naming the acting principal, a failed login recording the address attempted in its place (scope A7, C4).", "status": "done"}]}, {"id": "M2", "name": "Review & Correction Tool", "tier": "core", "goal": "CHIRP staff open a document, judge every machine-produced item on it, correct what is wrong and sign the document off.", "tasks": [{"id": "2RT.1", "description": "The SvelteKit workspace beside the Python service: Bun workspace in the chirpdb repository, Bun adapter, talking only to the API and holding no database credentials (scope B1).", "status": "done"}, {"id": "2RT.2", "description": "Login and logout in the tool: email and password against Supabase Auth, the signup page that redeems an invite and sets a password, and a refusal that names its cause (scope A1 tool side).", "status": "done"}, {"id": "2RT.3", "description": "Item state model and the decision routes: the five states (unreviewed, accepted, corrected, rejected, flagged) across every item kind, accept, reject and flag as single actions, and a flag refused without a note (scope B5).", "status": "done"}, {"id": "2RT.4", "description": "Optimistic concurrency on every item write: a write is made against the value the reviewer last read and refused with 409 if the item has changed since, so two reviewers on one item cannot silently clobber each other; only a change to the item itself refuses it, never a change to another item, a claim or a pipeline stage's bookkeeping on the same document (scope B5).", "status": "done"}, {"id": "2RT.5", "description": "Rejected items out of default reads: rejected records and entities absent from every list, search and per-document response, returned by an explicit query flag carrying their state (scope B12).", "status": "done"}, {"id": "2RT.6", "description": "Per-document entity list route: the document's entities with mention counts, paginated, ordered so entities typed other, entities with low mention confidence and entities whose mention text does not match their name come first (scope B7).", "status": "done"}, {"id": "2RT.7", "description": "Record corrections: change which sentences a record spans, and edit the analyst fields (action or name, reference number, addressee text, contributory and addressed flags, safety issue versus safety lesson) (scope B6).", "status": "done"}, {"id": "2RT.8", "description": "Entity corrections: rename, change type (with a proposed type where the type is other), merge two entities of one document, move a mention to another entity, remove a mention (scope B7).", "status": "done"}, {"id": "2RT.9", "description": "Accept all remaining entities: one action moving every unreviewed entity on the document to accepted, as a batch of per-entity writes each made against the entity as the tool loaded it, skipping and reporting what changed underneath rather than failing (scope B7).", "status": "done"}, {"id": "2RT.10", "description": "Metadata and accident particulars editable, each field showing the source that produced its value and recording a human edit as the override source the schema already reserves (scope B8).", "status": "done"}, {"id": "2RT.11", "description": "Structure editable: a sentence's type and a heading's level, with a re-typed heading folding its section into the previous one and its level cleared; sentence text is never editable (revision 4 scope B9, withdrawn).", "status": "out_of_scope"}, {"id": "2RT.12", "description": "Incident link confirmable or clearable, and recommendation addressees attachable or detachable from organisations that already exist (scope B9, B10).", "status": "done"}, {"id": "2RT.13", "description": "Document sign-off: one action marks a document verified once no item is flagged and every document-level item is decided, recording the per-kind item-state counts as they stand at that moment; an administrator-only action returns it to extracted with a note (scope B11).", "status": "done"}, {"id": "2RT.14", "description": "Re-runs and deletion refused on human decisions: any stage re-run or delete on a document holding at least one decision returns 409, a force flag proceeds, and the audit trail survives either. The document page shows stage status read-only; no re-run can be triggered from the tool (scope B13).", "status": "done"}, {"id": "2RT.15", "description": "Forced re-run preserves decided items, matched by content identity (a record by its sentence set, an entity by its type and name, a mention by its sentence and span), replacing only unreviewed ones (scope B14).", "status": "done"}, {"id": "2RT.16", "description": "The queue: a document list filterable by status, jurisdiction, degraded extraction, claim holder, presence of flagged items, item-state counts and publication date, sortable on each (scope B2).", "status": "done"}, {"id": "2RT.17", "description": "Claims: an advisory marker of who is working on a document and since when, visible in the queue and on the document, released on sign-off or after 24 hours without a write (scope B3).", "status": "done"}, {"id": "2RT.18", "description": "The document page shell: the per-document route and its section layout, across metadata, records, entities, incident link and addressees, ready for each correction task to build its own section onto (scope B4).", "status": "done"}, {"id": "2RT.19", "description": "Per-item history on the document page: the machine original, then every change with actor, time, action and reason (scope C3). Each entry shows its reason, and a one-click write (accept, reject, attach, detach, accept all with no confirm step) gets a collapsed optional \"Add reason\" input; the tool already sends a reason on every other write (2RT.26).", "status": "done"}, {"id": "2RT.20", "description": "Keyboard operation and performance: every action reachable by keyboard, WCAG AA text contrast, and the corpus's most entity-dense document usable within three seconds of request (scope B1).", "status": "done"}, {"id": "2RT.21", "description": "Enforce daisyUI as the design-system layer in apps/review/src/lib/styles/: wire the vendored tokens.css, fonts.css and motion.css through daisyUI theme configuration so every UI-surfaced task in this milestone builds against one enforced system rather than ad hoc CSS.", "status": "done"}, {"id": "2RT.22", "description": "Define what a verified document is: whether sign-off is constrained by item states, whether a verified document can return to extracted and who may do it; recorded in the scope document and an ADR, built by 2RT.13 (scope B11).", "status": "done"}, {"id": "2RT.23", "description": "Sentences out of review: the sentence decision route removed from the API with the code and tests behind it, and sentences no longer counted among a document's items in the review queue; the review state already stored on sentences is left in place (scope B4, B5).", "status": "done"}, {"id": "2RT.24", "description": "Local seed data: a committed, synthetic seed for the local stack covering every table in the schema, with enough rows in each to exercise the tool and the API across every document status, item review state, jurisdiction, role and reader scope, claim and pipeline-stage outcome.", "status": "done"}, {"id": "2RT.25", "description": "UX and aesthetic review of the tool: a developer walks every screen and state on the seeded local stack and approves or tweaks layout, copy, spacing, empty and error states and interaction.", "status": "done"}, {"id": "2RT.26", "description": "The tool sends an optional reason on every write the API records: decision notes, corrections, merge, move and mention removal, span edits, addressee changes, accept all remaining and return to extracted, each capped at 2000 characters.", "status": "done"}]}, {"id": "M3", "name": "Audit Trail", "tier": "core", "goal": "Every human write is recorded with its actor, its time and the value it replaced, and nothing can edit or delete the record.", "tasks": [{"id": "3AU.1", "description": "The audit trail and its two reads: an entry holds the principal (the user, and the key's label where an API key was presented, or for a failed login the address attempted), the time, the document the item belongs to (kept after the document is deleted), the item, its value before and after, a named action and an optional reason. One item's history reads back in order and one document's entries by its id, both served from the day the trail is created and sized against a 545,649-entry accept-all sweep. No API route or database role available to the application can update or delete an entry (scope C1, C2).", "status": "done"}, {"id": "3AU.2", "description": "Audit capture on every write the API performs for a principal: review decisions and corrections from the tool and edits made with an API key, whichever route they came through. The machine value is captured as the before of the first human change to an item, which keeps the machine original recoverable for anything a person has touched; pipeline writes are left unrecorded (scope C1).", "status": "done"}, {"id": "3AU.3", "description": "A run-level read over the trail: which ingestion or pipeline run a set of audit rows belongs to, who triggered it and what it changed — \"this user ran a metadata pass that touched 340 documents\" — built on the batch id 3AU.2 stamps per run rather than on a table of its own.", "status": "out_of_scope"}, {"id": "3AU.4", "description": "Audit capture for the passage routes: adding or removing a sentence of a passage, and creating or deleting a record, each write an entry, so a record's span history no longer skips a change made through them (scope C1).", "status": "done"}, {"id": "3AU.5", "description": "Audit capture for a forced re-run and a forced delete on the same path as every other write, so the trail has one writer, a blank key label is stored as none as it is elsewhere, and the acting user is named the same way in every capture.", "status": "done"}]}, {"id": "M4", "name": "Source PDFs", "tier": "core", "goal": "The original report is one click from any item derived from it, stored where only the API can reach it.", "tasks": [{"id": "4PD.1", "description": "A private Supabase Storage bucket keyed by content hash, with the API minting short-lived signed URLs and a reader's scope applied (scope D1).", "status": "done"}, {"id": "4PD.2", "description": "New ingestions store their PDF once the pipeline is queued (scope D2).", "status": "done"}, {"id": "4PD.3", "description": "Backfill of the 1,252 existing PDFs: fetch each from its source URL, store only on a SHA-256 match against the hash recorded at ingest, and report every mismatch and dead link by document (scope D3).", "status": "done"}, {"id": "4PD.4", "description": "Deep links: the document, any sentence, record or entity mention opens the stored PDF at that page in a new tab (scope D4).", "status": "done"}]}, {"id": "M5", "name": "Filtering & Search", "tier": "core", "goal": "The corpus answers sharper questions: seven new facets over four surfaces, controlled vocabularies behind three of them, and nearest-passage search by meaning.", "tasks": [{"id": "5SE.1", "description": "Controlled vocabularies for vessel type, accident type and severity: one vocabulary each, a stored mapping from every observed free-text value, and a report of what maps to nothing (scope E3).", "status": "done"}, {"id": "5SE.2", "description": "The seven facets: accident date, outcome, vessel type, accident type, severity, named entity and review state, combining with AND with each other and with the existing text query, status, jurisdiction and publication date (scope E1).", "status": "done"}, {"id": "5SE.3", "description": "The facets across four surfaces: document search, sentence search through the parent document, and the recommendation and safety issue list routes, which gain pagination (scope E2).", "status": "done"}, {"id": "5SE.4", "description": "Entity search across the corpus by type and name, combined with the document facets and paginated (scope E2).", "status": "done"}, {"id": "5SE.5", "description": "Semantic search endpoint: nearest record passages by embedding similarity from either a text query or a passage id, with the facets and a reader's scope applied (scope E4).", "status": "done"}, {"id": "5SE.6", "description": "Passage search similarity floor: measure the real similarity spread on the hosted corpus and replace the provisional default of 0.75 with the floor the data supports.", "status": "done"}]}, {"id": "M6", "name": "Hardening, Documentation & Integration", "tier": "core", "goal": "The two services are watched, documented and deployed, and the whole review flow is exercised before anyone is asked to accept it.", "tasks": [{"id": "6HD.2", "description": "The reviewer guide: signing in, the queue, claims, each decision and correction, flags and notes, the PDF link and sign-off, written for CHIRP staff (scope F2).", "status": "done"}, {"id": "6HD.3", "description": "Developer documentation: the API reference and the database architecture document updated for every new route, table and column, plus the chirpdocs data guide and a chirpdocs page on the review workflow and audit trail (scope F3).", "status": "done"}, {"id": "6HD.4", "description": "The third Compose service: the tool's container beside the API and the embeddings worker, its tunnel hostname, secrets and configuration, and the first production deployment (scope F4).", "status": "done"}, {"id": "6HD.5", "description": "Migration and backfill rehearsal: every migration in the tranche applied to a copy of production before production, with the PDF backfill and the vocabulary mapping run on that copy first (scope F5).", "status": "done"}, {"id": "6HD.6", "description": "Three new ADRs and one amendment: principals and the security model, the audit trail, the re-run and deletion rule; and the rate limiter added to ADR-007 as its fifth per-process bound (scope F3).", "status": "done"}, {"id": "6HD.7", "description": "End-to-end test pass: a seeded database holding one document with records, entities, metadata and a stored PDF, and the whole review flow exercised through both the tool and the API, with automated tests over the new routes at the project's two levels (scope F6).", "status": "done"}, {"id": "6HD.8", "description": "The response shapes the review tool reads come from the API's own published contract rather than hand-written copies, and what the API returns is checked as it arrives, so a field the API renames or drops fails loudly in the tool instead of rendering as blank. CI refuses a change to the API's response models that the tool's copy of the contract does not reflect. The API's models stay the single source of truth.", "status": "done"}]}, {"id": "M7", "name": "Identity & Access", "tier": "secondary", "goal": "Administration of users and keys moves from Tandem's scripts into the tool, and the session policy tightens.", "tasks": [{"id": "7ID.1", "description": "Self-service API keys: a signed-in user issues, labels, expires and revokes their own API keys in the tool; a key's ceiling and scope are its owner's role's (scope S3, 1.0pd).", "status": "done"}, {"id": "7ID.2", "description": "User administration screen: an administrator issues invites, assigns roles and scopes, and deactivates users (scope S4, 1.0pd).", "status": "done"}, {"id": "7ID.3", "description": "Session policy: sessions end after 8 hours idle or 7 days, passwords at least 12 characters and checked against a breached-password list, and an administrator can force sign-out (scope S9, 0.5pd).", "status": "done"}]}, {"id": "M8", "name": "Review & Correction Tool", "tier": "secondary", "goal": "The corrections core left out: structural surgery on sentences and records, records the pass missed, and the smaller editing gaps.", "tasks": [{"id": "8RT.1", "description": "Sentence merge and split: two adjacent sentences become one or one becomes two, with mention offsets remapped exactly and passage membership re-pointed in the same transaction; a split is refused where a mention straddles the cut (revision 4 scope S2, withdrawn, 1.5pd).", "status": "out_of_scope"}, {"id": "8RT.2", "description": "Record split and merge, and entity split (scope S2, 1.0pd).", "status": "done"}, {"id": "8RT.3", "description": "Add a missed record: a reviewer selects sentences and creates a recommendation or safety issue the pass did not find, as an analyst-authored record (scope S6, 0.5pd).", "status": "done"}, {"id": "8RT.4", "description": "Incident link picking: search occurrences by publication number, date or vessel name and link one (scope S7, 0.5pd).", "status": "todo"}, {"id": "8RT.5", "description": "Report vessels and authors editable: vessel rows (name, type, ports, voyage type) added, edited and removed, and the publishing body corrected (scope S11, 0.5pd).", "status": "todo"}, {"id": "8RT.6", "description": "Create an organisation from the tool when the right addressee does not exist (scope S12, 0.25pd).", "status": "todo"}, {"id": "8RT.7", "description": "A half-hour walkthrough of the review tool with a CHIRP contact, once core is far enough along to demonstrate (scope S13, 0.25pd).", "status": "done"}, {"id": "8RT.8", "description": "State bar segments readable without colour: a hairline gap between segments, or the per-state counts as text in the rail, so the bar passes WCAG 1.4.11 where hue alone does not.", "status": "done"}, {"id": "8RT.9", "description": "Hints reachable and dismissible without a mouse: replace the Hint button, which has no behaviour beyond CSS, with aria-describedby from the term to a visually hidden span, keep the question mark as decoration and let Escape dismiss the bubble.", "status": "done"}, {"id": "8RT.10", "description": "Collapsible panels without interactive content in a summary: replace the details element with a button carrying aria-expanded, rendered open without JavaScript, so a hint, pager or bulk action can sit in a folding band.", "status": "todo"}, {"id": "8RT.11", "description": "Queue Claim hint wording matches how claims behave: reword the Claim column hint so it says opening an unclaimed document claims it, opening a held one leaves the holder in place and a save moves the claim to the saver.", "status": "todo"}, {"id": "8RT.12", "description": "Record cards show their text: a safety issue or recommendation with no analyst-written name or action shows its passage text instead of a dash, in the document's record panels and wherever else the card renders.", "status": "todo"}, {"id": "8RT.13", "description": "Hints stay inside the frame: a hint whose trigger sits near an edge of its panel or the window opens shifted or flipped so its whole text is visible, as on the Invite panel of the Users page, where the box is cut off on the left.", "status": "done"}]}, {"id": "M9", "name": "Audit Trail", "tier": "secondary", "goal": "The trail reads back per document, not only per item.", "tasks": [{"id": "9AU.1", "description": "Per-document audit timeline in the tool (scope S8, 0.5pd).", "status": "done"}]}, {"id": "M10", "name": "Filtering & Search", "tier": "secondary", "goal": "A facet says how many documents each of its values would return, not merely how many the current filter matches.", "tasks": [{"id": "10SE.1", "description": "Per-value facet counts: each facet returns the distribution of its values for the current filter set (scope S5, 1.0pd).", "status": "done"}, {"id": "10SE.2", "description": "Passage search cold start: the first search after the hosted project sits idle answers 500, because the exact scan reads the vectors from disk and runs past Postgres's statement timeout; the route answers within the timeout from cold.", "status": "done"}, {"id": "10SE.3", "description": "Record passages that are headings or captions: the records pass takes fragments such as \"OIC forward mooring party\" or \"Stability of beam trawlers\" for a recommendation or safety issue; such rows are not records and do not appear in passage search.", "status": "done"}, {"id": "10SE.4", "description": "A passage search shows a finding that other reports state in the same or nearly the same words as a recurrence of the query, naming each report, so a reviewer can tell a restated finding from a distinct neighbour without losing either.", "status": "done"}, {"id": "10SE.5", "description": "Re-run the records pass, unforced, over the 38 documents whose records the layout-fragment rules change, then run the passage-search warm step: none of the 38 holds a reviewed decision, 4 of them gain 9 recommendations the pass had missed, and the re-run re-embeds every replaced passage so it leaves the vectors cold.", "status": "todo"}, {"id": "10SE.6", "description": "Short record passages the layout-fragment rules do not cover: 784 record passages of 8 words or fewer on hosted, all unreviewed, most of them ship-particulars rows, glossary lines, lead-ins ending in a colon, lone words or acronyms, single-space captions and numbered headings typed as list items; genuine short records exist, so each bucket needs its own shape rule rather than a length rule.", "status": "todo"}]}, {"id": "M11", "name": "Hardening", "tier": "secondary", "goal": "The alerts reach past uptime into the pipeline's own failures.", "tasks": [{"id": "11HD.1", "description": "Alerts on pipeline stage failures and embedding queue poison rows (scope S10, 0.5pd).", "status": "blocked"}, {"id": "11HD.2", "description": "Error capture and runbook: every unhandled failure from both front and back end captured with its stack trace, route and account, repeated faults grouped into one item with a count, and alerted to the Tandem Discord channel; a switch that turns reporting off; plus a runbook saying what each alert means, uptime alerts from 11HD.3 included, and what to check first (scope F1).", "status": "blocked"}, {"id": "11HD.3", "description": "Uptime watching: a third-party watcher polls the API's health endpoint and the frontend endpoints, with a separate alert when the API is up but cannot reach the database; both alerts to the Tandem Discord channel with the Client copied on the API-down alert only; certificate expiry flagged (scope F1).", "status": "todo"}, {"id": "11HD.4", "description": "Retrieval prefix guard: an edit to an embedding model's retrieval prefix is refused while vectors made under that model exist, so a retune goes through a documented re-embed and cannot leave stored vectors and typed queries on different prefixes.", "status": "done"}]}, {"id": "M12", "name": "Review & Correction Tool", "tier": "tertiary", "goal": "Corpus-wide organisation surgery, and the PDF beside the item rather than in another tab.", "tasks": [{"id": "12RT.1", "description": "Organisation merge and rename corpus-wide: every recommendation pointing at the merged organisation repoints to the survivor, the losing spelling kept as an identifier, and a rename keeps the old spelling the same way (scope T2, 1.0pd).", "status": "blocked"}, {"id": "12RT.2", "description": "Embedded PDF viewer: the page beside the item being reviewed, in the same screen (scope T3, 0.5pd).", "status": "blocked"}, {"id": "12RT.3", "description": "Flag, edit and reset on an item move into an overflow menu behind a meatballs icon, leaving accept and reject as the visible decision controls on each row.", "status": "blocked"}]}, {"id": "M13", "name": "Filtering & Search", "tier": "tertiary", "goal": "CHIRP staff compose the facets themselves instead of asking for a query to be run.", "tasks": [{"id": "13SE.1", "description": "Query interface for the corpus facets: a screen where a CHIRP staff member composes the facets and reads the matching documents, records and entities (scope T1, 2.0pd).", "status": "blocked"}, {"id": "13SE.2", "description": "MAIB vessel types harvested one per vessel: a report naming several vessels yields one stated type for each.", "status": "blocked"}, {"id": "13SE.3", "description": "Entity search sort options in the query interface: the user picks the order of entity results, for example by mention count or newest document, instead of the fixed alphabetical order. The entity search route takes the chosen order.", "status": "blocked"}, {"id": "13SE.4", "description": "Entity search tolerates a misspelt name fragment and can rank results by how closely the name matches: \"harbourside trder\" finds \"Harbourside Trader\". The close match adds to the fragment match, since a fragment of one or two letters is too short to judge closeness.", "status": "blocked"}, {"id": "13SE.5", "description": "Passage search says when its recurrences were capped: a response that names the first 20 reports restating the query also says how many restate it in all, so a caller can tell a complete list from a truncated one.", "status": "blocked"}]}, {"id": "M14", "name": "Audit Trail", "tier": "tertiary", "goal": "The trail leaves the tool as data.", "tasks": [{"id": "14AU.1", "description": "Audit read route with filters (document, principal, date, action) and export of a document's or the corpus's history as CSV or JSON (scope T4, 0.5pd).", "status": "blocked"}]}, {"id": "M15", "name": "Source PDFs", "tier": "tertiary", "goal": "Stored PDFs stay complete, every uploaded report can be re-run and a metadata field opens the PDF at the page it was read from.", "tasks": [{"id": "15PD.1", "description": "Re-store pass for new ingestions whose PDF upload failed after the backfill: a route listing documents with no stored PDF and a route storing one from the document's source URL, only on a hash match.", "status": "blocked"}, {"id": "15PD.2", "description": "Re-run and the recovery sweep read a document's PDF from storage, falling back to the source URL, so an uploaded PDF can be re-extracted.", "status": "blocked"}, {"id": "15PD.3", "description": "Metadata field deep links: a metadata field read from a sentence opens the PDF at the page it was read from, in a new tab (scope T5, 1.0pd).", "status": "blocked"}, {"id": "15PD.4", "description": "The PDF backfill's worker threads each hold their own Supabase client, or the hosted run defaults to one worker: a shared client at 4 and 2 workers reported 317 then 64 documents refused with Errno 35, all transient, zero at one worker.", "status": "blocked"}]}, {"id": "M16", "name": "Identity & Access", "tier": "tertiary", "goal": "An administrator sees and can withdraw every credential in the system, not only their own.", "tasks": [{"id": "16ID.1", "description": "Administrator oversight of API keys: an administrator lists every user's keys with their owner, label, expiry and state, and revokes any of them, from the user administration screen.", "status": "blocked"}]}]};
+      // --- END gen_tiers ---
+
+      const TIERS = [
+        {
+          key: "core",
+          label: "Core",
+          stretch: false,
+          desc: "The committed scope: identity and access, the review and correction tool, the audit trail, source PDFs, filtering and search, and hardening.",
+        },
+        {
+          key: "secondary",
+          label: "Secondary",
+          stretch: true,
+          desc: "Extras on top of a working tool, taken on after core while time remains.",
+        },
+        {
+          key: "tertiary",
+          label: "Tertiary",
+          stretch: true,
+          desc: "Further extras, taken on after secondary.",
+        },
+      ];
+      const STATUS_TEXT = {
+        done: "Done",
+        todo: "To do",
+        blocked: "Blocked",
+        out_of_scope: "Out of scope",
+      };
+
+      const esc = (s) =>
+        s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+      // Descriptions mark identifiers with backticks, as the roadmap does
+      const prose = (s) => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+      const live = (tasks) => tasks.filter((t) => t.status !== "out_of_scope");
+      const doneOf = (tasks) => live(tasks).filter((t) => t.status === "done").length;
+      const bar = (done, total, stretch) =>
+        '<div class="bar' + (stretch ? " bar--stretch" : "") +
+        '"><div class="bar__fill' +
+        (total && done === total ? " bar__fill--complete" : "") +
+        '" style="width:' + (total ? (done / total) * 100 : 0) + '%"></div></div>';
+
+      const tiers = TIERS.map((tier) => {
+        const milestones = ROADMAP.milestones.filter((m) => m.tier === tier.key);
+        const tasks = milestones.flatMap((m) => m.tasks);
+        return { ...tier, milestones, done: doneOf(tasks), total: live(tasks).length };
+      });
+
+      // The headline reads the same counts as everything below it
+      const [core, secondary] = tiers;
+      document.getElementById("heroKicker").textContent =
+        ROADMAP.tranche + " · Delivery by tier";
+      document.getElementById("heroHeadline").innerHTML =
+        (core.done === core.total
+          ? "Core delivered in full."
+          : "Core " + core.done + " of " + core.total + " delivered.") +
+        ' <span class="accent">Plus ' + secondary.done +
+        " stretch items.</span>";
+      document.getElementById("lastUpdated").textContent =
+        ROADMAP.updated + (ROADMAP.commit ? " · roadmap at " + ROADMAP.commit : "");
+
+      const tile = (t) =>
+        '<a class="tile tile--' + (t.stretch ? "stretch" : "core") +
+        '" href="#' + t.key + '">' +
+        '<div class="tile__tier">' + t.label + "</div>" +
+        '<div class="tile__figure">' + t.done +
+        '<span class="unit">of ' + t.total + " done</span></div>" +
+        bar(t.done, t.total, t.stretch) +
+        '<div class="tile__sub">' + t.milestones.length + " milestones</div>" +
+        "</a>";
+      document.getElementById("tiles").innerHTML =
+        tiers.filter((t) => !t.stretch).map(tile).join("") +
+        '<div class="stretch-group"><span class="stretch-label">' +
+        '<span class="stretch-tag">Stretch</span></span>' +
+        tiers.filter((t) => t.stretch).map(tile).join("") +
+        "</div>";
+
+      document.getElementById("tiers").innerHTML = tiers
+        .map(
+          (t) =>
+            '<section class="card card--' + (t.stretch ? "stretch" : "core") +
+            '" id="' + t.key + '">' +
+            '<div class="card__kicker">' + t.label + " tier" +
+            (t.stretch ? ' <span class="stretch-tag">Stretch</span>' : "") +
+            "</div>" +
+            '<div class="card__head"><h2>' +
+            (t.done === t.total
+              ? "Complete"
+              : t.stretch
+                ? t.done
+                  ? t.done + " delivered as stretch"
+                  : "Not started"
+                : t.total - t.done + " still to deliver") +
+            '</h2><span class="card__count"><strong>' + t.done + "</strong> of " +
+            t.total + " tasks done</span></div>" +
+            '<p class="card__desc">' + t.desc + "</p>" +
+            t.milestones
+              .map((m) => {
+                const done = doneOf(m.tasks);
+                const total = live(m.tasks).length;
+                return (
+                  '<details class="milestone"><summary>' +
+                  '<span class="milestone__name">' + esc(m.name) + "</span>" +
+                  '<span class="milestone__count"><strong>' + done + "</strong> / " +
+                  total + "</span>" + bar(done, total, t.stretch) + "</summary>" +
+                  '<p class="milestone__goal">' + prose(m.goal) + "</p>" +
+                  '<ul class="tasks">' +
+                  m.tasks
+                    .map(
+                      (task) =>
+                        '<li class="task task--' + task.status + '">' +
+                        '<span class="task__id">' + esc(task.id) + "</span>" +
+                        '<span class="task__desc">' + prose(task.description) + "</span>" +
+                        '<span class="chip chip--' + task.status + '">' +
+                        (STATUS_TEXT[task.status] || esc(task.status)) + "</span></li>",
+                    )
+                    .join("") +
+                  "</ul></details>"
+                );
+              })
+              .join("") +
+            "</section>",
+        )
+        .join("");
+    </script>
+  </body>
+</html>
