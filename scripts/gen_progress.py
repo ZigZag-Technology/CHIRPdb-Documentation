@@ -45,7 +45,7 @@ HOURS_PER_DAY = 7.5
 
 # Solidtime project holding the CHIRPdb work. Matched by name, case-insensitive.
 # Set to None to count every project in the organisation.
-PROJECT_NAME = "CHIRPdb"
+PROJECT_NAME = "CHIRPdb Tranche 1"
 
 # The funded ceiling for the whole engagement. The project's own
 # estimated_time in Solidtime does not match the contract (it reads 162.5
@@ -65,12 +65,18 @@ TOTAL_BUDGET_DAYS = 120
 # instance. A task with no estimate renders as tracked-only.
 #
 # A row added here needs matching markup in progress/index.html, keyed
-# <KEY>_ELAPSED, <KEY>_ALLOC and <KEY>_DONE.
+# <KEY>_ELAPSED, <KEY>_ALLOC and <KEY>_DONE. Time logged with no task shows
+# as the Misc row, emitted as MISC_ELAPSED.
 PHASES = [
     {
         "key": "dsg",
         "label": "DSG",
         "tasks": ["CHIRPdb - DSG"],
+    },
+    {
+        "key": "admin",
+        "label": "Admin",
+        "tasks": ["CHIRPdb - Admin"],
     },
     {
         "key": "mvp",
@@ -254,6 +260,11 @@ def build():
             "done": done,
         })
 
+    # Time logged with no task belongs to no task row, but it still came out of
+    # the budget, so it is emitted as Misc rather than dropped.
+    unassigned = seconds_by_task.get(None, 0) / 3600.0 / HOURS_PER_DAY
+    matched.add(None)
+
     # Name the tasks, not just the total - an unattributed figure invites a
     # wrong guess about where the time went.
     unmatched = sorted(((tid, sec) for tid, sec in seconds_by_task.items()
@@ -287,6 +298,8 @@ def build():
             else fmt_days(phase["alloc_days"])))
         block.append("      const %s_DONE = %s;" % (
             key, "true" if phase["done"] else "false"))
+    block.append("      const MISC_ELAPSED = %s;"
+                 % fmt_days(round(unassigned, 2)))
     block.append(END)
 
     html = open(OUT).read()
@@ -317,7 +330,9 @@ def build():
             note = "  (%.2f over)" % over + note
         print("%s  %.2f / %s days%s" % (phase["label"], phase["elapsed_days"],
                                         fmt_days(phase["alloc_days"]), note))
-    tracked = sum(p["elapsed_days"] for p in phases)
+    if unassigned:
+        print("Misc  %.2f days tracked, no task" % unassigned)
+    tracked = sum(p["elapsed_days"] for p in phases) + round(unassigned, 2)
     print("tracked %s / %s days" % (fmt_days(tracked),
                                     fmt_days(TOTAL_BUDGET_DAYS)))
     if abs(allocated - TOTAL_BUDGET_DAYS) > 0.001:

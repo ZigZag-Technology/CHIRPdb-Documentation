@@ -757,6 +757,30 @@
 
         <div class="phase">
           <div class="phase__label">
+            Admin
+            <span class="phase__name">Project administration</span>
+            <span class="phase__tag" id="adminTag"></span>
+          </div>
+          <div class="phase__stats" id="adminStats"></div>
+          <div class="phase__bar">
+            <div class="phase__bar-fill" id="adminFill" style="width: 0"></div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase__label">
+            Misc
+            <span class="phase__name">Time logged without a task</span>
+            <span class="phase__tag" id="miscTag"></span>
+          </div>
+          <div class="phase__stats" id="miscStats"></div>
+          <div class="phase__bar">
+            <div class="phase__bar-fill" id="miscFill" style="width: 0"></div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase__label">
             MVP
             <span class="phase__name">Foundation MVP</span>
             <span class="phase__tag" id="mvpTag"></span>
@@ -952,11 +976,14 @@
       // --- BEGIN gen_progress ---
       // Generated from Solidtime by scripts/gen_progress.py.
       // Do not edit by hand - re-run the script instead.
-      const LAST_UPDATED = "31 Oct 2026";
+      const LAST_UPDATED = "2 Nov 2026";
       const TOTAL_BUDGET = 120;
       const DSG_ELAPSED = 5.02;
       const DSG_ALLOC = null;
       const DSG_DONE = false;
+      const ADMIN_ELAPSED = 2.29;
+      const ADMIN_ALLOC = null;
+      const ADMIN_DONE = false;
       const MVP_ELAPSED = 19.34;
       const MVP_ALLOC = 19;
       const MVP_DONE = true;
@@ -975,6 +1002,7 @@
       const P5_ELAPSED = 7.86;
       const P5_ALLOC = 15;
       const P5_DONE = false;
+      const MISC_ELAPSED = 0.11;
       // --- END gen_progress ---
 
       const fmt = (n) => {
@@ -992,6 +1020,12 @@
       const PHASES = [
         { key: "dsg", label: "DSG", alloc: DSG_ALLOC, elapsed: DSG_ELAPSED,
           done: DSG_DONE, funding: 2 },
+        { key: "admin", label: "Admin", alloc: ADMIN_ALLOC,
+          elapsed: ADMIN_ELAPSED, done: ADMIN_DONE, funding: 2 },
+        // Time logged with no task. It has no Solidtime task to carry an
+        // estimate or a done flag, but it still came out of the budget.
+        { key: "misc", label: "Misc", alloc: null, elapsed: MISC_ELAPSED,
+          done: false, funding: 2 },
         {
           key: "mvp",
           label: "MVP",
@@ -1203,8 +1237,10 @@
       document.getElementById("budgetHeadroom").textContent = unbudgeted.length
         ? headroomNote +
           " " +
-          unbudgeted.map((p) => p.key.toUpperCase()).join(", ") +
-          " carries no estimate, so its tracked days sit outside that."
+          names(unbudgeted) +
+          (unbudgeted.length > 1
+            ? " carry no estimate, so their tracked days sit outside that."
+            : " carries no estimate, so its tracked days sit outside that.")
         : headroomNote;
 
       document.getElementById("lastUpdated").textContent = LAST_UPDATED;
